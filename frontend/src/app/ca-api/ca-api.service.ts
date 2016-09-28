@@ -2,24 +2,24 @@ import { Injectable } from '@angular/core';
 import { AuthHttp } from 'angular2-jwt';
 import { Observable } from 'rxjs';
 import { Logger } from './logging';
-import { REFRESH_ENDPOINT, VERIFY_ENDPOINT, LOGIN_ENDPOINT } from './ca-api.config';
+import { REFRESH_ENDPOINT, VERIFY_ENDPOINT, LOGIN_ENDPOINT, USER_ENDPOINT, API_BASE_URL } from './ca-api.config';
 import { Response, RequestOptions, Headers, URLSearchParams } from '@angular/http';
 import { DataExtractor } from './data-extractor.service';
 import { ErrorHandler } from './error-handler.service';
+import { User } from './login.service';
 
 @Injectable()
 export class CAApiService {
     public constructor(
         private http: AuthHttp,
         private logger: Logger,
-        private baseUrl: string = 'localhost',
         private dataExtractor: DataExtractor,
         private errorHandler: ErrorHandler
     ) {
     }
 
-    public getUserByEmail(email: string) {
-
+    public getUserByEmail(email: string): Observable<User> {
+        return this.getRequest(this.fullUrl(USER_ENDPOINT + email));
     }
 
     /**
@@ -147,6 +147,6 @@ export class CAApiService {
      * @return {string}
      */
     private fullUrl(path: string): string {
-        return this.baseUrl + path;
+        return API_BASE_URL + path;
     }
 }

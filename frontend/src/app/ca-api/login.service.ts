@@ -7,8 +7,15 @@ import { CAApiError } from './error-handler.service';
 
 export const TOKEN_NAME = 'jwt';
 
-export class User {
-    email: string
+export interface User {
+    email: string;
+}
+export class User implements User{
+    public email: string;
+
+    constructor(email: string) {
+        this.email = email;
+    }
 }
 
 interface Token {
@@ -61,20 +68,19 @@ export class LoginService {
         localStorage.removeItem(TOKEN_NAME);
         sessionStorage.removeItem(TOKEN_NAME);
     }
-    
+
 
     public constructor(
         private logger: Logger,
         private apiService: CAApiService
     ) { }
 
-    public get loggedInUser(): Observable<User> {
+    public get loggedInUser(): User {
         return this.user;
     }
 
     public get isLoggedIn(): Observable<boolean> {
-        return this.loggedInUser
-            .map((user: any) => user != null);
+        return Observable.of(this.loggedInUser != null);
     }
 
     /**
@@ -85,20 +91,20 @@ export class LoginService {
      * @param keepLoggedIn
      * @returns {Observable<void>}
      */
-    public login(email: string, password: string, keepLoggedIn: boolean = true): Observable<User> {
-        return this.apiService.obtainToken(email, password)
-            .do((data: any) => {
-                LoginService.storeToken(data.token, keepLoggedIn);
-            })
-            .flatMap((data: any) => {
-                return this.retrieveUser(this.token.email);
-            })
-            .do((user: User) => this.user.next(user))
-            .catch((error: CAApiError) => {
-                LoginService.deleteToken();
-                return Observable.throw(error);
-            });
-    }
+    // public login(email: string, password: string, keepLoggedIn: boolean = true): Observable<User> {
+    //     return this.apiService.obtainToken(email, password)
+    //         .do((data: any) => {
+    //             LoginService.storeToken(data.token, keepLoggedIn);
+    //         })
+    //         .flatMap((data: any) => {
+    //             return this.retrieveUser(this.token.email);
+    //         })
+    //         .do((user: User) => this.user = user)
+    //         .catch((error: CAApiError) => {
+    //             LoginService.deleteToken();
+    //             return Observable.throw(error);
+    //         });
+    // }
 
     /**
      * Renews the login by refreshing the token on the server
