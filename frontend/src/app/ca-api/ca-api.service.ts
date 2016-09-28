@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AuthHttp } from 'angular2-jwt';
+import { Observable } from 'rxjs';
+import { Logger } from './logging';
+import { REFRESH_ENDPOINT, VERIFY_ENDPOINT, LOGIN_ENDPOINT } from './ca-api.config';
+import { Response, RequestOptions, Headers, URLSearchParams } from '@angular/http';
+import { DataExtractor } from './data-extractor.service';
+import { ErrorHandler } from './error-handler.service';
 
 @Injectable()
 export class CAApiService {
@@ -7,7 +13,25 @@ export class CAApiService {
         private http: AuthHttp,
         private logger: Logger,
         private baseUrl: string = 'localhost',
+        private dataExtractor: DataExtractor,
+        private errorHandler: ErrorHandler
     ) {
+    }
+
+    public getUserByEmail(email: string) {
+
+    }
+
+    /**
+     * Obtains a JWT for the credentials provided
+     *
+     * @param email
+     * @param password
+     * @returns {Observable<string>}
+     */
+    public obtainToken(email: string, password: string): Observable<any> {
+        let payload: any = {email, password};
+        return this.postRequest(this.fullUrl(LOGIN_ENDPOINT), payload);
     }
 
     /**
@@ -115,5 +139,14 @@ export class CAApiService {
                 this.logger.debug('Response from DELETE ' + response.url + ': ', response);
                 return this.errorHandler.handleError(response);
             });
+    }
+
+        /**
+     * Helper to prepend the path with the API base url
+     * @param path
+     * @return {string}
+     */
+    private fullUrl(path: string): string {
+        return this.baseUrl + path;
     }
 }

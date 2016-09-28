@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Response } from '@angular/http';
 import { Observable } from 'rxjs';
-import { Logger } from '../../logging';
-import { LmtApiError, ErrorKind } from './lmt-api-error';
+import { Logger } from './logging';
 
 @Injectable()
 export class ErrorHandler {
@@ -10,7 +9,7 @@ export class ErrorHandler {
         private logger: Logger
     ) { }
 
-    public  handleError(error: Response): Observable<LmtApiError> {
+    public  handleError(error: Response): Observable<CAApiError> {
         if (400 <= error.status && error.status <= 499) {
             return this.handleClientError(error);
         }
@@ -19,7 +18,7 @@ export class ErrorHandler {
         }
     }
 
-    private handleClientError(error: Response): Observable<LmtApiError> {
+    private handleClientError(error: Response): Observable<CAApiError> {
         let body: any;
         try {
             body = error.json();
@@ -28,7 +27,7 @@ export class ErrorHandler {
             body = {};
         }
 
-        let backendError: LmtApiError = {
+        let backendError: CAApiError = {
             statusCode: error.status,
             statusText: error.statusText,
             kind: ErrorKind.ClientError,
@@ -38,7 +37,7 @@ export class ErrorHandler {
         switch (error.status) {
             case 400:
                 backendError.kind = ErrorKind.ValidationError;
-                backendError.message = 'Die Werte in einigen Feldern sind fehlerhaft.';
+                backendError.message = 'Some values are wrong!';
                 backendError.validationErrors = body;
                 break;
             case 403:
@@ -62,7 +61,7 @@ export class ErrorHandler {
         return Observable.throw(backendError);
     }
 
-    private handleServerError(error: Response): Observable<LmtApiError> {
+    private handleServerError(error: Response): Observable<CAApiError> {
         this.logger.error('Server error:', error);
 
         let body: any;
@@ -80,4 +79,21 @@ export class ErrorHandler {
             errorText: body.message || ''
         });
     }
+}
+
+export interface CAApiError {
+    statusCode: number;
+    statusText: string;
+    kind: ErrorKind;
+    message: string;
+    validationErrors?: any;
+}
+
+export enum ErrorKind {
+    ServerError,
+    ClientError,
+    ValidationError,
+    NoPermissionError,
+    ResourceNotFoundError,
+    InvalidEndpointError
 }
