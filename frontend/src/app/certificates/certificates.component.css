@@ -1,0 +1,16 @@
+.container {
+    width: 900px;
+}
+
+.links {
+    margin-top: 30px;
+    height: 50px;
+}
+
+h2 {
+    margin-top: 30px;
+}
+
+li {
+    border: solid 1px darkgray;
+}

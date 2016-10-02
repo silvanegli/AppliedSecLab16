@@ -2,11 +2,15 @@ import { Injectable } from '@angular/core';
 import { AuthHttp } from 'angular2-jwt';
 import { Observable } from 'rxjs';
 import { Logger } from './logging';
-import { REFRESH_ENDPOINT, VERIFY_ENDPOINT, LOGIN_ENDPOINT, USER_ENDPOINT, API_BASE_URL } from './ca-api.config';
+import {
+    REFRESH_ENDPOINT, VERIFY_ENDPOINT, LOGIN_ENDPOINT, USER_ENDPOINT, API_BASE_URL,
+    CERTIFICATE_ENDPOINT
+} from './ca-api.config';
 import { Response, RequestOptions, Headers, URLSearchParams } from '@angular/http';
 import { DataExtractor } from './data-extractor.service';
 import { ErrorHandler } from './error-handler.service';
 import { User } from './login.service';
+import { Certificate } from '../certificates/certificate.model';
 
 @Injectable()
 export class CAApiService {
@@ -18,6 +22,59 @@ export class CAApiService {
     ) {
     }
 
+    /**
+     * Revoke a certain certificate
+     *
+     * @param id
+     * @returns {Observable<Certificate>}
+     */
+    public revokeCertificate(id: number): Observable<Certificate> {
+        return this.deleteRequest(this.fullUrl(CERTIFICATE_ENDPOINT + '/' + id))
+            .map((json: any) => new Certificate(json));
+    }
+
+    /**
+     * Create a new certificate
+     *
+     * @returns {Observable<Certificate>}
+     */
+    public createCertificate(name: string): Observable<Certificate> {
+        let payload = {'name': name};
+        return this.postRequest(this.fullUrl(CERTIFICATE_ENDPOINT), payload)
+            .map((json: any) => new Certificate(json));
+    }
+
+    /**
+     * Get all active certificates
+     *
+     * @returns {Certificate[]}
+     */
+    public getCertificates(): Observable<Certificate[]> {
+        let options = new URLSearchParams();
+        options.append('status', 'active');
+        // return this.getRequest(this.fullUrl(CERTIFICATE_ENDPOINT), options)
+        //     .map((json: any) => (new Certificate(json)));
+        return Observable.of([].map((json: any) => new Certificate(json)));
+    }
+
+    /**
+     * Get all revoked certificates
+     *
+     * @returns {Certificate[]}
+     */
+    public getRevokedCertificates(): Observable<Certificate[]> {
+        let options = new URLSearchParams();
+        options.append('status', 'revoked');
+        // return this.getRequest(this.fullUrl(CERTIFICATE_ENDPOINT), options)
+        return Observable.of([].map((json: any) => new Certificate(json)));
+    }
+
+    /**
+     * Gets a user by email
+     *
+     * @param email
+     * @returns {Observable<User>}
+     */
     public getUserByEmail(email: string): Observable<User> {
         return this.getRequest(this.fullUrl(USER_ENDPOINT + email));
     }
@@ -27,10 +84,11 @@ export class CAApiService {
      *
      * @param email
      * @param password
+     * @param method
      * @returns {Observable<string>}
      */
-    public obtainToken(email: string, password: string): Observable<any> {
-        let payload: any = {email, password};
+    public obtainToken(email: string, password: string, method: string): Observable<any> {
+        let payload: any = {email, password, method};
         return this.postRequest(this.fullUrl(LOGIN_ENDPOINT), payload);
     }
 
@@ -141,7 +199,7 @@ export class CAApiService {
             });
     }
 
-        /**
+    /**
      * Helper to prepend the path with the API base url
      * @param path
      * @return {string}

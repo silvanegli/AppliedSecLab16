@@ -6,7 +6,8 @@ const certificatesRoutes: Routes = [
     {
         path: 'certificates',
         component: CertificatesComponent,
-        canActivate: [AuthGuard] }
+        // canActivate: [AuthGuard]
+    }
 ];
 
 export const routing = RouterModule.forChild(certificatesRoutes);

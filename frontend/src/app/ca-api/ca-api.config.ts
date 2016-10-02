@@ -4,3 +4,5 @@ export const LOGIN_ENDPOINT: string = 'login/';
 export const VERIFY_ENDPOINT: string = 'api-token-verify/';
 export const REFRESH_ENDPOINT: string = 'api-token-refresh/';
 export const USER_ENDPOINT: string = 'user/';
+
+export const CERTIFICATE_ENDPOINT: string = 'certificates/';

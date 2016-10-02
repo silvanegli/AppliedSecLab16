@@ -1,0 +1,28 @@
+.row {
+    text-align: center;
+}
+
+.tile {
+    height: 250px;
+    width: 250px;
+    margin: 30px;
+    float: none;
+    display: inline-block;
+    padding: 100px 10px;
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.profile {
+    background: #0064A2;
+}
+
+.certificates {
+    background: #005A91;
+}
+
+.logout {
+    background: red;
+    cursor: pointer;
+}
