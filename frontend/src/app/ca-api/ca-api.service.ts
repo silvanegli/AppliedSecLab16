@@ -3,7 +3,7 @@ import { AuthHttp } from 'angular2-jwt';
 import { Observable } from 'rxjs';
 import { Logger } from './logging';
 import {
-    REFRESH_ENDPOINT, VERIFY_ENDPOINT, LOGIN_ENDPOINT, USER_ENDPOINT, API_BASE_URL,
+    REFRESH_ENDPOINT, VERIFY_ENDPOINT, LOGIN_ENDPOINT, CERTIFICATE_LOGIN_ENDPOINT, USER_ENDPOINT, API_BASE_URL,
     CERTIFICATE_ENDPOINT
 } from './ca-api.config';
 import { Response, RequestOptions, Headers, URLSearchParams } from '@angular/http';
@@ -84,12 +84,20 @@ export class CAApiService {
      *
      * @param email
      * @param password
-     * @param method
      * @returns {Observable<string>}
      */
-    public obtainToken(email: string, password: string, method: string): Observable<any> {
-        let payload: any = {email, password, method};
+    public obtainToken(email: string, password: string): Observable<any> {
+        let payload: any = {email, password};
         return this.postRequest(this.fullUrl(LOGIN_ENDPOINT), payload);
+    }
+
+    /**
+     * Obtains a JWT when using a certificate
+     *
+     * @returns {Observable<string>}
+     */
+    public obtainCertificateToken(): Observable<any> {
+        return this.getRequest(this.fullUrl(CERTIFICATE_LOGIN_ENDPOINT));
     }
 
     /**

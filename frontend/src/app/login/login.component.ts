@@ -12,7 +12,6 @@ export class LoginComponent {
     public passwordLogin: boolean = true;
     public email: string;
     public password: string;
-    public certificate: string;
     public error: string;
 
     constructor(
@@ -34,7 +33,7 @@ export class LoginComponent {
                     }
                 )
         } else {
-            this.loginService.certificateLogin(this.email, this.certificate)
+            this.loginService.certificateLogin()
                 .subscribe(
                     () => {
                         this.router.navigate(['/']);

@@ -92,7 +92,7 @@ export class LoginService {
      * @returns {Observable<void>}
      */
     public passwordLogin(email: string, password: string, keepLoggedIn: boolean = false): Observable<User> {
-        return this.apiService.obtainToken(email, password, 'password')
+        return this.apiService.obtainToken(email, password)
             .do((data: any) => {
                 LoginService.storeToken(data.token, keepLoggedIn);
             })
@@ -107,15 +107,14 @@ export class LoginService {
     }
 
     /**
-     * Logs the user with the specified credentials in by requesting a token from the server
+     * Logs in the user by certificate, by requesting a token from the server
      *
      * @param email
-     * @param certificate
      * @param keepLoggedIn
      * @returns {Observable<void>}
      */
-    public certificateLogin(email: string, certificate: string, keepLoggedIn: boolean = false): Observable<User> {
-        return this.apiService.obtainToken(email, certificate, 'certificate')
+    public certificateLogin(keepLoggedIn: boolean = false): Observable<User> {
+        return this.apiService.obtainCertificateToken()
             .do((data: any) => {
                 LoginService.storeToken(data.token, keepLoggedIn);
             })

@@ -9,7 +9,7 @@
             <input type="radio" name="passwordLogin" [value]="false" [(ngModel)]="passwordLogin" autocomplete="off"> Login with certificate
         </label>
     </div>
-    <div class="form-group">
+    <div *ngIf="passwordLogin" class="form-group">
         <label for="email">Email</label>
         <input type="email" class="form-control" [(ngModel)]="email" id="email" name="email" placeholder="your@email" required>
     </div>
@@ -17,10 +17,5 @@
         <label for="password">Password</label>
         <input type="password" class="form-control" [(ngModel)]="password" id="password" name="password" placeholder="Your password here">
     </div>
-    <div *ngIf="!passwordLogin" class="form-group">
-        <textarea name="certificate" [(ngModel)]="certificate" placeholder="Past your key here...">
-
-        </textarea>
-    </div>
-    <button type="submit" class="btn btn-default login-button" [disabled]="!loginForm.form.valid || (!password && !certificate)">Login</button>
+    <button type="submit" class="btn btn-default login-button" [disabled]="!loginForm.form.valid && passwordLogin">Login</button>
 </form>

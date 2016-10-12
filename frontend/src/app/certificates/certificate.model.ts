@@ -1,11 +1,11 @@
-export interface Certificate {
+export interface CertificateInterface {
     name: string;
     certificate?: string;
     hash?: string;
     privateKey?: string;
 }
 
-export class Certificate implements Certificate {
+export class Certificate implements CertificateInterface {
     public name: string;
     public certificate?: string;
     public hash?: string;

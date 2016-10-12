@@ -1,3 +1,21 @@
-<p>
-  profile works!
-</p>
+<div class="container">
+    <div class="text-center">
+        <h1>Profile</h1>
+    </div>
+    <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+    <div class="form-group">
+        <label for="email">Name</label>
+        <input type="email" class="form-control" [(ngModel)]="name" id="name" name="name" placeholder="YOur name"
+               required>
+    </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" [(ngModel)]="email" id="email" name="email" placeholder="your@email"
+               required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" [(ngModel)]="password" id="password" name="password"
+               placeholder="Your password here">
+    </div>
+</div>

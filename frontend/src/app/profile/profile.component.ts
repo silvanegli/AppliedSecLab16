@@ -1,15 +1,20 @@
 import { Component, OnInit } from '@angular/core';
+import { CAApiService } from '../ca-api/ca-api.service';
 
 @Component({
-  selector: 'app-profile',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+    selector: 'app-profile',
+    templateUrl: './profile.component.html',
+    styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
 
-  constructor() { }
+    constructor(
+        private apiService: CAApiService
+    ) {
+    }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+        // this.apiService.getUserByEmail()
+    }
 
 }
