@@ -37,10 +37,12 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'CertAPI',
     'rest_framework',
+    'corsheaders',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -51,9 +53,6 @@ MIDDLEWARE_CLASSES = (
     'django_ssl_auth.SSLClientAuthMiddleware',
 )
 
-# AUTHENTICATION_BACKENDS = (
-#     'django_ssl_auth.SSLClientAuthBackend',
-# )
 USER_DATA_FN = 'django_ssl_auth.fineid.user_dict_from_dn'  # todo: create own handler
 
 ROOT_URLCONF = 'djangoBackend.urls'
@@ -116,3 +115,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CORS_ORIGIN_ALLOW_ALL = True
