@@ -49,3 +49,5 @@ src/CACHE
 src/.sass-cache
 .sass-cache
 *.mo
+
+venv/
