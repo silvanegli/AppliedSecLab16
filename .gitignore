@@ -1,1 +1,9 @@
 .idea/
+*.p12
+*.crt
+*.csr
+*.key
+*.aux
+*.log
+*.gz
+*.toc

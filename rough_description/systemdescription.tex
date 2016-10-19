@@ -7,6 +7,7 @@
 %\usepackage{ngerman}
 \usepackage{longtable}
 \usepackage{color}
+\usepackage{pdfpages}
 
 \usepackage{xifthen}
 \newboolean{showbackdoors}
@@ -19,8 +20,8 @@
 
 
 \title{\huge\sffamily\bfseries System Description and Risk Analysis}
-\author{w \and x \and y \and z}
-\date{\dots}
+\author{Cyrill Krähenbühl \and Silvan Egli \and Lukas Bischofberger }
+\date{}
 
 
 \begin{document}
@@ -30,7 +31,7 @@
 %% (it is not allowed to change the font size or page geometry to gain more space)
 %% comment or remove lines below before hand-in
 \begin{center}
-{\large\textcolor{red}{Page limit: 30 pages.}}
+%{\large\textcolor{red}{Page limit: 30 pages.}}
 \end{center}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -40,42 +41,59 @@
 
 \section{System Characterization}
 
-\subsection{System Overview}
+\subsection{System Architecture}
 
-Describe the system's mission,  the system boundaries,
-and the overall system architecture, including the main subsystems and
-their relationships.   This description should provide a high-level
-overview of the system, e.g., suitable for managers, that complements
-the more technical description that follows.
-
-
-\subsection{System Functionality}
-
-Describe the system's functions.
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.7]{seclabsystemoverview.pdf}
+	\caption{System overview}
+\end{figure}
 
 
-\subsection{Security Design}
+%Describe the system's mission,  the system boundaries,
+%and the overall system architecture, including the main subsystems and
+%their relationships.   This description should provide a high-level
+%overview of the system, e.g., suitable for managers, that complements
+%the more technical description that follows.
 
-Describe the system's security design, including key and session management and 
-security of data at rest and in transit.
+
+
+%\subsection{System Functionality}
+
+%Describe the system's functions.
+
+
+%\subsection{Security Design}
+
+%Describe the system's security design, including key and session management and security of data at rest and in transit.
 
 
 \subsection{Components}
 
-List all system components and their interfaces, subdivided, for example, into
-  categories such as platforms, applications, data records, etc. For
-  each component, state its relevant properties.
+%List all system components and their interfaces, subdivided, for example, into categories such as platforms, applications, data records, etc. For  each component, state its relevant properties.
+  
+  client: angular application
+  webserver\&db server: django on top of nginx, communicating with a mysql database on the same server
+  ca server: core ca, handles all openssl commands and stores certificates and keys
+  backup server: backup of certificates, keys and the mysql database
 
+\subsection{Information Flows}
+
+- client authentication: client sends username/pw or certificate to webserver. webserver checks username and password in the db. the certificate is checked by nginx (valid, revoked?). django then responds with a token
+
+- client certificate creation: client sends certificate name to webserver. webserver checks if name is present already, otherwise requests cert from ca server (based on info from database). the ca server creates certificate and key and stores them safely. returns locations of these assets. webserver inserts the certificate information into the database and offer the user to download the assets.
+
+- certificate revocation: client sends revocation request to webserver. webserver asks ca server to revoke the certificate. ca server responds with updated certificate list.
 
 \ifthenelse{\boolean{showbackdoors}}{
 % show for handed-in version
 
-\subsection{Backdoors}
-
-Describe the implemented backdoors. 
-
-\bigskip\noindent
-\textbf{Hide this subsection in the version handed over to the reviewing team by setting the flag \texttt{showbackdoors} at the top of this document to \texttt{false}.}
+%\subsection{Backdoors}
+%
+%Describe the implemented backdoors. 
+%
+%\bigskip\noindent
+%\textbf{Hide this subsection in the version handed over to the reviewing team by setting the flag \texttt{showbackdoors} at the top of this document to \texttt{false}.}
 
 
 %% do not delete the three lines below
@@ -83,136 +101,161 @@ Describe the implemented backdoors.
 % empty for reviewing group's version
 } 
 
-\subsection{Additional Material}
-
-You may have additional sections according to your needs.
+%\subsection{Additional Material}
+%
+%You may have additional sections according to your needs.
 
 
 \section{Risk Analysis and Security Measures}
 
 \subsection{Assets}
 
-Describe the relevant assets and their required security
-  properties. For example, data objects, access restrictions,
-  configurations, etc.
+%Describe the relevant assets and their required security properties. For example, data objects, access restrictions, configurations, etc.
+
+- certificates
+- user data
+- webserver/dbserver
+- ca server
+- backup server
+- availability of service
+
 
 \subsection{Threat Sources}
 
-Name and describe potential threat sources including their motivation.
+threats
+-----
 
-\subsection{Risks Definitions}
+- key leakage
+- user data leakage
+- compromise of webserver, ca server. backup server
+- unavailability
+- misbehaviour of trusted entities
+- sysadmin access to system
 
-Define likelihood, impact and risk level using the following three
-  tables.
+vulnerabilites
+-------------
+
+- misconfiguration of used software
+- bad passwords
+- badly implemented software (eg. access control)
+- zero days in used software
+- lack of security awareness of employees
+- sys admin access privileges
+
+%Name and describe potential threat sources including their motivation.
+
+%\subsection{Risks Definitions}
+
+%Define likelihood, impact and risk level using the following three tables.
 
 %\subsubsection{Tools}
 
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\multicolumn{2}{|c|}{\bf Likelihood} \\
-\hline
-Likelihood & Description \\
-\hline
-\hline
-High   & \hspace*{20pt}\ldots \\
-\hline
-Medium & \hspace*{20pt}\ldots \\
-\hline
-Low   & \hspace*{20pt}\ldots \\
-\hline
-\end{tabular}
-\hspace{3em}
-\begin{tabular}{|l|l|}
-\hline
-\multicolumn{2}{|c|}{\bf Impact} \\
-\hline
-Impact & Description \\
-\hline
-\hline
-High   & \hspace*{20pt}\ldots \\
-\hline
-Medium & \hspace*{20pt}\ldots \\
-\hline
-Low   & \hspace*{20pt}\ldots \\
-\hline
-\end{tabular}
-\end{center}
+%\begin{center}
+%\begin{tabular}{|l|l|}
+%\hline
+%\multicolumn{2}{|c|}{\bf Likelihood} \\
+%\hline
+%Likelihood & Description \\
+%\hline
+%\hline
+%High   & \hspace*{20pt}\ldots \\
+%\hline
+%Medium & \hspace*{20pt}\ldots \\
+%\hline
+%Low   & \hspace*{20pt}\ldots \\
+%\hline
+%\end{tabular}
+%\hspace{3em}
+%\begin{tabular}{|l|l|}
+%\hline
+%\multicolumn{2}{|c|}{\bf Impact} \\
+%\hline
+%Impact & Description \\
+%\hline
+%\hline
+%High   & \hspace*{20pt}\ldots \\
+%\hline
+%Medium & \hspace*{20pt}\ldots \\
+%\hline
+%Low   & \hspace*{20pt}\ldots \\
+%\hline
+%\end{tabular}
+%\end{center}
 
-\vspace{5mm}
+%\vspace{5mm}
 
-\begin{center}
-\begin{tabular}{|l|c|c|c|}
-\hline
-\multicolumn{4}{|c|}{{\bf Risk Level}} \\
-\hline
-{{\bf Likelihood}} & \multicolumn{3}{c|}{{\bf Impact}} \\ %\cline{2-4}
-     & Low & Medium & High \\  \hline
- High & Low & Medium & High  \\
-\hline
- Medium & Low & Medium & Medium \\
-\hline
- Low & Low & Low & Low \\
-\hline
-\end{tabular}
-\end{center}
-
-
-\subsection{Risk Evaluation}
-
-List all potential threats and the corresponding countermeasures. Estimate the risk based on the information about the threat, the threat sources and the corresponding countermeasure. Adhere to the risk definitions you have given above.
+%\begin{center}
+%\begin{tabular}{|l|c|c|c|}
+%\hline
+%\multicolumn{4}{|c|}{{\bf Risk Level}} \\
+%\hline
+%{{\bf Likelihood}} & \multicolumn{3}{c|}{{\bf Impact}} \\ %\cline{2-4}
+%     & Low & Medium & High \\  \hline
+% High & Low & Medium & High  \\
+%\hline
+% Medium & Low & Medium & Medium \\
+%\hline
+% Low & Low & Low & Low \\
+%\hline
+%\end{tabular}
+%\end{center}
 
 
-\subsubsection{{\it Evaluation Asset X}}
-
-Evaluate the likelihood, impact and the resulting risk,  \emph{after implementation of the corresponding countermeasures}. For each threat, clearly name the threat source and the the threat action.
-
-\begin{footnotesize}
-\begin{prettytablex}{llp{5.5cm}lll}
-No. & Threat &  Countermeasure(s) & L & I & Risk \\
-\hline
-1 & ... & ... & {\it Low} & {\it Low} & {\it Low} \\
-\hline
-2 & ... & ...& {\it Medium} & {\it High} & {\it Medium} \\
-\hline
-\end{prettytablex}
-\end{footnotesize}
-
-
-
-\subsubsection{{\it Evaluation Asset y}}
-
-\begin{footnotesize}
-\begin{prettytablex}{llp{5.5cm}lll}
-No. & Threat & Countermeasure(s) & L & I & Risk \\
-\hline
-1 & ... & ... & {\it Low} & {\it Low} & {\it Low} \\
-\hline
-2 & ... & ...& {\it Medium} & {\it High} & {\it Medium} \\
-\hline
-\end{prettytablex}
-\end{footnotesize}
-
-\subsubsection{Detailed Description of Selected Countermeasures}
-
-Optionally explain the details of the countermeasures mentioned above.
-
-
-
-\subsubsection{Risk Acceptance}
-
-List all medium and high risks, according to the evaluation above. For each risk, propose additional countermeasures that could be implemented to further reduce the risks.
-
-\begin{footnotesize}
-\begin{prettytablex}{p{2cm}X}
-No. of threat & Proposed additional countermeasure including expected impact  \\
-\hline
-... & ... \\
-\hline
-... & ... \\
-\hline
-\end{prettytablex}
-\end{footnotesize}
+%\subsection{Risk Evaluation}
+%
+%List all potential threats and the corresponding countermeasures. Estimate the risk based on the information about the threat, the threat sources and the corresponding countermeasure. Adhere to the risk definitions you have given above.
+%
+%
+%\subsubsection{{\it Evaluation Asset X}}
+%
+%Evaluate the likelihood, impact and the resulting risk,  \emph{after implementation of the corresponding countermeasures}. For each threat, clearly name the threat source and the the threat action.
+%
+%\begin{footnotesize}
+%\begin{prettytablex}{llp{5.5cm}lll}
+%No. & Threat &  Countermeasure(s) & L & I & Risk \\
+%\hline
+%1 & ... & ... & {\it Low} & {\it Low} & {\it Low} \\
+%\hline
+%2 & ... & ...& {\it Medium} & {\it High} & {\it Medium} \\
+%\hline
+%\end{prettytablex}
+%\end{footnotesize}
+%
+%
+%
+%\subsubsection{{\it Evaluation Asset y}}
+%
+%\begin{footnotesize}
+%\begin{prettytablex}{llp{5.5cm}lll}
+%No. & Threat & Countermeasure(s) & L & I & Risk \\
+%\hline
+%1 & ... & ... & {\it Low} & {\it Low} & {\it Low} \\
+%\hline
+%2 & ... & ...& {\it Medium} & {\it High} & {\it Medium} \\
+%\hline
+%\end{prettytablex}
+%\end{footnotesize}
+%
+%\subsubsection{Detailed Description of Selected Countermeasures}
+%
+%Optionally explain the details of the countermeasures mentioned above.
+%
+%
+%
+%\subsubsection{Risk Acceptance}
+%
+%List all medium and high risks, according to the evaluation above. For each risk, propose additional countermeasures that could be implemented to further reduce the risks.
+%
+%\begin{footnotesize}
+%\begin{prettytablex}{p{2cm}X}
+%No. of threat & Proposed additional countermeasure including expected impact  \\
+%\hline
+%... & ... \\
+%\hline
+%... & ... \\
+%\hline
+%\end{prettytablex}
+%\end{footnotesize}
 
 \end{document}
 
