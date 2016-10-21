@@ -112,16 +112,25 @@
 
 %Describe the relevant assets and their required security properties. For example, data objects, access restrictions, configurations, etc.
 
-Our project does not have physical assets. All the servers and networks are virtualized and thous will be listed as virtual assets.
+Our project does not have physical assets. All the servers and networks are virtualized and thous will be listed as virtual assets. So we will distinguish between software assets and information assets.
+
+Software includes our virtual servers, including the software running on them. Further we count the connectivity of the different components as a logical asset as the network is also virtualized.
 
 \begin{itemize}
-	\item certificates
-	\item user data
-	\item webserver
-	\item ca server
-	\item backup server
-	\item availability of service
+	\item Frontend server: The frontend server runs a webserver and a database server. This are a nginx and a mysql service running on Ubuntu. Further our application is a django (python framework)  system which delivers the frontend (Angular) application. The packages and frameworks used are automatically updated with the newest security patches. The django application is updated by the system developers.
+	\item CA server: The backend server system consists of a bunch of bash script as well as the openssl package, both running on Ubuntu. The packages are automatically updated with the newest security patches.
+	\item Backup server: The backup server runs rsync on Ubuntu, it is also automatically updated with the newest security patches.
+	\item Availability of service / connectivity of the components: We rely on the virtualized network which is configured externally to work consistently  for our application to function.
 \end{itemize}
+
+Then we also have information as assets, this includes the following:
+
+\begin{itemize}
+	\item Certificates: This includes our own server and CA certificates as well as all the user generated certificates. Whereas the secrecy of the certificates is not critical, the security of the private keys is crucial. 
+	\item User data: User data includes the users names, emails but also passwords. The security of this information is also critical to our application.
+\end{itemize}
+
+Our further assets are the people working with the product. This includes the engineers building the platform, preserving the technical knowledge. But also spans to the customers using the product, wherein also originates the customer relation.   
 
 \subsection{Threat Sources}
 
