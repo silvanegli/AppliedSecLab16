@@ -20,7 +20,7 @@
 
 
 \title{\huge\sffamily\bfseries System Description and Risk Analysis}
-\author{Cyrill Krähenbühl \and Silvan Egli \and Lukas Bischofberger }
+\author{Cyrill Kr\"ahenb\"uhl \and Silvan Egli \and Lukas Bischofberger }
 \date{}
 
 
@@ -43,12 +43,16 @@
 
 \subsection{System Architecture}
 
+Our system is a certificate authority. A user can retrieve his certificates, create new certificates and revoke certificates.
+
 \begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.7]{seclabsystemoverview.pdf}
 	\caption{System overview}
+	\label{figure:systemoverview}
 \end{figure}
 
+The architecture is shown in figure \ref{figure:systemoverview}. All components except the client are in the same local network and are separated from the client by a firewall. A client can only communicate with the system by connecting to the webserver. The webserver authenticates the user, manages the database and retrieves, creates or revokes certificates through the certificate authority (CA). The CA handles all certificate related operation. The backup server periodically backs up all data on the database and the CA.
 
 %Describe the system's mission,  the system boundaries,
 %and the overall system architecture, including the main subsystems and
@@ -70,12 +74,16 @@
 
 \subsection{Components}
 
+We can divide our system into four major components.
+\begin{itemize}
+\item Client: The client side of the system is implemented using the javascript framework Angular \footnote{https://angularjs.org/}.
+\item Webserver \& Database: The webserver and the database run on the same Ubuntu system. For the webserver we use nginx \footnote{https://www.nginx.com/} and for the database mysql. The web application is implemented using the python framework Django \footnote{https://www.djangoproject.com/}.
+\item CA server: The CA server runs on a Ubuntu system. All certificate related operations are implemented using openssl \footnote{https://www.openssl.org/}. The CA stores all certificates and their corresponding keys.
+\item Backup server: The backup server runs on a Ubuntu system and uses rsync to synchronize certificates, keys and revocation lists from the CA and user informations from the database.
+\end{itemize}
+
 %List all system components and their interfaces, subdivided, for example, into categories such as platforms, applications, data records, etc. For  each component, state its relevant properties.
   
-  client: angular application
-  webserver\&db server: django on top of nginx, communicating with a mysql database on the same server
-  ca server: core ca, handles all openssl commands and stores certificates and keys
-  backup server: backup of certificates, keys and the mysql database
 
 \subsection{Information Flows}
 
