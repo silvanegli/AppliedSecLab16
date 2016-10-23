@@ -144,27 +144,51 @@ Then we also have information as assets, this includes the following:
 
 Our further assets are the people working with the product. This includes the engineers building the platform, preserving the technical knowledge. But also spans to the customers using the product, wherein also originates the customer relation.   
 
-\subsection{Threat Sources}
+\subsection{Risks and Vulnerabilities}
 
-threats
------
+\begin{itemize}
+    \item Weak passwords: 
+    \begin{itemize}
+        \item Users: Weak passwords of employees let advisories issue and revoking certificates in their names.
+        \item System Administrator: Weak passwords of system administrators allow advisories access to the system with unbound possibilities.
+    \end{itemize}
+    \item Security Awareness and Knowledge of Employees: If the employees do not know how to request certificates and how to use them to sign/encrypt messages. This also includes the the protection of the private keys.
+    \item Unavailability of CA: Threat actions like DOS attacks can make the CA unavailable. This results in making signing/verification of messages impossible as the public key of the CA can not be fetched. 
+    \item Misconfiguration: The system administrator might expose the system to the outside by opening unintended ports for example.
+    \item Threat sources: The iMovie company has a focus on investigative reporting. Depending on the subject being reported the threat source might include organized crime or governmental agency. 
+    \item Information leakage: if confidential data (e.g. about a movie) is leaked customers might loose confidence
+    \script 
+\end{itemize}
 
-- key leakage
-- user data leakage
-- compromise of webserver, ca server. backup server
-- unavailability
-- misbehaviour of trusted entities
-- sysadmin access to system
 
-vulnerabilites
--------------
 
-- misconfiguration of used software
-- bad passwords
-- badly implemented software (eg. access control)
-- zero days in used software
-- lack of security awareness of employees
-- sys admin access privileges
+
+%\paragraph{threats}
+
+%\begin{itemize}
+ %   \item key leakage
+  %  \item user data leakage
+   % \item compromise of webserver, ca server. backup server
+    %\item unavailability
+    %\item misbehaviour of trusted entities
+%    \item sysadmin access to system
+%\end{itemize}
+    
+
+%\paragraph{vulnerabilities}
+
+%\begin{itemize}
+ % \item misconfiguration of used software
+ % \item bad passwords
+ % \item badly implemented software (eg. access control)
+ % \item zero days in used software
+ % \item lack of security awareness of employees
+ % \item sys admin access privileges
+%\end{itemize}
+
+
+
+
 
 %Name and describe potential threat sources including their motivation.
 
