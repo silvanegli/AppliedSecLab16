@@ -52,7 +52,7 @@ Our system is a certificate authority. A user can retrieve his certificates, cre
 	\label{figure:systemoverview}
 \end{figure}
 
-The architecture is shown in figure \ref{figure:systemoverview}. All components except the client are in the same local network and are separated from the client by a firewall. A client can only communicate with the system by connecting to the webserver. The webserver authenticates the user, manages the database and retrieves, creates or revokes certificates through the certificate authority (CA). The CA handles all certificate related operation. The backup server periodically backs up all data on the database and the CA.
+The architecture is shown in figure \ref{figure:systemoverview}. All components except the client are in the same local network and are separated from the client by a firewall [siegli: are we using a dedicated machine (like a reverse proxy) or do we use a local firewalls on each machine ? in case of seperate machine I would put it into figure 1]. A client can only communicate with the system by connecting to the webserver. The webserver authenticates the user, manages the database and retrieves, creates or revokes certificates through the certificate authority (CA). The CA handles all certificate related operation. The backup server periodically backs up all data on the database and the CA.
 
 %Describe the system's mission,  the system boundaries,
 %and the overall system architecture, including the main subsystems and
@@ -74,10 +74,10 @@ The architecture is shown in figure \ref{figure:systemoverview}. All components 
 
 \subsection{Components}
 
-We can divide our system into four major components.
+We divide our system into four major components.
 \begin{itemize}
-\item Client: The client side of the system is implemented using the Angular framework\footnote{https://angular.io/}.
-\item Webserver \& Database: The webserver and the database run on the same Ubuntu system. For the webserver we use nginx\footnote{https://www.nginx.com/} and for the database mysql. The web application is implemented using the python framework Django\footnote{https://www.djangoproject.com/}.
+\item Client: The client side of the system is implemented using the javascript framework Angular \footnote{https://angularjs.org/}.
+\item Webserver \& Database: The webserver and the database run on the same Ubuntu system. For the webserver we use nginx \footnote{https://www.nginx.com/} and for the database mysql. The web application is implemented using the python framework Django \footnote{https://www.djangoproject.com/}.
 \item CA server: The CA server runs on a Ubuntu system. All certificate related operations are implemented using openssl \footnote{https://www.openssl.org/}. The CA stores all certificates and their corresponding keys.
 \item Backup server: The backup server runs on a Ubuntu system and uses rsync to synchronize certificates, keys and revocation lists from the CA and user informations from the database.
 \end{itemize}
@@ -87,14 +87,13 @@ We can divide our system into four major components.
 
 \subsection{Information Flows}
 
-Here we present some of the most important information flows.
 
 \begin{itemize}
 	\item Client authentication: The client sends his username and password (or certificate) by using the client application to the webserver. The webserver (nginx) passes this information to the backend application (django) which then checks the username and password with help of the mysql database. If the user sent a certificate, this is checked by nginx. It must be ensured, that the certificate is valid and has not been revoked. Django then creates a JWT and returns it to the client application.
 	
-	\item Client certificate creation: The client checks in his view if he has already generated a key pair. Assuming he has, he sends a new certificate name to the webserver. Django requests a certificate from the CA server based on information from the database. The user is given the possibility to update his user information if he wants to. The CA server then creates the certificate based on the already present key pair and stores them safely. It returns the locations of these assets to django, which stores it in the database. Also it returns the message of the successful creation of the certificate to the client and offers the possibility to download the certificate in P12 format as well as the private key.
+	\item Client certificate creation: The client checks in his view if he has already generated a key pair. Assuming he has, he sends a new certificate name to the webserver. Django requests a certificate from the CA server based on information from the database. The user is given the possibility to update his user information if he wants to. The CA server then creates the certificate based on the already present key pair and stores them safely. It returns the locations of these assets to django, which stores it in the database. Also it returns the message of the successful creation of the certificate to the client and offers the possibility to download the certificate, including the private key, in PKCS #12 format.
 	
-	\item Certificate revocation: The client sends a revocation request to the webserver. Django asks the CA server to revoke the certificate, which also adds it to the revocation list. The CA server responds with updated this updated revocation list.
+	\item Certificate revocation: The client sends a revocation request to the webserver. Django asks the CA server to revoke the certificate, which then adds it to the revocation list. The CA server responds with  this updated revocation list.
 \end{itemize}
 
 \ifthenelse{\boolean{showbackdoors}}{
@@ -124,25 +123,25 @@ Here we present some of the most important information flows.
 
 %Describe the relevant assets and their required security properties. For example, data objects, access restrictions, configurations, etc.
 
-Our project does not have physical assets. All the servers and networks are virtualized and thous will be listed as virtual assets. So we will distinguish between software assets and information assets.
+Our project does not have physical assets. [siegli:  maybe we later have to make the assumption that the system is running on real machines. but for the moment i'm okay with that (let's see what they say ;-) ]  All the servers and networks are virtualized and thus will be listed as virtual assets. We will distinguish between software assets and information assets.
 
 Software includes our virtual servers, including the software running on them. Further we count the connectivity of the different components as a logical asset as the network is also virtualized.
 
 \begin{itemize}
-	\item Frontend server: The frontend server runs a webserver and a database server. This are a nginx and a mysql service running on Ubuntu. Further our application is a django (python framework)  system which delivers the frontend (Angular) application. The packages and frameworks used are automatically updated with the newest security patches. The django application is updated by the system developers.
-	\item CA server: The backend server system consists of a bunch of bash script as well as the openssl package, both running on Ubuntu. The packages are automatically updated with the newest security patches.
-	\item Backup server: The backup server runs rsync on Ubuntu, it is also automatically updated with the newest security patches.
-	\item Availability of service / connectivity of the components: We rely on the virtualized network which is configured externally to work consistently  for our application to function.
+	\item Frontend server: The frontend server runs a webserver and a database server. These are running an nginx and a mysql service on Ubuntu. Further our application is a django (python framework)  system which delivers the frontend (Angular) application. The packages and frameworks used are automatically updated with the newest security patches. The django application is updated by the system administrators.
+	\item CA server: The backend server system consists of a bunch of bash scripts as well as the openssl package, both running on Ubuntu. The packages are automatically updated with the newest security patches.
+	\item Backup server: The backup server runs rsync on Ubuntu, it is also automatically updated with the latest security patches.
+	\item Availability of service / connectivity of the components: We rely on the virtualized network which is configured externally to work consistently [siegli: why consistently ?] for our application to function. 
 \end{itemize}
 
-Then we also have information as assets, this includes the following:
+Our information assets include the following:
 
 \begin{itemize}
 	\item Certificates: This includes our own server and CA certificates as well as all the user generated certificates. Whereas the secrecy of the certificates is not critical, the security of the private keys is crucial. 
 	\item User data: User data includes the users names, emails but also passwords. The security of this information is also critical to our application.
 \end{itemize}
 
-Our further assets are the people working with the product. This includes the engineers building the platform, preserving the technical knowledge. But also spans to the customers using the product, wherein also originates the customer relation.   
+Further assets are the people working with the product. This includes the engineers building the platform and preserving the technical knowledge but also spans to the customers (employees of iMovie) using the product, wherein also originates the customer relation.   
 
 \subsection{Risks and Vulnerabilities}
 
