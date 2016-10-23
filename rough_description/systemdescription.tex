@@ -91,7 +91,7 @@ We divide our system into four major components.
 \begin{itemize}
 	\item Client authentication: The client sends his username and password (or certificate) by using the client application to the webserver. The webserver (nginx) passes this information to the backend application (django) which then checks the username and password with help of the mysql database. If the user sent a certificate, this is checked by nginx. It must be ensured, that the certificate is valid and has not been revoked. Django then creates a JWT and returns it to the client application.
 	
-	\item Client certificate creation: The client checks in his view if he has already generated a key pair. Assuming he has, he sends a new certificate name to the webserver. Django requests a certificate from the CA server based on information from the database. The user is given the possibility to update his user information if he wants to. The CA server then creates the certificate based on the already present key pair and stores them safely. It returns the locations of these assets to django, which stores it in the database. Also it returns the message of the successful creation of the certificate to the client and offers the possibility to download the certificate, including the private key, in PKCS #12 format.
+	\item Client certificate creation: The client checks in his view if he has already generated a key pair. Assuming he has, he sends a new certificate name to the webserver. Django requests a certificate from the CA server based on information from the database. The user is given the possibility to update his user information if he wants to. The CA server then creates the certificate based on the already present key pair and stores them safely. It returns the locations of these assets to django, which stores it in the database. Also it returns the message of the successful creation of the certificate to the client and offers the possibility to download the certificate, including the private key, in PKCS \#12 format.
 	
 	\item Certificate revocation: The client sends a revocation request to the webserver. Django asks the CA server to revoke the certificate, which then adds it to the revocation list. The CA server responds with  this updated revocation list.
 \end{itemize}
@@ -156,7 +156,7 @@ Further assets are the people working with the product. This includes the engine
     \item Misconfiguration: The system administrator might expose the system to the outside by opening unintended ports for example.
     \item Threat sources: The iMovie company has a focus on investigative reporting. Depending on the subject being reported the threat source might include organized crime or governmental agency. 
     \item Information leakage: if confidential data (e.g. about a movie) is leaked customers might loose confidence
-    \script 
+    %\script 
 \end{itemize}
 
 
