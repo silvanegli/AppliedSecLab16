@@ -131,7 +131,7 @@ Software includes our virtual servers, including the software running on them. F
 	\item Frontend server: The frontend server runs a webserver and a database server. These are running an nginx and a mysql service on Ubuntu. Further our application is a django (python framework)  system which delivers the frontend (Angular) application. The packages and frameworks used are automatically updated with the newest security patches. The django application is updated by the system administrators.
 	\item CA server: The backend server system consists of a bunch of bash scripts as well as the openssl package, both running on Ubuntu. The packages are automatically updated with the newest security patches.
 	\item Backup server: The backup server runs rsync on Ubuntu, it is also automatically updated with the latest security patches.
-	\item Availability of service / connectivity of the components: We rely on the virtualized network which is configured externally to work consistently [siegli: why consistently ?] for our application to function. 
+	\item Availability of service / connectivity of the components: We rely on the virtualized network which is configured externally to work consistently [siegli: why consistently ?, lukasbi: if the network doesnt work consistently our app would have downtime] for our application to function. 
 \end{itemize}
 
 Our information assets include the following:
@@ -155,7 +155,7 @@ Further assets are the people working with the product. This includes the engine
     \item Unavailability of CA: Threat actions like DOS attacks can make the CA unavailable. This results in making signing/verification of messages impossible as the public key of the CA can not be fetched. 
     \item Misconfiguration: The system administrator might expose the system to the outside by opening unintended ports for example.
     \item Threat sources: The iMovie company has a focus on investigative reporting. Depending on the subject being reported the threat source might include organized crime or governmental agency. 
-    \item Information leakage: if confidential data (e.g. about a movie) is leaked customers might loose confidence
+    \item Information leakage: if confidential data (e.g. about a movie) is leaked customers might loose confidence.
     %\script 
 \end{itemize}
 
