@@ -52,7 +52,7 @@ Our system is a certificate authority. A user can retrieve his certificates, cre
 	\label{figure:systemoverview}
 \end{figure}
 
-The architecture is shown in figure \ref{figure:systemoverview}. All components except the client are in the same local network and are separated from the client by a firewall [siegli: are we using a dedicated machine (like a reverse proxy) or do we use a local firewalls on each machine ? in case of seperate machine I would put it into figure 1]. A client can only communicate with the system by connecting to the webserver. The webserver authenticates the user, manages the database and retrieves, creates or revokes certificates through the certificate authority (CA). The CA handles all certificate related operation. The backup server periodically backs up all data on the database and the CA.
+The architecture is shown in figure \ref{figure:systemoverview}. All components except the client are in the same local network and are separated from the client by a firewall [siegli: are we using a dedicated machine (like a reverse proxy) or do we use a local firewalls on each machine ? in case of seperate machine I would put it into figure 1. cyrill: I think we have to use a separate machine like reverse proxy or router firewall, but isnt it clear from the diagram since we only have a connection from client to webserver?]. A client can only communicate with the system by connecting to the webserver. The webserver authenticates the user, manages the database and retrieves, creates or revokes certificates through the certificate authority (CA). The CA handles all certificate related operation. The backup server periodically backs up all data on the database and the CA.
 
 %Describe the system's mission,  the system boundaries,
 %and the overall system architecture, including the main subsystems and
@@ -148,15 +148,14 @@ Further assets are the people working with the product. This includes the engine
 \begin{itemize}
     \item Weak passwords: 
     \begin{itemize}
-        \item Users: Weak passwords of employees let advisories issue and revoking certificates in their names.
+        \item Users: Weak passwords of employees let advisories issue and revoke certificates in their names.
         \item System Administrator: Weak passwords of system administrators allow advisories access to the system with unbound possibilities.
     \end{itemize}
-    \item Security Awareness and Knowledge of Employees: If the employees do not know how to request certificates and how to use them to sign/encrypt messages. This also includes the the protection of the private keys.
+    \item Security Awareness and Knowledge of Employees: If the employees do not know how to request certificates and how to use them to sign/encrypt messages. This also includes the protection of the private keys.
     \item Unavailability of CA: Threat actions like DOS attacks can make the CA unavailable. This results in making signing/verification of messages impossible as the public key of the CA can not be fetched. 
     \item Misconfiguration: The system administrator might expose the system to the outside by opening unintended ports for example.
     \item Threat sources: The iMovie company has a focus on investigative reporting. Depending on the subject being reported the threat source might include organized crime or governmental agency. 
     \item Information leakage: if confidential data (e.g. about a movie) is leaked customers might loose confidence.
-    %\script 
 \end{itemize}
 
 
