@@ -76,8 +76,8 @@ The architecture is shown in figure \ref{figure:systemoverview}. All components 
 
 We can divide our system into four major components.
 \begin{itemize}
-\item Client: The client side of the system is implemented using the javascript framework Angular \footnote{https://angularjs.org/}.
-\item Webserver \& Database: The webserver and the database run on the same Ubuntu system. For the webserver we use nginx \footnote{https://www.nginx.com/} and for the database mysql. The web application is implemented using the python framework Django \footnote{https://www.djangoproject.com/}.
+\item Client: The client side of the system is implemented using the Angular framework\footnote{https://angular.io/}.
+\item Webserver \& Database: The webserver and the database run on the same Ubuntu system. For the webserver we use nginx\footnote{https://www.nginx.com/} and for the database mysql. The web application is implemented using the python framework Django\footnote{https://www.djangoproject.com/}.
 \item CA server: The CA server runs on a Ubuntu system. All certificate related operations are implemented using openssl \footnote{https://www.openssl.org/}. The CA stores all certificates and their corresponding keys.
 \item Backup server: The backup server runs on a Ubuntu system and uses rsync to synchronize certificates, keys and revocation lists from the CA and user informations from the database.
 \end{itemize}
