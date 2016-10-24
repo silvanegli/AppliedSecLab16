@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+import datetime
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -30,6 +32,14 @@ AUTHENTICATION_BACKENDS = (
     'djangoBackend.auth.UserModelAuth',
 
 )
+
+JWT_AUTH = {
+    'JWT_ALGORITHM': 'HS256',
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LEEWAY': 0,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=30),
+}
 
 # Application definition
 
@@ -104,8 +114,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'imovies',
-        'USER': 'root',
-        'PASSWORD': '',
+        'USER': 'user',
+        'PASSWORD': 'user',
         'HOST': 'localhost',
     },
 

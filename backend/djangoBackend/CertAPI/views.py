@@ -4,7 +4,9 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from CertAPI.models import Certificate
-from CertAPI.serializers import CertificateSerializer
+from CertAPI.serializers import CertificateSerializer, UserSerializer
+
+from djangoBackend.models import Users
 
 
 @api_view(('GET',))
@@ -20,3 +22,11 @@ class CertificateList(generics.ListCreateAPIView):
     """
     serializer_class = CertificateSerializer
     queryset = Certificate.objects.all()
+
+
+class UserDetail(generics.RetrieveUpdateAPIView):
+    """
+    User detail view
+    """
+    serializer_class = UserSerializer
+    queryset = Users.objects.all()
