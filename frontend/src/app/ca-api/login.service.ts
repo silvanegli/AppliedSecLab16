@@ -109,7 +109,6 @@ export class LoginService {
     /**
      * Logs in the user by certificate, by requesting a token from the server
      *
-     * @param email
      * @param keepLoggedIn
      * @returns {Observable<void>}
      */
@@ -196,6 +195,6 @@ export class LoginService {
      * Gets the logged in user from the server
      */
     private retrieveUser(email: string): Observable<User> {
-        return this.apiService.getUserByEmail(email);
+        return this.apiService.getUserByUsername(email);
     }
 }

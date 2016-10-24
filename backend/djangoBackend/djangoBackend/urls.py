@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 from djangoBackend.auth import SSLAuth
 
@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^', include('CertAPI.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-token-auth/', obtain_jwt_token),
+    url(r'^api-token-refresh/', refresh_jwt_token),
     url(r'^ssl-login', SSLAuth),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

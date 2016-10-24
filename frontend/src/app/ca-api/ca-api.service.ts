@@ -70,13 +70,13 @@ export class CAApiService {
     }
 
     /**
-     * Gets a user by email
+     * Gets a user by username
      *
-     * @param email
+     * @param username
      * @returns {Observable<User>}
      */
-    public getUserByEmail(email: string): Observable<User> {
-        return this.getRequest(this.fullUrl(USER_ENDPOINT + email));
+    public getUserByUsername(username: string): Observable<User> {
+        return this.getRequest(this.fullUrl(USER_ENDPOINT + username + '/'));
     }
 
     /**
