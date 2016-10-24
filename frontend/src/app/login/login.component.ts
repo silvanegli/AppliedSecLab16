@@ -28,8 +28,7 @@ export class LoginComponent {
                         this.router.navigate(['/']);
                     },
                     (error: CAApiError) => {
-                        console.log(error);
-                        this.error = error.statusText;
+                        this.error = error.message;
                     }
                 )
         } else {

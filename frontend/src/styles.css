@@ -1,8 +1,21 @@
-body {
-    margin-top: 100px;
+.container {
+    margin-top: 180px;
 }
 
 app-root {
     width: 300px;
     margin: 0 auto;
+}
+
+.dashboard-link {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    width: 150px;
+    height: 40px;
+    background: green;
+    color: #FFF;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
 }

@@ -1,12 +1,12 @@
+<a [routerLink]="'/'">
+    <div class="dashboard-link">Dashboard</div>
+</a>
 <div class="container">
     <div class="text-center">
         <h1>Certificates</h1>
     </div>
     <div *ngIf="error" class="alert alert-danger">{{error}}</div>
     <div class="links">
-        <a [routerLink]="['/']">
-            <button class="btn btn-default pull-left">Go to Dashboard</button>
-        </a>
         <a (click)="creatingCertificate = true">
             <button class="btn btn-default pull-right">Create new Certificate</button>
         </a>

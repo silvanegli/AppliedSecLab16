@@ -16,7 +16,7 @@ export class NotAuthGuard implements CanActivate {
             .map((isLoggedIn: boolean) => !isLoggedIn)
             .do((isNotLoggedIn: boolean) => {
                 if (!isNotLoggedIn) {
-                    this.router.navigate(['/account']);
+                    this.router.navigate(['/']);
                 }
             })
             .first();

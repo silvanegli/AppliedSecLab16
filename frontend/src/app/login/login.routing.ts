@@ -4,7 +4,8 @@ import { NotAuthGuard } from '../ca-api/not-auth.guard.service';
 
 const loginRoutes: Routes = [
     {
-        path: 'login', component: LoginComponent,
+        path: 'login',
+        component: LoginComponent,
         canActivate: [NotAuthGuard]
     }
 ];

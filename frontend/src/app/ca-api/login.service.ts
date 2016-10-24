@@ -9,12 +9,18 @@ export const TOKEN_NAME = 'jwt';
 
 export interface User {
     email: string;
+    firstname: string;
+    lastname: string;
 }
-export class User implements User{
+export class User implements User {
     public email: string;
+    public firstname: string;
+    public lastname: string;
 
-    constructor(email: string) {
+    constructor(email: string, firstname: string, lastname: string) {
         this.email = email;
+        this.firstname = firstname;
+        this.lastname = lastname;
     }
 }
 
@@ -83,6 +89,10 @@ export class LoginService {
         return Observable.of(this.loggedInUser != null);
     }
 
+    public get username(): string {
+        return this.token.username;
+    }
+
     /**
      * Logs the user with the specified credentials in by requesting a token from the server
      *
@@ -149,7 +159,7 @@ export class LoginService {
                 LoginService.storeToken(data.token, false);
             })
             .flatMap((data: any) => {
-                return this.retrieveUser(this.token.email);
+                return this.retrieveUser(this.token.username);
             })
             .subscribe(
                 (user: User) => {this.user = user},

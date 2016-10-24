@@ -80,6 +80,17 @@ export class CAApiService {
     }
 
     /**
+     * Update a user
+     *
+     * @param username
+     * @param user
+     * @returns {Observable<User>}
+     */
+    public updateUser(username: string, user: User): Observable<User> {
+        return this.putRequest(this.fullUrl(USER_ENDPOINT + username + '/'), user);
+    }
+
+    /**
      * Obtains a JWT for the credentials provided
      *
      * @param username
