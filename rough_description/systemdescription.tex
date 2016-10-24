@@ -52,7 +52,9 @@ Our system is a certificate authority. A user can retrieve his certificates, cre
 	\label{figure:systemoverview}
 \end{figure}
 
-The architecture is shown in figure \ref{figure:systemoverview}. All components except the client are in the same local network and are separated from the client by a firewall [siegli: are we using a dedicated machine (like a reverse proxy) or do we use a local firewalls on each machine ? in case of seperate machine I would put it into figure 1. cyrill: I think we have to use a separate machine like reverse proxy or router firewall, but isnt it clear from the diagram since we only have a connection from client to webserver?]. A client can only communicate with the system by connecting to the webserver. The webserver authenticates the user, manages the database and retrieves, creates or revokes certificates through the certificate authority (CA). The CA handles all certificate related operation. The backup server periodically backs up all data on the database and the CA.
+The architecture is shown in figure \ref{figure:systemoverview}. All components except the client are in the same local network and are separated from the client by a firewall. 
+%[siegli: are we using a dedicated machine (like a reverse proxy) or do we use a local firewalls on each machine ? in case of seperate machine I would put it into figure 1. cyrill: I think we have to use a separate machine like reverse proxy or router firewall, but isnt it clear from the diagram since we only have a connection from client to webserver?]. 
+A client can only communicate with the system by connecting to the webserver. The webserver authenticates the user, manages the database and retrieves, creates or revokes certificates through the certificate authority (CA). The CA handles all certificate related operation. The backup server periodically backs up all data on the database and the CA.
 
 %Describe the system's mission,  the system boundaries,
 %and the overall system architecture, including the main subsystems and
@@ -123,7 +125,9 @@ We divide our system into four major components.
 
 %Describe the relevant assets and their required security properties. For example, data objects, access restrictions, configurations, etc.
 
-Our project does not have physical assets. [siegli:  maybe we later have to make the assumption that the system is running on real machines. but for the moment i'm okay with that (let's see what they say ;-) ]  All the servers and networks are virtualized and thus will be listed as virtual assets. We will distinguish between software assets and information assets.
+Our project does not have physical assets. 
+%[siegli:  maybe we later have to make the assumption that the system is running on real machines. but for the moment i'm okay with that (let's see what they say ;-) ]  
+All the servers and networks are virtualized and thus will be listed as virtual assets. We will distinguish between software assets and information assets.
 
 Software includes our virtual servers, including the software running on them. Further we count the connectivity of the different components as a logical asset as the network is also virtualized.
 
@@ -131,7 +135,8 @@ Software includes our virtual servers, including the software running on them. F
 	\item Frontend server: The frontend server runs a webserver and a database server. These are running an nginx and a mysql service on Ubuntu. Further our application is a django (python framework)  system which delivers the frontend (Angular) application. The packages and frameworks used are automatically updated with the newest security patches. The django application is updated by the system administrators.
 	\item CA server: The backend server system consists of a bunch of bash scripts as well as the openssl package, both running on Ubuntu. The packages are automatically updated with the newest security patches.
 	\item Backup server: The backup server runs rsync on Ubuntu, it is also automatically updated with the latest security patches.
-	\item Availability of service / connectivity of the components: We rely on the virtualized network which is configured externally to work consistently [siegli: why consistently ?, lukasbi: if the network doesnt work consistently our app would have downtime] for our application to function. 
+	\item Availability of service / connectivity of the components: We rely on the virtualized network which is configured externally to work consistently
+	 
 \end{itemize}
 
 Our information assets include the following:
@@ -149,7 +154,7 @@ Further assets are the people working with the product. This includes the engine
     \item Weak passwords: 
     \begin{itemize}
         \item Users: Weak passwords of employees let advisories issue and revoke certificates in their names.
-        \item System Administrator: Weak passwords of system administrators allow advisories access to the system with unbound possibilities.
+        \item System Administrator: Weak passwords of system administrators allow adversaries access to the system with unbound possibilities.
     \end{itemize}
     \item Security Awareness and Knowledge of Employees: If the employees do not know how to request certificates and how to use them to sign/encrypt messages. This also includes the protection of the private keys.
     \item Unavailability of CA: Threat actions like DOS attacks can make the CA unavailable. This results in making signing/verification of messages impossible as the public key of the CA can not be fetched. 
