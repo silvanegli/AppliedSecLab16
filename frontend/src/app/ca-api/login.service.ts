@@ -97,7 +97,7 @@ export class LoginService {
                 LoginService.storeToken(data.token, keepLoggedIn);
             })
             .flatMap((data: any) => {
-                return this.retrieveUser(this.token.email);
+                return this.retrieveUser(this.token.username);
             })
             .do((user: User) => this.user = user)
             .catch((error: CAApiError) => {
@@ -119,7 +119,7 @@ export class LoginService {
                 LoginService.storeToken(data.token, keepLoggedIn);
             })
             .flatMap((data: any) => {
-                return this.retrieveUser(this.token.email);
+                return this.retrieveUser(this.token.username);
             })
             .do((user: User) => this.user = user)
             .catch((error: CAApiError) => {

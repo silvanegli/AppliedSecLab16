@@ -82,12 +82,12 @@ export class CAApiService {
     /**
      * Obtains a JWT for the credentials provided
      *
-     * @param email
+     * @param username
      * @param password
      * @returns {Observable<string>}
      */
-    public obtainToken(email: string, password: string): Observable<any> {
-        let payload: any = {email, password};
+    public obtainToken(username: string, password: string): Observable<any> {
+        let payload: any = {username, password};
         return this.postRequest(this.fullUrl(LOGIN_ENDPOINT), payload);
     }
 
