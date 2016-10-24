@@ -13,3 +13,4 @@ urlpatterns += [
         views.CertificateList.as_view(),
         name='certificate-list'),
 ]
+

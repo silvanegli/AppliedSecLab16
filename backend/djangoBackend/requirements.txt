@@ -4,3 +4,4 @@ djangorestframework==3.4.7
 djangorestframework-jwt==1.8.0
 PyJWT==1.4.2
 django-cors-headers==1.2.2
+mysqlclient

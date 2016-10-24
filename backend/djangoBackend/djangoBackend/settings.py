@@ -26,6 +26,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTHENTICATION_BACKENDS = (
+    'djangoBackend.auth.UserModelAuth',
+)
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -38,6 +42,7 @@ INSTALLED_APPS = (
     'CertAPI',
     'rest_framework',
     'corsheaders',
+    'djangoBackend',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -88,11 +93,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'djangoBackend.wsgi.application'
 
+
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
+
     'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'imovies',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+    },
+
+    'local': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
