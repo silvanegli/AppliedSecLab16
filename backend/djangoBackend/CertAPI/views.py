@@ -1,12 +1,13 @@
 from rest_framework import generics
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
+from CertAPI.views_utils import IsOwner, RetrieveUpdateAPIView_UpdateDjangoUser
 from CertAPI.models import Certificate
 from CertAPI.serializers import CertificateSerializer, UserSerializer
 
-from djangoBackend.models import Users
+from djangoBackend.models import Users as LegacyUsers
 
 
 @api_view(('GET',))
@@ -15,18 +16,23 @@ def api_root(request, format=None):
         'certificates': reverse('certificate-list', request=request, format=format),
     })
 
+
 # Certificates
 class CertificateList(generics.ListCreateAPIView):
     """
-    List all categories or create new foodCategory
+    List all certificates
     """
     serializer_class = CertificateSerializer
     queryset = Certificate.objects.all()
 
 
-class UserDetail(generics.RetrieveUpdateAPIView):
+
+@permission_classes((IsOwner,))
+class UserDetail(RetrieveUpdateAPIView_UpdateDjangoUser):
     """
     User detail view
     """
     serializer_class = UserSerializer
-    queryset = Users.objects.all()
+    queryset = LegacyUsers.objects.all()
+
+

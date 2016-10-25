@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from CertAPI.models import Certificate
 
-from djangoBackend.models import Users
+from djangoBackend.models import Users as LegacyUsers
 
 
 class CertificateSerializer(serializers.HyperlinkedModelSerializer):
@@ -13,5 +13,5 @@ class CertificateSerializer(serializers.HyperlinkedModelSerializer):
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Users
+        model = LegacyUsers
         fields = ('firstname', 'lastname', 'email')

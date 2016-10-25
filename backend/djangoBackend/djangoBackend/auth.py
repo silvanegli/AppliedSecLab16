@@ -26,7 +26,7 @@ class SSLAuth(generics.GenericAPIView):
 class UserModelAuth:
     def authenticate(self, username=None, password=None):
         try:
-            legacy_user = LegacyUsers.objects.get(email=username)
+            legacy_user = LegacyUsers.objects.get(uid=username)
             bin_sha1_pwd_hash = hashlib.sha1(password.encode())
             hex_dig = bin_sha1_pwd_hash.hexdigest()
             
@@ -37,6 +37,9 @@ class UserModelAuth:
 
         if legacy_user is not None:
             django_user = self.get_or_create_django_user(legacy_user, password)
+            django_user.first_name = legacy_user.firstname
+            django_user.last_name = legacy_user.lastname
+            django_user.save()
         else:
             django_user = None
 
