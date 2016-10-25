@@ -1,8 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Certificate(models.Model):
-    user = models.IntegerField(default=0) # todo make foreign key
+    user = models.ForeignKey(User, related_name='certificates')
     name = models.CharField('cert name', max_length=100, blank=True)
-    cert_path = models.CharField('path to certificate', max_length=300, blank=True)
-    key_path = models.CharField('path to private kay', max_length=300, blank=True)
+    revoked = models.BooleanField('is revoked', default=False)
