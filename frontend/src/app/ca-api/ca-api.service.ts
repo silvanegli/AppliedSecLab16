@@ -9,8 +9,8 @@ import {
 import { Response, RequestOptions, Headers, URLSearchParams } from '@angular/http';
 import { DataExtractor } from './data-extractor.service';
 import { ErrorHandler } from './error-handler.service';
-import { User } from './login.service';
 import { Certificate } from '../certificates/certificate.model';
+import { User } from '../profile/profile.model';
 
 @Injectable()
 export class CAApiService {

@@ -19,3 +19,10 @@ app-root {
     text-align: center;
     font-weight: bold;
 }
+
+.btn-default, .btn-default[disabled]:hover {
+    background: green;
+    color: #FFF;
+    border: solid 1px #3c763d;
+    font-weight: bold;
+}

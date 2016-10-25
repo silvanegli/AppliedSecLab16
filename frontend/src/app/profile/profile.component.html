@@ -6,6 +6,7 @@
         <h1>Profile</h1>
     </div>
     <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+    <div *ngIf="success" class="alert alert-success">{{ success }}</div>
     <form #profileForm="ngForm" (submit)="onSubmitProfile()">
         <div class="form-group">
             <label for="firstname">Firstname</label>

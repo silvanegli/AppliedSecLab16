@@ -14,3 +14,7 @@ h2 {
 li {
     border: solid 1px darkgray;
 }
+
+.user-info span {
+     display: block;
+}

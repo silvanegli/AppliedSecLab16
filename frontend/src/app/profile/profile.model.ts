@@ -1,16 +1,17 @@
-export interface UserInterface {
-    name: string;
+interface UserInterface {
+    firstname: string;
+    lastname: string;
     email: string;
-    password?: string;
 }
 
 export class User implements UserInterface {
-    public name: string;
+    public firstname: string;
+    public lastname: string;
     public email: string;
-    public password?: string;
 
     public constructor(jsonObject: any) {
-        this.name = jsonObject.name;
+        this.firstname = jsonObject.firstname;
+        this.lastname = jsonObject.lastname;
         this.email = jsonObject.email;
     }
 }

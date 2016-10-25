@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Certificate } from './certificate.model';
 import { CAApiService } from '../ca-api/ca-api.service';
 import { CAApiError } from '../ca-api/error-handler.service';
+import { User } from '../profile/profile.model';
+import { LoginService } from '../ca-api/login.service';
 
 @Component({
     selector: 'app-certificates',
@@ -11,25 +14,37 @@ import { CAApiError } from '../ca-api/error-handler.service';
 export class CertificatesComponent implements OnInit {
     public certificates: Certificate[];
     public revokedCertificates: Certificate[];
-    public newCertificate: Certificate;
     public error: string;
     public newCertificateName: string;
     public creatingCertificate: boolean = false;
+    public acceptUserInfo: boolean = false;
+    public user: User;
 
     constructor(
-        private apiService: CAApiService
+        private apiService: CAApiService,
+        private loginService: LoginService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {
     }
 
     ngOnInit() {
         this.getCertificates();
-        this.getRevokedCertificates()
+        this.getRevokedCertificates();
+        this.user = this.loginService.loggedInUser;
+        this.route.queryParams.subscribe(params => {
+            if (params['status'] == 'userUpdate') {
+                this.creatingCertificate = true;
+            }
+        });
     }
 
     public onCreateCertificate(name: string): void {
         this.apiService.createCertificate(name).subscribe(
             () => {
                 this.getCertificates();
+                this.onCancel();
+
             },
             (error: CAApiError) => {
                 this.error = error.statusText;
@@ -37,9 +52,23 @@ export class CertificatesComponent implements OnInit {
         );
     }
 
+    public onChangeUserInfo(): void {
+        let status = 'userUpdate';
+        this.router.navigate(['/profile'], {queryParams: { status: status }});
+    }
+
+    public onCancel(): void {
+        this.creatingCertificate = false;
+        this.acceptUserInfo = false;
+        this.newCertificateName = '';
+    }
+
     public onRevokeCertificate(id: number): void {
         this.apiService.revokeCertificate(id).subscribe(
-            () => ( this.getCertificates(), this.getRevokedCertificates ),
+            () => {
+                this.getCertificates();
+                this.getRevokedCertificates();
+            },
             (error: CAApiError) => this.error = error.statusText
         );
     }

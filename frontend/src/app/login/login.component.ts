@@ -10,7 +10,7 @@ import { CAApiError } from '../ca-api/error-handler.service';
 })
 export class LoginComponent {
     public passwordLogin: boolean = true;
-    public email: string;
+    public username: string;
     public password: string;
     public error: string;
 
@@ -22,7 +22,7 @@ export class LoginComponent {
 
     onSubmit() {
         if (this.passwordLogin) {
-            this.loginService.passwordLogin(this.email, this.password)
+            this.loginService.passwordLogin(this.username, this.password)
                 .subscribe(
                     () => {
                         this.router.navigate(['/']);

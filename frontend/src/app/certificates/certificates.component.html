@@ -6,32 +6,54 @@
         <h1>Certificates</h1>
     </div>
     <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+    <div *ngIf="success" class="alert alert-success">{{success}}</div>
     <div class="links">
-        <a (click)="creatingCertificate = true">
+        <a (click)="creatingCertificate = true" *ngIf="!creatingCertificate">
             <button class="btn btn-default pull-right">Create new Certificate</button>
         </a>
     </div>
     <div *ngIf="creatingCertificate" class="certificate">
         <form #newCertificateForm="ngForm" (submit)="onCreateCertificate()">
-            <input type="text" name="name" placeholder="Name" [(ngModel)]="newCertificateName" required>
-            <button type="submit" class="btn btn-default" [disabled]="!newCertificateForm.form.valid">Create certificate</button>
+            <div class="user-info" *ngIf="!acceptUserInfo">
+                <h4>Your information:</h4>
+                <span>Firstname: {{user.firstname}}</span>
+                <span>Lastname: {{user.lastname}}</span>
+                <span>Email: {{user.email}}</span>
+                <button type="button" class="btn btn-default" (click)="onChangeUserInfo()">Change user info</button>
+                <button type="button" class="btn btn-default" (click)="acceptUserInfo = true">Continue with this info</button>
+            </div>
+            <div *ngIf="acceptUserInfo">
+                <input type="text" name="name" placeholder="Name" [(ngModel)]="newCertificateName" required>
+                <button type="button" class="btn btn-default" (click)="onCancel()">Cancel</button>
+                <button type="submit" class="btn btn-default" [disabled]="!newCertificateForm.form.valid">
+                    Create certificate
+                </button>
+            </div>
+
         </form>
     </div>
-    <div class="certificates" *ngIf="certificates.length > 0">
+    <div class="certificates">
         <h2>Active certificates</h2>
+        <div *ngIf="certificates.length==0">
+            <h4>Looks like you have no certificates. Create one?</h4>
+        </div>
         <ul>
             <li *ngFor="let certificate of certificates" class="row">
                 <div class="col-md-10">
                     {{certificate.name}}
                 </div>
                 <div class="col-md-2">
-                    <button (click)="onRevokeCertificate(certificate.id)" class="btn btn-default">Revoke certificate</button>
+                    <button (click)="onRevokeCertificate(certificate.id)" class="btn btn-default">Revoke certificate
+                    </button>
                 </div>
             </li>
         </ul>
     </div>
-    <div class="revoked-certificates" *ngIf="revokedCertificates.length > 0">
+    <div class="revoked-certificates">
         <h2>Revoked certificates</h2>
+        <div *ngIf="revokedCertificates.length==0">
+            <h4>Looks like you have no revoked certificates.</h4>
+        </div>
         <ul>
             <li *ngFor="let certificate of revokedCertificates">
                 {{certificate.name}}

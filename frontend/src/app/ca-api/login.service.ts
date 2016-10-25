@@ -4,25 +4,9 @@ import { JwtHelper, tokenNotExpired } from 'angular2-jwt';
 import { Logger } from './logging';
 import { CAApiService } from './ca-api.service';
 import { CAApiError } from './error-handler.service';
+import { User } from '../profile/profile.model';
 
 export const TOKEN_NAME = 'jwt';
-
-export interface User {
-    email: string;
-    firstname: string;
-    lastname: string;
-}
-export class User implements User {
-    public email: string;
-    public firstname: string;
-    public lastname: string;
-
-    constructor(email: string, firstname: string, lastname: string) {
-        this.email = email;
-        this.firstname = firstname;
-        this.lastname = lastname;
-    }
-}
 
 interface Token {
     orig_iat: number;
@@ -86,6 +70,7 @@ export class LoginService {
     }
 
     public get isLoggedIn(): Observable<boolean> {
+        console.log(this.loggedInUser);
         return Observable.of(this.loggedInUser != null);
     }
 
@@ -96,13 +81,13 @@ export class LoginService {
     /**
      * Logs the user with the specified credentials in by requesting a token from the server
      *
-     * @param email
+     * @param username
      * @param password
      * @param keepLoggedIn
      * @returns {Observable<void>}
      */
-    public passwordLogin(email: string, password: string, keepLoggedIn: boolean = false): Observable<User> {
-        return this.apiService.obtainToken(email, password)
+    public passwordLogin(username: string, password: string, keepLoggedIn: boolean = true): Observable<User> {
+        return this.apiService.obtainToken(username, password)
             .do((data: any) => {
                 LoginService.storeToken(data.token, keepLoggedIn);
             })
@@ -122,7 +107,7 @@ export class LoginService {
      * @param keepLoggedIn
      * @returns {Observable<void>}
      */
-    public certificateLogin(keepLoggedIn: boolean = false): Observable<User> {
+    public certificateLogin(keepLoggedIn: boolean = true): Observable<User> {
         return this.apiService.obtainCertificateToken()
             .do((data: any) => {
                 LoginService.storeToken(data.token, keepLoggedIn);
@@ -156,7 +141,7 @@ export class LoginService {
         let tokenString = LoginService.loadToken();
         this.apiService.refreshToken(tokenString)
             .do((data: any) => {
-                LoginService.storeToken(data.token, false);
+                LoginService.storeToken(data.token, this.isLoginPermanent);
             })
             .flatMap((data: any) => {
                 return this.retrieveUser(this.token.username);
@@ -190,6 +175,15 @@ export class LoginService {
         else {
             return this.helper.decodeToken(token);
         }
+    }
+
+    /**
+     * Whether the current login is permanent, return value is only valid if a user is logged in
+     *
+     * @returns {boolean}
+     */
+    private get isLoginPermanent(): boolean {
+        return sessionStorage.getItem(TOKEN_NAME) == null;
     }
 
     /**
