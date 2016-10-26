@@ -3,11 +3,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from CertAPI.views_utils import IsOwner, RetrieveUpdateAPIView_UpdateDjangoUser
+from CertAPI.views_utils import IsOwner, RetrieveUpdateAPIView_UpdateLegacyUser
 from CertAPI.models import Certificate
 from CertAPI.serializers import CertificateSerializer, UserSerializer
 
-from djangoBackend.models import Users as LegacyUsers
+from djangoBackend.models import DjangoUser
 
 
 @api_view(('GET',))
@@ -28,11 +28,11 @@ class CertificateList(generics.ListCreateAPIView):
 
 
 @permission_classes((IsOwner,))
-class UserDetail(RetrieveUpdateAPIView_UpdateDjangoUser):
+class UserDetail(RetrieveUpdateAPIView_UpdateLegacyUser):
     """
     User detail view
     """
     serializer_class = UserSerializer
-    queryset = LegacyUsers.objects.all()
+    queryset = DjangoUser.objects.all()
 
 

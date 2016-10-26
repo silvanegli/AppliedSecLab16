@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission
 from rest_framework.generics import RetrieveUpdateAPIView
-from django.contrib.auth.models import User
+from djangoBackend.models import Users as LegacyUsers
 
 class IsOwner(BasePermission):
    """
@@ -8,21 +8,21 @@ class IsOwner(BasePermission):
    """
    def has_object_permission(self, request, view, obj):
         user = request.user
-        return obj.uid == user.username #as obj is a legacy user
+        return obj.uid == user.uid #as obj is a legacy user
 
 
-class RetrieveUpdateAPIView_UpdateDjangoUser(RetrieveUpdateAPIView):
+class RetrieveUpdateAPIView_UpdateLegacyUser(RetrieveUpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         #update django user model
-        django_user = User.objects.get(pk=request.user.pk)
-        new_firstname = request.data['firstname']
-        new_lastname = request.data['lastname']
+        legacy_user = LegacyUsers.objects.get(uid=request.user.uid)
+        new_firstname = request.data['first_name']
+        new_lastname = request.data['last_name']
         new_email = request.data['email']
 
-        django_user.first_name = new_firstname
-        django_user.last_name = new_lastname
-        django_user.email = new_email
-        django_user.save()
+        legacy_user.firstname = new_firstname
+        legacy_user.lastname = new_lastname
+        legacy_user.email = new_email
+        legacy_user.save()
 
-        return super(RetrieveUpdateAPIView_UpdateDjangoUser, self).put(request, *args, **kwargs)
+        return super(RetrieveUpdateAPIView_UpdateLegacyUser, self).put(request, *args, **kwargs)

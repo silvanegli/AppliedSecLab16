@@ -3,7 +3,7 @@ import hashlib
 
 from django.http import HttpResponse
 from rest_framework import generics
-from django.contrib.auth.models import User
+from djangoBackend.models import DjangoUser
 from djangoBackend.models import Users as LegacyUsers
 
 
@@ -37,9 +37,6 @@ class UserModelAuth:
 
         if legacy_user is not None:
             django_user = self.get_or_create_django_user(legacy_user, password)
-            django_user.first_name = legacy_user.firstname
-            django_user.last_name = legacy_user.lastname
-            django_user.save()
         else:
             django_user = None
 
@@ -48,17 +45,17 @@ class UserModelAuth:
 
     def get_or_create_django_user(self, legacy_user, raw_pwd):
         try:
-            user = User.objects.get(username=legacy_user.uid)
+            user = DjangoUser.objects.get(uid=legacy_user.uid)
 
-        except User.DoesNotExist:
-            user = User.objects.create_user(username=legacy_user.uid,email=legacy_user.email, password=raw_pwd)
+        except DjangoUser.DoesNotExist:
+            user = DjangoUser.objects.create_user(uid=legacy_user.uid,firstname=legacy_user.firstname, lastname=legacy_user.lastname,
+                                                  email=legacy_user.email, password=raw_pwd)
 
         return user
 
-
     def get_user(self, user_id):
         try:
-            return User.objects.get(pk=user_id)
-        except User.DoesNotExist:
+            return DjangoUser.objects.get(pk=user_id)
+        except DjangoUser.DoesNotExist:
             return None
 

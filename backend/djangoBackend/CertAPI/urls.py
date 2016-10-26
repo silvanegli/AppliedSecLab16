@@ -4,7 +4,7 @@ from django.conf.urls import url
 from CertAPI import views
 
 urlpatterns = [
-    url(r'^$', views.api_root),
+    url(r'^$', views.api_root, name='root'),
 ]
 
 # URLs

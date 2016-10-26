@@ -28,10 +28,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+AUTH_USER_MODEL = 'djangoBackend.DjangoUser'
+
+
 AUTHENTICATION_BACKENDS = (
     'djangoBackend.auth.UserModelAuth',
 
 )
+
+#LOGIN_URL = 'user:login'
+#LOGIN_REDIRECT_URL = 'CertAPI:root'
+
+
 
 JWT_AUTH = {
     'JWT_ALGORITHM': 'HS256',
