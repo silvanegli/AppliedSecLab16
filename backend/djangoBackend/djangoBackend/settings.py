@@ -34,6 +34,7 @@ AUTH_USER_MODEL = 'djangoBackend.DjangoUser'
 
 AUTHENTICATION_BACKENDS = (
     'djangoBackend.auth.UserModelAuth',
+    'djangoBackend.auth.SSLClientAuthBackend'
 
 )
 
@@ -79,8 +80,6 @@ MIDDLEWARE_CLASSES = (
     'django_ssl_auth.SSLClientAuthMiddleware',
 )
 
-USER_DATA_FN = 'django_ssl_auth.fineid.user_dict_from_dn'  # todo: create own handler
-
 ROOT_URLCONF = 'djangoBackend.urls'
 
 REST_FRAMEWORK = {
@@ -89,10 +88,7 @@ REST_FRAMEWORK = {
     ),
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'django_ssl_auth.SSLClientAuthBackend',
     ),
 }
 

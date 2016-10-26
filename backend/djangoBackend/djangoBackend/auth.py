@@ -1,26 +1,62 @@
-from pprint import pformat
 import hashlib
+from pprint import pformat
 
 from django.http import HttpResponse
 from rest_framework import generics
+
 from djangoBackend.models import DjangoUser
 from djangoBackend.models import Users as LegacyUsers
 
 
+def extract_user(self, dn):
+    print(dn)
+    ret = dict()
+    ret['email'] = dn['email']
+    ret['uid'] = dn['email']
+    ret['firstname'] = dn['email']
+    ret['lastname'] = dn['email']
+    return ret
+
 class SSLAuth(generics.GenericAPIView):
     def get(self, request, **kwargs):
         ctx = dict(
-            user_data=self.extract_user(request.META[
+            user_data=extract_user(request.META[
                                             'HTTP_X_SSL_USER_DN']),
             authentication_status=request.META['HTTP_X_SSL_AUTHENTICATED'],
             user=str(request.user))
         return HttpResponse(pformat(ctx), content_type="text/plain")
 
-    def extract_user(self, dn):
-        # d = dict(dn)
-        ret = dict()
-        ret['email'] = dn['email']
-        return ret
+class SSLClientAuthBackend(object):
+    @staticmethod
+    def authenticate(request=None):
+        if not request.is_secure():
+            print("insecure request")
+            return None
+        authentication_status = request.META.get('HTTP_X_SSL_AUTHENTICATED', None)
+        if (authentication_status != "SUCCESS" or 'HTTP_X_SSL_USER_DN' not in request.META):
+            print(
+                "HTTP_X_SSL_AUTHENTICATED marked failed or "
+                "HTTP_X_SSL_USER_DN "
+                "header missing")
+            return None
+        dn = request.META.get('HTTP_X_SSL_USER_DN')
+        user_data = extract_user(dn)
+        uid = user_data['uid']
+        try:
+            user = User.objects.get(uid=uid)
+        except User.DoesNotExist:
+            print("user {0} not found".format(username))
+            if settings.AUTOCREATE_VALID_SSL_USERS:
+                user = User(**user_data)
+                user.save()
+            else:
+                return None
+        if not user.is_active:
+            logger.warning("user {0} inactive".format(username))
+            return None
+        logger.info("user {0} authenticated using a certificate issued to "
+                    "{1}".format(username, dn))
+        return user
 
 
 class UserModelAuth:
