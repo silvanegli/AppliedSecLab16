@@ -24,9 +24,9 @@ class SSLAuth(generics.GenericAPIView):
 
 
 class UserModelAuth:
-    def authenticate(self, username=None, password=None):
+    def authenticate(self, uid=None, password=None):
         try:
-            legacy_user = LegacyUsers.objects.get(uid=username)
+            legacy_user = LegacyUsers.objects.get(uid=uid)
             bin_sha1_pwd_hash = hashlib.sha1(password.encode())
             hex_dig = bin_sha1_pwd_hash.hexdigest()
             

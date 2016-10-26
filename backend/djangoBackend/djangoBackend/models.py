@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import  BaseUserManager, AbstractBaseUser, PermissionsMixin
 
+
+#Legacy User Model
 class Users(models.Model):
     uid = models.CharField(primary_key=True, max_length=64)
     lastname = models.CharField(max_length=64)
