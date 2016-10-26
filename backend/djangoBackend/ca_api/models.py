@@ -1,5 +1,5 @@
 from django.db import models
-from djangoBackend.models import DjangoUser
+from ca_auth.models import DjangoUser
 
 
 class Certificate(models.Model):

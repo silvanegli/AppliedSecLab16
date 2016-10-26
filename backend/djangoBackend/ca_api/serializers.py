@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from CertAPI.models import Certificate
-from djangoBackend.models import DjangoUser
+from ca_api.models import Certificate
+from ca_auth.models import DjangoUser
 
 
 

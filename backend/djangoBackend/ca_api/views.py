@@ -3,11 +3,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from CertAPI.views_utils import IsOwner, RetrieveUpdateAPIView_UpdateLegacyUser
-from CertAPI.models import Certificate
-from CertAPI.serializers import CertificateSerializer, UserSerializer
+from ca_api.views_utils import IsOwner, RetrieveUpdateAPIView_UpdateLegacyUser
+from ca_api.models import Certificate
+from ca_api.serializers import CertificateSerializer, UserSerializer
 
-from djangoBackend.models import DjangoUser
+from ca_auth.models import DjangoUser
 
 
 @api_view(('GET',))

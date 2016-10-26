@@ -1,7 +1,7 @@
 # API endpoints
 from django.conf.urls import url
 
-from CertAPI import views
+from ca_api import views
 
 urlpatterns = [
     url(r'^$', views.api_root, name='root'),

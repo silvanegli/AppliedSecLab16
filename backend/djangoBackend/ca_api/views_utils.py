@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission
 from rest_framework.generics import RetrieveUpdateAPIView
-from djangoBackend.models import Users as LegacyUsers
+from ca_auth.models import Users as LegacyUsers
 
 class IsOwner(BasePermission):
    """
