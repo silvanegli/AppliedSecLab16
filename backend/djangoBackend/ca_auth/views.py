@@ -1,14 +1,16 @@
 from pprint import pformat
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate
 from django.http import HttpResponse
-from rest_framework.compat import is_authenticated
 
 from ca_auth.ssl_auth import SSLClientAuthBackend
 
 
 def ssl_auth(request):
-    if
+    user = SSLClientAuthBackend.authenticate(request)
+    if user is None:
+        return HttpResponse("login failed", content_type="text/plain") #todo refine
+
     ctx = dict(
         user_data=SSLClientAuthBackend.extract_user(request.META[
                                                         'HTTP_X_SSL_USER_DN']),
