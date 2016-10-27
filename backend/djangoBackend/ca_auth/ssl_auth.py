@@ -7,7 +7,6 @@ class SSLClientAuthBackend(object):
             print("insecure request")
             return None
         authentication_status = request.META.get('HTTP_X_SSL_AUTHENTICATED', None)
-        print(authentication_status)
         if (authentication_status != "SUCCESS" or 'HTTP_X_SSL_USER_DN' not in request.META):
             print(
                 "HTTP_X_SSL_AUTHENTICATED marked failed or "
