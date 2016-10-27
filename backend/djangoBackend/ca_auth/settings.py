@@ -144,7 +144,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = '/static/'
+STATIC_URL = '/var/www/web.seclab/static/'
+STATIC_ROOT = '/var/www/web.seclab/static/'
 
 CORS_ORIGIN_ALLOW_ALL = True

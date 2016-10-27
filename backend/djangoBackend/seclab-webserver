@@ -17,23 +17,27 @@ server {
         #
         listen 443 ssl default_server;
         listen [::]:443 ssl default_server;
-        #
-	ssl on;
-	ssl_certificate      /etc/ssl/certs/server.crt;
-	ssl_certificate_key  /etc/ssl/private/server.key;
-	
-	ssl_client_certificate /etc/ssl/ca/certs/ca.crt;
-	ssl_crl /etc/ssl/ca/private/ca.crl;
+#
+        ssl on;
+        ssl_certificate      /etc/nginx/certs/server.crt;
+        ssl_certificate_key  /etc/nginx/certs/server.key;
+
+        ssl_client_certificate /etc/ssl/ca/certs/ca.crt;
+#       ssl_crl /etc/ssl/ca/private/ca.crl;
 	ssl_verify_client optional;
 
         server_name web.seclab;
 
-        root /var/www/dist;
+        root /var/www/web.seclab;
 
         # Add index.php to the list if you are using PHP
         index index.html index.htm index.nginx-debian.html;
+	
+	location ^~/static {
+		try_files $uri $uri/ =404;
+	}
 
-        location / {
+        location /api {
                 # First attempt to serve request as file, then
                 # as directory, then fall back to displaying a 404.
 #                try_files $uri $uri/ =404;

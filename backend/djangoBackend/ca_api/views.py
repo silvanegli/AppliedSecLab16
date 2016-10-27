@@ -26,7 +26,6 @@ class CertificateList(generics.ListCreateAPIView):
     queryset = Certificate.objects.all()
 
 
-
 @permission_classes((IsOwner,))
 class UserDetail(RetrieveUpdateAPIView_UpdateLegacyUser):
     """
