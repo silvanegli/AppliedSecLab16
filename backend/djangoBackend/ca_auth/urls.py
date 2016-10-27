@@ -20,9 +20,9 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 from ca_auth import views
 
 urlpatterns = [
-    url(r'^', include('ca_api.urls')),
+    url(r'^api/', include('ca_api.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^api-token-auth/', obtain_jwt_token),
-    url(r'^api-token-refresh/', refresh_jwt_token),
-    url(r'^ssl-login/', views.ssl_auth),
+    url(r'^api/api-token-auth/', obtain_jwt_token),
+    url(r'^api/api-token-refresh/', refresh_jwt_token),
+    url(r'^api/ssl-login/', views.ssl_auth),
 ]
