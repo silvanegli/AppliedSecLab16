@@ -12,7 +12,7 @@ urlpatterns += [
     url(r'^certificates/$',
         views.CertificateList.as_view(),
         name='certificate-list'),
-    url(r'^users/(?P<pk>[a-z]+)/$',
+    url(r'^users/(?P<pk>[a-z0-9]+)/$',
         views.UserDetail.as_view(),
         name='user-detail'),
 ]
