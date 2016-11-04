@@ -23,6 +23,7 @@ echo '\ncreate new self signed ca certificat'
 echo '------------------------------------'
 
 openssl req -new -x509 -days 1095 \
+    -config /etc/ssl/openssl.cnf \
     -key /etc/ssl/ca/private/ca.key \
     -out /etc/ssl/ca/certs/ca.crt
 
@@ -30,6 +31,7 @@ echo '\ncreate ca revocation list'
 echo '------------------------------------'
 
 openssl ca -name CA_default -gencrl \
+    -config /etc/ssl/openssl.cnf \
     -keyfile /etc/ssl/ca/private/ca.key \
     -cert /etc/ssl/ca/certs/ca.crt \
     -out /etc/ssl/ca/private/ca.crl \

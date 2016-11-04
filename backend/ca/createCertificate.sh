@@ -1,5 +1,9 @@
 #!/bin/bash
-source config.cfg
+
+MYDIR="$(dirname "$(readlink -f "$0")")"
+echo $MYDIR
+
+source $MYDIR/config.cfg
 
 # arguments:
 # user id

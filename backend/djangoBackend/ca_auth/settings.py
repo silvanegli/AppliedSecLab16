@@ -41,7 +41,6 @@ LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
 
-
 JWT_AUTH = {
     'JWT_ALGORITHM': 'HS256',
     'JWT_VERIFY': True,
@@ -127,6 +126,12 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+
+# certificate scripts
+
+CREATE_CERT_LOCATION = '/home/silvan/Code/seclab/backend/ca/createCertificate.sh'
+USER_CERT_LOCATION = '/etc/ssl/ca/certs/users/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

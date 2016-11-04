@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from ca_api.views_utils import IsOwner, RetrieveUpdateAPIView_UpdateLegacyUser
+from ca_api.views_utils import IsOwner, RetrieveUpdateAPIView_UpdateLegacyUser, RetrieveCreateCertsAPIView
 from ca_api.models import Certificate
 from ca_api.serializers import CertificateSerializer, UserSerializer
 
@@ -17,8 +17,13 @@ def api_root(request, format=None):
     })
 
 
+#class Certificate(generics.RetrieveUpdateAPIView):
+
+
+
+
 # Certificates
-class CertificateList(generics.ListCreateAPIView):
+class CertificateList(RetrieveCreateCertsAPIView):
     """
     List all certificates
     """

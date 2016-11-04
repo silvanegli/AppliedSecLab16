@@ -18,4 +18,12 @@ class CertificateSerializer(serializers.HyperlinkedModelSerializer):
         model = Certificate
         fields = ('name', 'revoked', 'user')
 
+    def save(self, **kwargs):
+        cert_name = self.validated_data.get('name')
+        user = self.context['request'].user
+        cert = Certificate.objects.create(name=cert_name, user=user)
+
+        return cert
+
+
 
