@@ -32,6 +32,11 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def create_superuser(self, uid, password):
+        user = self.create_user(uid, "Admin First", "Admin Last", "any@admin.ca.ethz.ch", password)
+        user.is_superuser = True
+        user.save()
+        return user
 
 class DjangoUser(AbstractBaseUser, PermissionsMixin):
     uid = models.CharField(max_length=64, primary_key=True)

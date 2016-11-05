@@ -8,13 +8,23 @@ from ca_auth.models import Users as LegacyUsers
 from ca_api.models import Certificate
 
 
-class IsOwner(BasePermission):
+class IsSameUser(BasePermission):
    """
    Permissions for user management
    """
    def has_object_permission(self, request, view, obj):
         user = request.user
         return obj.uid == user.uid #
+
+
+class IsOwner(BasePermission):
+   """
+   Check if logged in user is holder of cert for certificate. This is used in Model Mixin get_object() where permissions
+   are checked.
+   """
+   def has_object_permission(self, request, view, obj):
+        user = request.user
+        return obj.user == user
 
 
 class RetrieveUpdateAPIView_UpdateLegacyUser(RetrieveUpdateAPIView):
@@ -47,24 +57,20 @@ class RetrieveUpdateAPIView_UpdateLegacyUser(RetrieveUpdateAPIView):
 
 
 def create_cert(user, cert_name):
-    r1 = call(["pwd"])
     response = call([settings.CREATE_CERT_LOCATION, user.uid, cert_name])
     return response
-
 
 class RetrieveCreateCertsAPIView(ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
 
-        user = request.user
-        cert_name = request.data.get('name')
-        same_name_cert_exists = user.certificates.all().filter(name=cert_name).exists()
-
-        if same_name_cert_exists:
-            raise exceptions.NotAcceptable(detail= 'There exists already a certificate with name: ' + cert_name)
-
+        #create model instance
         response = super(RetrieveCreateCertsAPIView, self).post(request, *args, **kwargs)
 
+        user = request.user
+        cert_name = request.data.get('name')
+
+        #create x509 certificate
         script_response = create_cert(user, cert_name)
 
         if script_response != 0:
@@ -72,6 +78,6 @@ class RetrieveCreateCertsAPIView(ListCreateAPIView):
             raise exceptions.APIException()
 
         #both script and django model creation succeeded
-        user_cert_path = settings.USER_CERT_LOCATION + user.uid + '/' + cert_name + '.crt'
+        #user_cert_path = settings.USER_CERT_LOCATION + user.uid + '/' + cert_name + '.crt'
         return response
 
