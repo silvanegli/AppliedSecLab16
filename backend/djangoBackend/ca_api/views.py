@@ -47,7 +47,8 @@ class CertificateDetails(RetrieveUpdateAPIView):
         serializer.instance = cert
 
 
-# Certificates
+
+
 class CertificateList(RetrieveCreateCertsAPIView):
     """
     List all certificates
@@ -57,7 +58,7 @@ class CertificateList(RetrieveCreateCertsAPIView):
 
     def perform_create(self, serializer):
         cert_name = serializer.validated_data.get('name')
-        user = self.context['request'].user
+        user = self.request.user
         same_name_cert_exists = user.certificates.all().filter(name=cert_name).exists()
 
         if same_name_cert_exists:
@@ -65,6 +66,15 @@ class CertificateList(RetrieveCreateCertsAPIView):
 
         cert = Certificate.objects.create(name=cert_name, user=user)
         serializer.instance = cert
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the certificates
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        return Certificate.objects.filter(user=user)
+
 
 
 @permission_classes((IsSameUser,))
