@@ -54,7 +54,7 @@ export class CAApiService {
     }
 
     /**
-     * Get all active certificates
+     * Get all certificates
      *
      * @returns {Observable<Certificate[]>}
      */
@@ -63,6 +63,20 @@ export class CAApiService {
             .map(json => json.map(
                 certJson => new Certificate(certJson))
             );
+    }
+
+    /**
+     * Download a certificates
+     *
+     * @returns void
+     */
+    public downloadCertificate(id: number): Observable<any>{
+        return this.getRequest(this.fullUrl(CERTIFICATE_ENDPOINT + id + '/download/')).map(this.extractContent);
+    }
+
+    private extractContent(res: Response) {
+        let blob: Blob = res.blob();
+        window['saveAs'](blob);
     }
 
     /**

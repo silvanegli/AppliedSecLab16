@@ -11,8 +11,23 @@ h2 {
     margin-top: 30px;
 }
 
+ul {
+    padding: 0;
+}
+
 li {
-    border: solid 1px darkgray;
+    border-bottom: solid 1px darkgray;
+    margin: 10px 0;
+    padding: 10px 0;
+    list-style: none;
+}
+
+.col-md-12 {
+    padding: 0;
+}
+
+button {
+    margin-left: 10px;
 }
 
 .user-info span {

@@ -52,6 +52,12 @@ export class CertificatesComponent implements OnInit {
         );
     }
 
+    public onDownload(id: number): void {
+        this.apiService.downloadCertificate(id).subscribe(
+            (data => window.open(window.URL.createObjectURL(data)))
+        );
+    }
+
     public onChangeUserInfo(): void {
         let status = 'userUpdate';
         this.router.navigate(['/profile'], {queryParams: {status: status}});
@@ -73,6 +79,7 @@ export class CertificatesComponent implements OnInit {
     }
 
     private getCertificates(): void {
+        this.certificates = [];
         this.apiService.getCertificates().subscribe(
             (certificates: Certificate[]) => {
                 certificates.map(
