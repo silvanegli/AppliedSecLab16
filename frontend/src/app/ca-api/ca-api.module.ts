@@ -9,6 +9,16 @@ import { AuthGuard } from './auth-guard.service';
 import { NotAuthGuard } from './not-auth.guard.service';
 import { API_BASE_URL } from './ca-api.config';
 
+export function authHttpFactory(http: Http): AuthHttp {
+    'use strict';
+    return new AuthHttp(new AuthConfig({
+        tokenName: TOKEN_NAME,
+        tokenGetter: () => Promise.resolve(LoginService.loadToken()),
+        headerPrefix: 'JWT',
+        noJwtError: true
+    }), http);
+}
+
 @NgModule({
     imports: [
         HttpModule
@@ -16,14 +26,7 @@ import { API_BASE_URL } from './ca-api.config';
     providers: [
         {
             provide: AuthHttp,
-            useFactory: (http: Http): AuthHttp => {
-                return new AuthHttp(new AuthConfig({
-                    tokenName: TOKEN_NAME,
-                    tokenGetter: () => Promise.resolve(LoginService.loadToken()),
-                    headerPrefix: 'JWT',
-                    noJwtError: true
-                }), http);
-            },
+            useFactory: authHttpFactory,
             deps: [Http]
         },
         CAApiService,

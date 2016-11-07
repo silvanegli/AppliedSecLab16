@@ -39,7 +39,7 @@ export class LoginComponent {
                     },
                     (error: CAApiError) => {
                         console.log(error);
-                        this.error = error.statusText;
+                        this.error = error.detail;
                     }
                 )
         }

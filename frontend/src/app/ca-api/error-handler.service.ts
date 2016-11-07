@@ -29,7 +29,7 @@ export class ErrorHandler {
 
         let backendError: CAApiError = {
             statusCode: error.status,
-            statusText: error.statusText,
+            detail: body.detail,
             kind: ErrorKind.ClientError,
             message: ''
         };
@@ -74,7 +74,7 @@ export class ErrorHandler {
 
         return Observable.throw({
             statusCode: error.status,
-            statusText: error.statusText,
+            detail: body.detail,
             errorKind: ErrorKind.ServerError,
             errorText: body.message || ''
         });
@@ -83,7 +83,7 @@ export class ErrorHandler {
 
 export interface CAApiError {
     statusCode: number;
-    statusText: string;
+    detail: string;
     kind: ErrorKind;
     message: string;
     validationErrors?: any;

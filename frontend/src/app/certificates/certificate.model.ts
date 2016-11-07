@@ -1,20 +1,15 @@
-export interface CertificateInterface {
-    name: string;
-    certificate?: string;
-    hash?: string;
-    privateKey?: string;
-}
-
-export class Certificate implements CertificateInterface {
+export class Certificate {
     public name: string;
-    public certificate?: string;
-    public hash?: string;
-    public privateKey?: string;
+    public pk: number;
+    public subject_email: string;
+    public user: string;
+    public revoked: boolean;
 
     public constructor(jsonObject: any) {
         this.name = jsonObject.name;
-        this.certificate = jsonObject.certificate;
-        this.hash = jsonObject.hash;
-        this.privateKey = jsonObject.privateKey;
+        this.pk = jsonObject.pk;
+        this.subject_email = jsonObject.subject_email;
+        this.user = jsonObject.user;
+        this.revoked = jsonObject.revoked;
     }
 }

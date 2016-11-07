@@ -16,8 +16,8 @@
         <form #newCertificateForm="ngForm" (submit)="onCreateCertificate()">
             <div class="user-info" *ngIf="!acceptUserInfo">
                 <h4>Your information:</h4>
-                <span>Firstname: {{user.firstname}}</span>
-                <span>Lastname: {{user.lastname}}</span>
+                <span>Firstname: {{user.first_name}}</span>
+                <span>Lastname: {{user.last_name}}</span>
                 <span>Email: {{user.email}}</span>
                 <button type="button" class="btn btn-default" (click)="onChangeUserInfo()">Change user info</button>
                 <button type="button" class="btn btn-default" (click)="acceptUserInfo = true">Continue with this info</button>
@@ -34,16 +34,16 @@
     </div>
     <div class="certificates">
         <h2>Active certificates</h2>
-        <div *ngIf="certificates.length==0">
+        <div *ngIf="(certificates | state:'active').length == 0">
             <h4>Looks like you have no certificates. Create one?</h4>
         </div>
         <ul>
-            <li *ngFor="let certificate of certificates" class="row">
+            <li *ngFor="let certificate of (certificates | state:'active'); let i = index;" class="row">
                 <div class="col-md-10">
-                    {{certificate.name}}
+                    {{certificate.name}} {{certificate.subject_email}}
                 </div>
                 <div class="col-md-2">
-                    <button (click)="onRevokeCertificate(certificate.id)" class="btn btn-default">Revoke certificate
+                    <button (click)="onRevokeCertificate(certificate.id, i)" class="btn btn-default">Revoke certificate
                     </button>
                 </div>
             </li>
@@ -51,11 +51,11 @@
     </div>
     <div class="revoked-certificates">
         <h2>Revoked certificates</h2>
-        <div *ngIf="revokedCertificates.length==0">
+        <div *ngIf="(certificates | state:'revoked').length == 0">
             <h4>Looks like you have no revoked certificates.</h4>
         </div>
         <ul>
-            <li *ngFor="let certificate of revokedCertificates">
+            <li *ngFor="let certificate of (certificates | state:'revoked')">
                 {{certificate.name}}
             </li>
         </ul>
