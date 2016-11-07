@@ -34,7 +34,8 @@ AUTH_USER_MODEL = 'ca_auth.DjangoUser'
 
 AUTHENTICATION_BACKENDS = (
     'ca_auth.auth.UserModelAuth',
-    'ca_auth.ssl_auth.SSLClientAuthBackend'
+    'ca_auth.ssl_auth.SSLClientAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 LOGIN_URL = '/'

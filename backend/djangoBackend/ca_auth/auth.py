@@ -31,7 +31,6 @@ class UserModelAuth:
             user = User.objects.create_user(uid=legacy_user.uid, firstname=legacy_user.firstname,
                                             lastname=legacy_user.lastname,
                                             email=legacy_user.email, password=raw_pwd)
-
         return user
 
     def get_user(self, user_id):

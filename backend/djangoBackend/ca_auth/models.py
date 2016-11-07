@@ -35,14 +35,18 @@ class UserManager(BaseUserManager):
     def create_superuser(self, uid, password):
         user = self.create_user(uid, "Admin First", "Admin Last", "any@admin.ca.ethz.ch", password)
         user.is_superuser = True
+        user.is_staff = True
         user.save()
         return user
+
 
 class DjangoUser(AbstractBaseUser, PermissionsMixin):
     uid = models.CharField(max_length=64, primary_key=True)
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
     email = models.EmailField(max_length=64)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField( default=True)
 
     objects = UserManager()
 
@@ -51,3 +55,6 @@ class DjangoUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'django_user'
         verbose_name_plural = 'django_users'
+
+    def get_short_name(self):
+        return self.uid

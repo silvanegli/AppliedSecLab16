@@ -19,8 +19,7 @@ class IsSameUser(BasePermission):
 
 class IsOwner(BasePermission):
    """
-   Check if logged in user is holder of cert for certificate. This is used in Model Mixin get_object() where permissions
-   are checked.
+   Check if logged in user is holder of cert.
    """
    def has_object_permission(self, request, view, obj):
         user = request.user
@@ -56,10 +55,6 @@ class RetrieveUpdateAPIView_UpdateLegacyUser(RetrieveUpdateAPIView):
         return response
 
 
-def create_cert(user, cert_name):
-    response = call([settings.CREATE_CERT_LOCATION, user.uid, cert_name])
-    return response
-
 class RetrieveCreateCertsAPIView(ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
@@ -71,13 +66,12 @@ class RetrieveCreateCertsAPIView(ListCreateAPIView):
         cert_name = request.data.get('name')
 
         #create x509 certificate
-        script_response = create_cert(user, cert_name)
+        cert_creation_status =  call([settings.CREATE_CERT_LOCATION, user.uid, cert_name, user.email])
 
-        if script_response != 0:
+        if cert_creation_status != 0:
             Certificate.objects.get(name=cert_name).delete() #undo certificate model creation
             raise exceptions.APIException()
 
         #both script and django model creation succeeded
-        #user_cert_path = settings.USER_CERT_LOCATION + user.uid + '/' + cert_name + '.crt'
         return response
 

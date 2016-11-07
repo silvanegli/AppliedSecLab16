@@ -17,6 +17,10 @@ urlpatterns += [
         views.CertificateDetails.as_view(),
         name='certificate-details'),
 
+    url(r'^certificates/(?P<cert_pk>[0-9]+)/download/$',
+        views.pkcs12_download,
+        name='pkcs12-download'),
+
     url(r'^users/(?P<pk>[a-z0-9]+)/$',
         views.UserDetail.as_view(),
         name='user-detail'),

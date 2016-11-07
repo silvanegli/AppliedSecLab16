@@ -18,6 +18,7 @@ class SSLClientAuthBackend(object):
         try:
             user_data = extract_user(dn)
         except Exception:
+            print("invalid certificate subject: " + dn)
             # invalid certificate
             return None
 
