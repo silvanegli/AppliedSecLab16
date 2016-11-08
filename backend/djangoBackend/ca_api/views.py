@@ -41,6 +41,13 @@ def pkcs12_download(request, cert_pk):
 
 #class Certificate(generics.RetrieveUpdateAPIView):
 
+def revoke_cert(cert):
+
+    cert.revoked = revoked
+    cert.save()
+
+
+
 @permission_classes((IsOwner,))
 class CertificateDetails(RetrieveUpdateAPIView):
     """
@@ -55,16 +62,17 @@ class CertificateDetails(RetrieveUpdateAPIView):
 
         cert = serializer.instance
 
-        if cert.revoked and not revoked:
-            raise exceptions.NotAcceptable(detail='revocation can not be undone')
-
         if cert.name != name:
             raise exceptions.NotAcceptable(detail='certificate\'s name can not be changed')
 
-        cert.revoked = revoked
-        cert.save()
+        if cert.revoked and not revoked:
+            raise exceptions.NotAcceptable(detail='revocation can not be undone')
 
-        serializer.instance = cert
+        elif cert.revoked and revoked:
+            raise exceptions.NotAcceptable(detail='certificate is already revoked')
+
+        elif not cert.revoked and revoked:
+            revoke_cert(cert)
 
 
 
