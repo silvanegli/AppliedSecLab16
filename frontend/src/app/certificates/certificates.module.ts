@@ -4,6 +4,7 @@ import { routing } from './certificates.routing';
 import { CAApiModule } from '../ca-api/ca-api.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { RevokedPipe } from './revoked.pipe';
 
 @NgModule({
     imports: [
@@ -12,7 +13,7 @@ import { FormsModule } from '@angular/forms';
         FormsModule,
         CAApiModule
     ],
-    declarations: [CertificatesComponent]
+    declarations: [CertificatesComponent, RevokedPipe]
 })
 export class CertificatesModule {
 }

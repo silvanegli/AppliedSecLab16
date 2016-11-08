@@ -5,6 +5,7 @@ import { CAApiService } from '../ca-api/ca-api.service';
 import { CAApiError } from '../ca-api/error-handler.service';
 import { User } from '../profile/profile.model';
 import { LoginService } from '../ca-api/login.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-certificates',
@@ -12,8 +13,7 @@ import { LoginService } from '../ca-api/login.service';
     styleUrls: ['./certificates.component.css']
 })
 export class CertificatesComponent implements OnInit {
-    public certificates: Certificate[];
-    public revokedCertificates: Certificate[];
+    public certificates: Certificate[] = [];
     public error: string;
     public newCertificateName: string;
     public creatingCertificate: boolean = false;
@@ -30,7 +30,6 @@ export class CertificatesComponent implements OnInit {
 
     ngOnInit() {
         this.getCertificates();
-        this.getRevokedCertificates();
         this.user = this.loginService.loggedInUser;
         this.route.queryParams.subscribe(params => {
             if (params['status'] == 'userUpdate') {
@@ -39,22 +38,29 @@ export class CertificatesComponent implements OnInit {
         });
     }
 
-    public onCreateCertificate(name: string): void {
-        this.apiService.createCertificate(name).subscribe(
+    public onCreateCertificate(): void {
+        this.apiService.createCertificate(this.newCertificateName).subscribe(
             () => {
                 this.getCertificates();
                 this.onCancel();
+                this.error = '';
 
             },
             (error: CAApiError) => {
-                this.error = error.statusText;
+                this.error = error.detail;
             }
+        );
+    }
+
+    public onDownload(id: number): void {
+        this.apiService.downloadCertificate(id).subscribe(
+            (data => window.open(window.URL.createObjectURL(data)))
         );
     }
 
     public onChangeUserInfo(): void {
         let status = 'userUpdate';
-        this.router.navigate(['/profile'], {queryParams: { status: status }});
+        this.router.navigate(['/profile'], {queryParams: {status: status}});
     }
 
     public onCancel(): void {
@@ -63,28 +69,25 @@ export class CertificatesComponent implements OnInit {
         this.newCertificateName = '';
     }
 
-    public onRevokeCertificate(id: number): void {
-        this.apiService.revokeCertificate(id).subscribe(
+    public onRevokeCertificate(id: number, ind: number): void {
+        this.apiService.revokeCertificate(id, this.certificates[ind]).subscribe(
             () => {
                 this.getCertificates();
-                this.getRevokedCertificates();
             },
-            (error: CAApiError) => this.error = error.statusText
+            (error: CAApiError) => this.error = error.detail
         );
     }
 
     private getCertificates(): void {
+        this.certificates = [];
         this.apiService.getCertificates().subscribe(
-            (certificates: Certificate[]) => this.certificates = certificates,
-            (error: CAApiError) => this.error = error.statusText
-        );
+            (certificates: Certificate[]) => {
+                certificates.map(
+                    (certificate) => {
+                        this.certificates.push(certificate);
+                    }
+                );
+            },
+            (error: CAApiError) => this.error = error.detail);
     }
-
-    private getRevokedCertificates() {
-        this.apiService.getRevokedCertificates().subscribe(
-            (certificates: Certificate[]) => this.revokedCertificates = certificates,
-            (error: CAApiError) => this.error = error.statusText
-        );
-    }
-
 }

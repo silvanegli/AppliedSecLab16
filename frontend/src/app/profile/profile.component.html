@@ -10,13 +10,13 @@
     <form #profileForm="ngForm" (submit)="onSubmitProfile()">
         <div class="form-group">
             <label for="firstname">Firstname</label>
-            <input type="text" class="form-control" [(ngModel)]="user.firstname" id="firstname" name="firstname"
+            <input type="text" class="form-control" [(ngModel)]="user.first_name" id="firstname" name="firstname"
                    placeholder="Firstname"
                    required>
         </div>
         <div class="form-group">
             <label for="lastname">Lastname</label>
-            <input type="text" class="form-control" [(ngModel)]="user.lastname" id="lastname" name="lastname"
+            <input type="text" class="form-control" [(ngModel)]="user.last_name" id="lastname" name="lastname"
                    placeholder="Lastname"
                    required>
         </div>
@@ -26,11 +26,6 @@
                    placeholder="your@email.com"
                    required>
         </div>
-        <!--       <div class="form-group">
-                   <label for="password">Password</label>
-                   <input type="password" class="form-control" [(ngModel)]="password" id="password" name="password"
-                          placeholder="Your password">
-               </div>-->
         <div class="form-group">
             <input type="submit" class="form-control">
         </div>

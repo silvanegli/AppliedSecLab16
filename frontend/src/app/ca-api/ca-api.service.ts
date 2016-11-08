@@ -12,6 +12,13 @@ import { ErrorHandler } from './error-handler.service';
 import { Certificate } from '../certificates/certificate.model';
 import { User } from '../profile/profile.model';
 
+
+function mapCertificates(json: any): Certificate[] {
+    return json.map(
+        (certJson) => new Certificate(json)
+    )
+}
+
 @Injectable()
 export class CAApiService {
     public constructor(
@@ -26,10 +33,12 @@ export class CAApiService {
      * Revoke a certain certificate
      *
      * @param id
+     * @param certificate
      * @returns {Observable<Certificate>}
      */
-    public revokeCertificate(id: number): Observable<Certificate> {
-        return this.deleteRequest(this.fullUrl(CERTIFICATE_ENDPOINT + '/' + id))
+    public revokeCertificate(id: number, certificate: Certificate): Observable<Certificate> {
+        certificate.revoked = true;
+        return this.putRequest(this.fullUrl(CERTIFICATE_ENDPOINT + '/' + id), certificate)
             .map((json: any) => new Certificate(json));
     }
 
@@ -39,34 +48,35 @@ export class CAApiService {
      * @returns {Observable<Certificate>}
      */
     public createCertificate(name: string): Observable<Certificate> {
-        let payload = {'name': name};
+        let payload = {name};
         return this.postRequest(this.fullUrl(CERTIFICATE_ENDPOINT), payload)
             .map((json: any) => new Certificate(json));
     }
 
     /**
-     * Get all active certificates
+     * Get all certificates
      *
-     * @returns {Certificate[]}
+     * @returns {Observable<Certificate[]>}
      */
     public getCertificates(): Observable<Certificate[]> {
-        let options = new URLSearchParams();
-        options.append('status', 'active');
-        // return this.getRequest(this.fullUrl(CERTIFICATE_ENDPOINT), options)
-        //     .map((json: any) => (new Certificate(json)));
-        return Observable.of([].map((json: any) => new Certificate(json)));
+        return this.getRequest(this.fullUrl(CERTIFICATE_ENDPOINT))
+            .map(json => json.map(
+                certJson => new Certificate(certJson))
+            );
     }
 
     /**
-     * Get all revoked certificates
+     * Download a certificates
      *
-     * @returns {Certificate[]}
+     * @returns void
      */
-    public getRevokedCertificates(): Observable<Certificate[]> {
-        let options = new URLSearchParams();
-        options.append('status', 'revoked');
-        // return this.getRequest(this.fullUrl(CERTIFICATE_ENDPOINT), options)
-        return Observable.of([].map((json: any) => new Certificate(json)));
+    public downloadCertificate(id: number): Observable<any>{
+        return this.getRequest(this.fullUrl(CERTIFICATE_ENDPOINT + id + '/download/')).map(this.extractContent);
+    }
+
+    private extractContent(res: Response) {
+        let blob: Blob = res.blob();
+        window['saveAs'](blob);
     }
 
     /**
@@ -93,12 +103,12 @@ export class CAApiService {
     /**
      * Obtains a JWT for the credentials provided
      *
-     * @param username
+     * @param uid
      * @param password
      * @returns {Observable<string>}
      */
-    public obtainToken(username: string, password: string): Observable<any> {
-        let payload: any = {username, password};
+    public obtainToken(uid: string, password: string): Observable<any> {
+        let payload: any = {uid, password};
         return this.postRequest(this.fullUrl(LOGIN_ENDPOINT), payload);
     }
 
