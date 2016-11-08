@@ -5,8 +5,8 @@
     <div class="text-center">
         <h1>Certificates</h1>
     </div>
-    <div *ngIf="error" class="alert alert-danger">{{error}}</div>
-    <div *ngIf="success" class="alert alert-success">{{success}}</div>
+    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+    <div *ngIf="success" class="alert alert-success">{{ success }}</div>
     <div class="links">
         <a (click)="creatingCertificate = true" *ngIf="!creatingCertificate">
             <button class="btn btn-default pull-right">Create new Certificate</button>
@@ -16,11 +16,12 @@
         <form #newCertificateForm="ngForm" (submit)="onCreateCertificate()">
             <div class="user-info" *ngIf="!acceptUserInfo">
                 <h4>Your information:</h4>
-                <span>Firstname: {{user.first_name}}</span>
-                <span>Lastname: {{user.last_name}}</span>
-                <span>Email: {{user.email}}</span>
+                <span>Firstname: {{ user.first_name }}</span>
+                <span>Lastname: {{ user.last_name }}</span>
+                <span>Email: {{ user.email }}</span>
                 <button type="button" class="btn btn-default" (click)="onChangeUserInfo()">Change user info</button>
-                <button type="button" class="btn btn-default" (click)="acceptUserInfo = true">Continue with this info</button>
+                <button type="button" class="btn btn-default" (click)="acceptUserInfo = true">Continue with this info
+                </button>
             </div>
             <div *ngIf="acceptUserInfo">
                 <input type="text" name="name" placeholder="Name" [(ngModel)]="newCertificateName" required>
@@ -39,12 +40,12 @@
         </div>
         <ul>
             <li *ngFor="let certificate of (certificates | state:'active'); let i = index;" class="row">
-                <div class="col-md-10">
-                    {{certificate.name}} {{certificate.subject_email}}
-                </div>
-                <div class="col-md-2">
-                    <button (click)="onRevokeCertificate(certificate.id, i)" class="btn btn-default">Revoke certificate
+                <div class="col-md-12">
+                    <b>{{ certificate.name }}</b><br>
+                    <span>Email: {{ certificate.subject_email }}</span>
+                    <button (click)="onRevokeCertificate(certificate.pk, i)" class="btn btn-default pull-right">Revoke certificate
                     </button>
+                    <button (click)="onDownload(certificate.pk)" class="btn btn-default pull-right">Download certificate</button>
                 </div>
             </li>
         </ul>
@@ -56,7 +57,8 @@
         </div>
         <ul>
             <li *ngFor="let certificate of (certificates | state:'revoked')">
-                {{certificate.name}}
+                <b>{{ certificate.name }}</b><br>
+                <span>Email: {{ certificate.subject_email }}</span>
             </li>
         </ul>
     </div>
