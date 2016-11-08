@@ -15,7 +15,8 @@ sudo mysql_install_db
 #CREATE DATABASE imovies;
 #GRANT ALL PRIVILEGES ON dbTest.* To 'user'@'hostname' IDENTIFIED BY 'password';
 
-
+echo 'installing uwsgi'
+sudo pip install uwsgi
 
 #create a backup of your .bashrc file
 cp ~/.bashrc ~/.bashrc-org
