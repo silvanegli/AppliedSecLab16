@@ -4,12 +4,13 @@ set -e
 MYDIR="$(dirname "$(readlink -f "$0")")"
 source $MYDIR/config.cfg
 
-echo '\ncreate ca folders'
+echo '\ncreate ca folders and files'
 echo '------------------------------------'
 
 mkdir -p /etc/ssl/ca/certs/users && 
 mkdir -p /etc/ssl/ca/crl 
 mkdir -p /etc/ssl/ca/private
+touch /etc/ssl/ca/serial
 
 echo '\ncreate database and crlnumber file'
 echo '------------------------------------'
