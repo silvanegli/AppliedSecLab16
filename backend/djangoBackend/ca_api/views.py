@@ -92,12 +92,18 @@ class CertificateList(RetrieveCreateCertsAPIView):
 
     def perform_create(self, serializer):
         cert_name = serializer.validated_data.get('name')
-
         user = self.request.user
+        cert_email = user.email        
+
         same_name_cert_exists = user.certificates.all().filter(name=cert_name).exists()
 
         if same_name_cert_exists:
             raise exceptions.NotAcceptable(detail= 'There exists already a certificate with name: ' + cert_name)
+
+        same_email_cert_exists = user.certificates.all().filter(email=cert_email).exists()
+        
+        if same_email_cert_exists:
+            raise exceptions.NotAcceptable(detail='There exists already a certificate with the same email address: '+ cert_email +'. Only one certificate per email address is allowed.')
 
         cert = Certificate.objects.create(name=cert_name, user=user, email=user.email)
         serializer.instance = cert

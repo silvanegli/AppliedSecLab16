@@ -13,12 +13,12 @@ source $MYDIR/config.cfg
 userDir="$configUserDir/$1"
 crt="$userDir/$2.crt"
 
-openssl ca -name $configCAname -revoke "$crt" -keyfile "$configCAkey" -cert "$configCAcert" 
+openssl ca -config "$configOpensslConf" -revoke "$crt"  
 echo "*******************************************************************************"
 echo "revoked certificate: ${crt}"
 echo "*******************************************************************************"
 
-openssl ca -name $configCAname -gencrl -keyfile "$configCAkey" -cert "$configCAcert" -out "$configCAcrl" -crldays $configCAcrlDaysValid 
+openssl ca -config "$configOpensslConf" -gencrl -out "$configCAcrl"
 echo "*******************************************************************************"
 echo "rebuilt certificate revocation list: $configCAcrl"
 echo "*******************************************************************************"
@@ -28,8 +28,6 @@ openssl crl -in "$configCAcrl" -noout -text
 echo "*******************************************************************************"
 echo "reloading nginx in order to make changes visible"
 echo "*******************************************************************************"
-service nginx reload
-
-
+sudo /usr/sbin/service nginx reload
 
 
