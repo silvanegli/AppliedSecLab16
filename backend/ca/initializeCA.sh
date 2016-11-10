@@ -29,7 +29,7 @@ echo '------------------------------------'
 openssl req -new -x509 -days 1095 \
     -config /etc/ssl/openssl.cnf \
     -key /etc/ssl/ca/private/ca.key \
-    -out /etc/ssl/ca/certs/ca.crt
+    -out /etc/ssl/ca/certs/ca.crt \
 
 echo '\ncreate ca revocation list'
 echo '------------------------------------'
