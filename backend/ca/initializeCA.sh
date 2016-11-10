@@ -4,12 +4,13 @@ set -e
 MYDIR="$(dirname "$(readlink -f "$0")")"
 source $MYDIR/config.cfg
 
-echo '\ncreate ca folders'
+echo '\ncreate ca folders and files'
 echo '------------------------------------'
 
 mkdir -p /etc/ssl/ca/certs/users && 
 mkdir -p /etc/ssl/ca/crl 
 mkdir -p /etc/ssl/ca/private
+touch /etc/ssl/ca/serial
 
 echo '\ncreate database and crlnumber file'
 echo '------------------------------------'
@@ -28,7 +29,7 @@ echo '------------------------------------'
 openssl req -new -x509 -days 1095 \
     -config /etc/ssl/openssl.cnf \
     -key /etc/ssl/ca/private/ca.key \
-    -out /etc/ssl/ca/certs/ca.crt
+    -out /etc/ssl/ca/certs/ca.crt \
 
 echo '\ncreate ca revocation list'
 echo '------------------------------------'

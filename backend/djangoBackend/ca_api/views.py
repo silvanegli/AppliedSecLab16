@@ -13,6 +13,7 @@ from ca_auth import settings
 
 from ca_auth.models import DjangoUser
 
+from subprocess import call
 
 @api_view(('GET',))
 def api_root(request, format=None):
@@ -27,13 +28,14 @@ def pkcs12_download(request, cert_pk):
     user = request.user
 
     cert = Certificate.objects.get(pk=cert_pk)
-
+   
     pkcs12_filename = cert.name + '.p12'
-    pkcs12_path = '{0}{1}/{2}'.format(settings.USER_CERT_LOCATION, user.uid, pkcs12_filename)
+    pkcs12_redirect_path = '/download/{0}/{1}'.format(user.uid, pkcs12_filename)
+    print('redirecting webserver for pkcs12 download to: ' + pkcs12_redirect_path)
 
     response = HttpResponse()
     response['Content-Type'] = 'application/pkcs-12'
-    response['X-Accel-Redirect'] = pkcs12_path
+    response['X-Accel-Redirect'] = pkcs12_redirect_path
     response['Content-Disposition'] = 'attachment;filename=' + pkcs12_filename
 
     return response
@@ -42,10 +44,15 @@ def pkcs12_download(request, cert_pk):
 #class Certificate(generics.RetrieveUpdateAPIView):
 
 def revoke_cert(cert):
-
-    cert.revoked = revoked
-    cert.save()
-
+    #revoke  x509 certificate
+    print('trying to revoke certificate: ' + cert.name + ' : ' + settings.REVOKE_CERT_LOCATION  + ' :' + cert.user.uid)
+    cert_revokation_status = call([settings.REVOKE_CERT_LOCATION, cert.user.uid, cert.name])
+    if cert_revokation_status == 0:
+        print('certificate: ' + cert.name + ' revoked')
+        cert.revoked = True
+        cert.save()
+    else:
+        raise exceptions.APIException(detail='revocation failed')
 
 
 @permission_classes((IsOwner,))

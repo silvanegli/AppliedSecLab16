@@ -1,6 +1,6 @@
 upstream django {
-#	server unix:/home/worxli/Documents/seclab/backend/djangoBackend/ca.sock;
-	server 127.0.0.1:9090;
+	server unix:/var/run/uwsgi/caserver.sock;
+#	server 127.0.0.1:9090;
 #	server unix:/	
 }
 
@@ -17,13 +17,13 @@ server {
         #
         listen 443 ssl default_server;
         listen [::]:443 ssl default_server;
-#
+
         ssl on;
         ssl_certificate      /etc/nginx/certs/server.crt;
         ssl_certificate_key  /etc/nginx/certs/server.key;
 
         ssl_client_certificate /etc/ssl/ca/certs/ca.crt;
-#       ssl_crl /etc/ssl/ca/private/ca.crl;
+        ssl_crl /etc/ssl/ca/private/ca.crl;
 	ssl_verify_client optional;
 
         server_name web.seclab;
@@ -37,7 +37,7 @@ server {
 		try_files $uri $uri/ =404;
 	}
 
-        location /api {
+        location ~ ^/(api|admin) {
                 # First attempt to serve request as file, then
                 # as directory, then fall back to displaying a 404.
 #                try_files $uri $uri/ =404;

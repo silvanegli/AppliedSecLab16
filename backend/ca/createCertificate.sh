@@ -47,7 +47,7 @@ openssl req -new -key "$key" -out "$csr" -subj "$subject"
 echo "*******************************************************************************"
 echo "creating signed user certificate: ${crt}"
 echo "*******************************************************************************"
-openssl x509 -req -days $configUserDaysValid -in "$csr" -CA "$configCAcert" -CAkey "$configCAkey" -CAserial "$configCAserial" -out "$crt"
+openssl x509 -req -days $configUserDaysValid -in "$csr" -CA "$configCAcert" -CAkey "$configCAkey" -CAserial "$configCAserial" -CAcreateserial -out "$crt"
 
 echo "*******************************************************************************"
 echo "created certificate:"
