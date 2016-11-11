@@ -18,12 +18,17 @@ echo "**************************************************************************
 echo "revoked certificate: ${crt}"
 echo "*******************************************************************************"
 
-openssl ca -config "$configOpensslConf" -gencrl -out "$configCAcrl"
+openssl ca -config "$configOpensslConf" -gencrl -out "$configIntermCrl"
 echo "*******************************************************************************"
-echo "rebuilt certificate revocation list: $configCAcrl"
+echo "rebuilt certificate revocation list: $configIntermCrl"
 echo "*******************************************************************************"
 
-openssl crl -in "$configCAcrl" -noout -text
+openssl crl -in "$configIntermCrl" -noout -text
+
+echo "*******************************************************************************"
+echo "rebuilding chained revocation list: $configChainCrl"
+echo "*******************************************************************************"
+cat $configIntermCrl $configRootCrl > $configChainCrl
 
 echo "*******************************************************************************"
 echo "reloading nginx in order to make changes visible"

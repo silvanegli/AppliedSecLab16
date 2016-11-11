@@ -94,7 +94,7 @@ class CertificateList(RetrieveCreateCertsAPIView):
         cert_name = serializer.validated_data.get('name')
         user = self.request.user
         cert_email = user.email        
-
+        print('trying to create cert: ' +  cert_name + ' for user: ' + user.uid )
         same_name_cert_exists = user.certificates.all().filter(name=cert_name).exists()
 
         if same_name_cert_exists:
