@@ -24,9 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'n@=yhp36y8x6%b+j%21n6ubg*r$pmtf!^chtp%7pit70xhz^x('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['web.seclab', 'localhost']
 
 
 AUTH_USER_MODEL = 'ca_auth.DjangoUser'
@@ -117,21 +117,17 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'imovies',
-        'USER': 'user',
-        'PASSWORD': 'user',
+        'USER': 'dbuser',
+        'PASSWORD': 'fp..X,i3',
         'HOST': 'localhost',
     },
-
-    'local': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
 }
 
 
 # certificate scripts
 
-CREATE_CERT_LOCATION = '/home/silvan/Code/seclab/backend/ca/createCertificate.sh'
+CREATE_CERT_LOCATION = '/home/cadmin/caServer/backend/ca/createCertificate.sh'
+REVOKE_CERT_LOCATION = '/home/cadmin/caServer/backend/ca/revokeCertificate.sh'
 USER_CERT_LOCATION = '/etc/ssl/ca/certs/users/'
 
 # Internationalization
@@ -150,7 +146,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_URL = '/var/www/web.seclab/static/'
-STATIC_ROOT = '/var/www/web.seclab/static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = '/static/'
 
 CORS_ORIGIN_ALLOW_ALL = True

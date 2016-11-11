@@ -13,6 +13,7 @@ from ca_auth import settings
 
 from ca_auth.models import DjangoUser
 
+from subprocess import call
 
 @api_view(('GET',))
 def api_root(request, format=None):
@@ -27,19 +28,32 @@ def pkcs12_download(request, cert_pk):
     user = request.user
 
     cert = Certificate.objects.get(pk=cert_pk)
-
+   
     pkcs12_filename = cert.name + '.p12'
-    pkcs12_path = '{0}{1}/{2}'.format(settings.USER_CERT_LOCATION, user.uid, pkcs12_filename)
+    pkcs12_redirect_path = '/download/{0}/{1}'.format(user.uid, pkcs12_filename)
+    print('redirecting webserver for pkcs12 download to: ' + pkcs12_redirect_path)
 
     response = HttpResponse()
     response['Content-Type'] = 'application/pkcs-12'
-    response['X-Accel-Redirect'] = pkcs12_path
+    response['X-Accel-Redirect'] = pkcs12_redirect_path
     response['Content-Disposition'] = 'attachment;filename=' + pkcs12_filename
 
     return response
 
 
 #class Certificate(generics.RetrieveUpdateAPIView):
+
+def revoke_cert(cert):
+    #revoke  x509 certificate
+    print('trying to revoke certificate: ' + cert.name + ' : ' + settings.REVOKE_CERT_LOCATION  + ' :' + cert.user.uid)
+    cert_revokation_status = call([settings.REVOKE_CERT_LOCATION, cert.user.uid, cert.name])
+    if cert_revokation_status == 0:
+        print('certificate: ' + cert.name + ' revoked')
+        cert.revoked = True
+        cert.save()
+    else:
+        raise exceptions.APIException(detail='revocation failed')
+
 
 @permission_classes((IsOwner,))
 class CertificateDetails(RetrieveUpdateAPIView):
@@ -55,16 +69,17 @@ class CertificateDetails(RetrieveUpdateAPIView):
 
         cert = serializer.instance
 
-        if cert.revoked and not revoked:
-            raise exceptions.NotAcceptable(detail='revocation can not be undone')
-
         if cert.name != name:
             raise exceptions.NotAcceptable(detail='certificate\'s name can not be changed')
 
-        cert.revoked = revoked
-        cert.save()
+        if cert.revoked and not revoked:
+            raise exceptions.NotAcceptable(detail='revocation can not be undone')
 
-        serializer.instance = cert
+        elif cert.revoked and revoked:
+            raise exceptions.NotAcceptable(detail='certificate is already revoked')
+
+        elif not cert.revoked and revoked:
+            revoke_cert(cert)
 
 
 
@@ -77,12 +92,18 @@ class CertificateList(RetrieveCreateCertsAPIView):
 
     def perform_create(self, serializer):
         cert_name = serializer.validated_data.get('name')
-
         user = self.request.user
+        cert_email = user.email        
+        print('trying to create cert: ' +  cert_name + ' for user: ' + user.uid )
         same_name_cert_exists = user.certificates.all().filter(name=cert_name).exists()
 
         if same_name_cert_exists:
             raise exceptions.NotAcceptable(detail= 'There exists already a certificate with name: ' + cert_name)
+
+        same_email_cert_exists = user.certificates.all().filter(email=cert_email).exists()
+        
+        if same_email_cert_exists:
+            raise exceptions.NotAcceptable(detail='There exists already a certificate with the same email address: '+ cert_email +'. Only one certificate per email address is allowed.')
 
         cert = Certificate.objects.create(name=cert_name, user=user, email=user.email)
         serializer.instance = cert

@@ -1,0 +1,15 @@
+[Unit]
+Description=uWSGI application server in Emperor mode
+
+[Service]
+PermissionsStartOnly=true
+ExecStartPre=-/bin/mkdir /var/run/uwsgi
+ExecStartPre=/bin/chown cadmin:www-data /var/run/uwsgi
+
+User=cadmin
+Group=www-data
+#uwsgi installed with sudo pip3 install uwsgi
+ExecStart=/usr/local/bin/uwsgi --emperor /etc/uwsgi/sites
+
+[Install]
+WantedBy=multi-user.target

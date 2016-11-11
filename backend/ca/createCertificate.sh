@@ -36,18 +36,20 @@ echo "creating private key: ${key} with length: ${configUserKeyLength}"
 echo "*******************************************************************************"
 
 openssl genrsa -out "$key" $configUserKeyLength
+chmod 600 ${key}
 
 echo "*******************************************************************************"
 echo "creating user certificate request: ${csr} for subject: ${subject}"
 echo "*******************************************************************************"
 
-openssl req -new -key "$key" -out "$csr" -subj "$subject"
+openssl req -config "$configOpensslConf" -new -sha256 -key "$key" -out "$csr" -subj "$subject"
 
 
 echo "*******************************************************************************"
 echo "creating signed user certificate: ${crt}"
 echo "*******************************************************************************"
-openssl x509 -req -days $configUserDaysValid -in "$csr" -CA "$configCAcert" -CAkey "$configCAkey" -CAserial "$configCAserial" -out "$crt"
+openssl ca -batch -config "$configOpensslConf" -extensions "usr_cert" -days $configUserDaysValid -notext -md "sha256" -in "$csr" -out "$crt"
+chmod 640 ${crt}
 
 echo "*******************************************************************************"
 echo "created certificate:"
