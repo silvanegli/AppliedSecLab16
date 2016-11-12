@@ -70,7 +70,6 @@ export class LoginService {
     }
 
     public get isLoggedIn(): Observable<boolean> {
-        console.log(this.loggedInUser);
         return Observable.of(this.loggedInUser != null);
     }
 

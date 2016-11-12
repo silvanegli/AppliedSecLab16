@@ -1,4 +1,5 @@
-export const API_BASE_URL: string = 'http://localhost:8000/api/';
+export const API_BASE_URL: string = 'https://web.seclab/api/';
+// export const API_BASE_URL: string = 'http://localhost:8000/api/';
 
 export const LOGIN_ENDPOINT: string = 'api-token-auth/';
 export const CERTIFICATE_LOGIN_ENDPOINT: string = 'ssl-login/';

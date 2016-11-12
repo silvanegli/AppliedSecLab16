@@ -38,8 +38,7 @@ export class LoginComponent {
                         this.router.navigate(['/']);
                     },
                     (error: CAApiError) => {
-                        console.log(error);
-                        this.error = error.detail;
+                        this.error = 'Could not login!';
                     }
                 )
         }

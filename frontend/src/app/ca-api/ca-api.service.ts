@@ -6,12 +6,11 @@ import {
     REFRESH_ENDPOINT, VERIFY_ENDPOINT, LOGIN_ENDPOINT, CERTIFICATE_LOGIN_ENDPOINT, USER_ENDPOINT, API_BASE_URL,
     CERTIFICATE_ENDPOINT
 } from './ca-api.config';
-import { Response, RequestOptions, Headers, URLSearchParams } from '@angular/http';
+import { Response, RequestOptions, Headers, URLSearchParams, ResponseContentType } from '@angular/http';
 import { DataExtractor } from './data-extractor.service';
 import { ErrorHandler } from './error-handler.service';
 import { Certificate } from '../certificates/certificate.model';
 import { User } from '../profile/profile.model';
-
 
 function mapCertificates(json: any): Certificate[] {
     return json.map(
@@ -32,13 +31,12 @@ export class CAApiService {
     /**
      * Revoke a certain certificate
      *
-     * @param id
      * @param certificate
      * @returns {Observable<Certificate>}
      */
-    public revokeCertificate(id: number, certificate: Certificate): Observable<Certificate> {
+    public revokeCertificate(certificate: Certificate): Observable<Certificate> {
         certificate.revoked = true;
-        return this.putRequest(this.fullUrl(CERTIFICATE_ENDPOINT + '/' + id), certificate)
+        return this.putRequest(this.fullUrl(CERTIFICATE_ENDPOINT + certificate.pk), certificate)
             .map((json: any) => new Certificate(json));
     }
 
@@ -71,13 +69,16 @@ export class CAApiService {
      * @returns void
      */
     public downloadCertificate(id: number): Observable<any>{
-        return this.getRequest(this.fullUrl(CERTIFICATE_ENDPOINT + id + '/download/')).map(this.extractContent);
+        return this.http.get(this.fullUrl(CERTIFICATE_ENDPOINT + id + '/download/'), { responseType: ResponseContentType.Blob })
+            .do((response: Response) => this.logger.debug('Response from GET ' + response.url + ': ', response))
+           // .map((response: Response) => response.blob())
+            .catch((response: Response) => {
+                this.logger.debug('Response from GET ' + response.url + ': ', response);
+                return this.errorHandler.handleError(response);
+            });
+
     }
 
-    private extractContent(res: Response) {
-        let blob: Blob = res.blob();
-        window['saveAs'](blob);
-    }
 
     /**
      * Gets a user by username
