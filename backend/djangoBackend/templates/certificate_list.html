@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificates Info</title>
+</head>
+<style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+<body>
+{% block content %}
+    <h2>Certificates</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>User</th>
+            <th>Email</th>
+            <th>Revoked</th>
+        </tr>
+
+        {% for cert in certificates %}
+            <tr>
+                <th>{{ cert.name }}</th>
+                <th>{{ cert.user.uid }}</th>
+                <th>{{ cert.email }}</th>
+                <th>{{ cert.revoked}}</th>
+            </tr>
+        {% endfor %}
+
+    </table>
+
+{% endblock %}
+</body>
+</html>

@@ -24,4 +24,8 @@ urlpatterns += [
     url(r'^users/(?P<pk>[a-z0-9]+)/$',
         views.UserDetail.as_view(),
         name='user-detail'),
+
+    url(r'^certificates-info/$',
+        views.certificate_list,
+        name='certificate list for admin')
 ]

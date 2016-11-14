@@ -1,10 +1,14 @@
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from rest_framework.reverse import reverse
 from rest_framework import exceptions
+from django.views.generic import ListView
 
 from ca_api.views_utils import IsSameUser, IsOwner, RetrieveUpdateAPIView_UpdateLegacyUser, RetrieveCreateCertsAPIView
 from ca_api.models import Certificate
@@ -14,6 +18,9 @@ from ca_auth import settings
 from ca_auth.models import DjangoUser
 
 from subprocess import call
+
+from ca_auth.ssl_auth import SSLClientAuthBackend
+
 
 @api_view(('GET',))
 def api_root(request, format=None):
@@ -127,3 +134,12 @@ class UserDetail(RetrieveUpdateAPIView_UpdateLegacyUser):
     queryset = DjangoUser.objects.all()
 
 
+def certificate_list(request):
+    user = SSLClientAuthBackend.authenticate(request)
+
+    if user is None or not user.is_superuser:
+        return HttpResponseForbidden("No or invalid certificate provided. Please import a valid administrator certificate and try again.")
+
+    else:
+        certs = Certificate.objects.all().order_by('user')
+        return render(request, 'certificate_list.html', {'certificates': certs})
