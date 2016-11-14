@@ -123,35 +123,39 @@ Define likelihood, impact and risk level using the following three
 %\subsubsection{Tools}
 
 \begin{center}
-\begin{tabular}{|l|l|}
+\begin{table}[h]
+\begin{tabularx}{\textwidth}{|l|X|}
 \hline
 \multicolumn{2}{|c|}{\bf Likelihood} \\
 \hline
 Likelihood & Description \\
 \hline
 \hline
-High   & \hspace*{20pt}\ldots \\
+High & The threat source is highly motivated and sufficiently capable of exploiting a given vulnerability in order to change the asset’s state. The controls to prevent the vulnerability from being exploited are ineffective.\\
 \hline
-Medium & \hspace*{20pt}\ldots \\
+Medium & The threat source is motivated and capable of exploiting a given vulnerability in order to change the asset’s state, but controls are in place that may impede a successful exploit of the vulnerability. \\
 \hline
-Low   & \hspace*{20pt}\ldots \\
+Low   & The threat source lacks motivation or capabilities to exploit a given vulnerability in order to change the asset’s state. Another possibility that results in a low likelihood is the case where controls are in place that prevent (or at least significantly impede) the vulnerability from being exercised. \\
 \hline
-\end{tabular}
+\end{tabularx}
+\end{table}
 \hspace{3em}
-\begin{tabular}{|l|l|}
+\begin{table}[h]
+\begin{tabularx}{\textwidth}{|l|X|}
 \hline
 \multicolumn{2}{|c|}{\bf Impact} \\
 \hline
 Impact & Description \\
 \hline
 \hline
-High   & \hspace*{20pt}\ldots \\
+High   & The event (1) may result in a highly costly loss of major tangible assets or resources; (2) may significantly violate, harm, or impede an organization’s mission, reputation, or interest; or (3) may result in human death or serious injury. \\
 \hline
-Medium & \hspace*{20pt}\ldots \\
+Medium & The event (1) may result in a costly loss of tangible assets or resources; (2) may violate, harm, or impede an organization’s mission, reputation, or interest, or (3) may result in human injury.\\
 \hline
-Low   & \hspace*{20pt}\ldots \\
+Low & The event (1) may result in a loss of some tangible assets or resources or (2) may noticeably affect an organization’s mission, reputation, or interest.\\
 \hline
-\end{tabular}
+\end{tabularx}
+\end{table}
 \end{center}
 
 \vspace{5mm}
@@ -161,7 +165,7 @@ Low   & \hspace*{20pt}\ldots \\
 \hline
 \multicolumn{4}{|c|}{{\bf Risk Level}} \\
 \hline
-{{\bf Likelihood}} & \multicolumn{3}{c|}{{\bf Impact}} \\ %\cline{2-4}
+{{\bf Likelihood}} & \multicolumn{3}{c|}{{\bf Impact}} \\ \cline{2-4}
      & Low & Medium & High \\  \hline
  High & Low & Medium & High  \\
 \hline
