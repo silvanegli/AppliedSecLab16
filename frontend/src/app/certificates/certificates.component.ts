@@ -6,6 +6,8 @@ import { CAApiError } from '../ca-api/error-handler.service';
 import { User } from '../profile/profile.model';
 import { LoginService } from '../ca-api/login.service';
 import { Observable } from 'rxjs';
+import { Response } from '@angular/http';
+import * as FileSaver from "file-saver";
 
 @Component({
     selector: 'app-certificates',
@@ -53,9 +55,11 @@ export class CertificatesComponent implements OnInit {
     }
 
     public onDownload(id: number): void {
-        this.apiService.downloadCertificate(id).subscribe(
-            (data => window.open(window.URL.createObjectURL(data)))
-        );
+        this.apiService.downloadCertificate(id)
+            .subscribe((response: Response) => {
+                let name = response.headers.get('Content-Disposition').split("=")[1];
+                FileSaver.saveAs(response.blob(), name);
+            })
     }
 
     public onChangeUserInfo(): void {
@@ -69,8 +73,8 @@ export class CertificatesComponent implements OnInit {
         this.newCertificateName = '';
     }
 
-    public onRevokeCertificate(id: number, ind: number): void {
-        this.apiService.revokeCertificate(id, this.certificates[ind]).subscribe(
+    public onRevokeCertificate(id: number): void {
+        this.apiService.revokeCertificate(this.certificates.filter(certificate => certificate.pk == id)[0]).subscribe(
             () => {
                 this.getCertificates();
             },

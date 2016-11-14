@@ -39,11 +39,11 @@
             <h4>Looks like you have no certificates. Create one?</h4>
         </div>
         <ul>
-            <li *ngFor="let certificate of (certificates | state:'active'); let i = index;" class="row">
+            <li *ngFor="let certificate of (certificates | state:'active');" class="row">
                 <div class="col-md-12">
                     <b>{{ certificate.name }}</b><br>
                     <span>Email: {{ certificate.subject_email }}</span>
-                    <button (click)="onRevokeCertificate(certificate.pk, i)" class="btn btn-default pull-right">Revoke certificate
+                    <button (click)="onRevokeCertificate(certificate.pk)" class="btn btn-default pull-right">Revoke certificate
                     </button>
                     <button (click)="onDownload(certificate.pk)" class="btn btn-default pull-right">Download certificate</button>
                 </div>
