@@ -154,18 +154,16 @@ Describe the relevant assets and their required security
 
 \subsection{Threat Sources}
 
-3 points
-
-- Nature
-- user
-- system administrator
-- script kiddies
-- skilled hacker
-- malware
-- organized crime
-- competitors (e.g. JMovie)
-
-Name and describe potential threat sources including their motivation.
+\begin{description}
+\item{\textbf{Nature:}} Environmental factors can hinder the execution of the system. There could be water leaks that would cause damage to servers and lost data.
+\item{\textbf{User:}} The employees of iMovie can intentionally misbehave and manipulate the system or unknowingly help an attacker compromise the system.
+\item{\textbf{System administrator:}} A system administrator is a more impactful threat source to the system than a user, since a compromised system administrator leads to much bigger security concerns than a compromised user.
+\item{\textbf{Script kiddies:}} Script kiddies most likely do not have iMovie as their primary target, but might still try for example to infect the servers with malware to use them in a botnet. They do not have the skills to infiltrate a well protected system and so the usual security measurements and regular updates should be enough to sufficiently protect against them.
+\item{\textbf{Skilled hacker:}} A skilled hacker is a big threat source and the usual security measurements most likely do not give enough protection against such an attacker. He might try to infiltrate the ca server and extract private keys to be able to imitate the webserver itself, issue arbitrary certificates or use the keys to perform man-in-the-middle attacks between employees and extract valuable information. He is most likely to be hired by a competitor or a criminal.
+\item{\textbf{Malware:}} There is always the possibility of either directed or undirected malware infection if users with infected systems interact with the system.
+\item{\textbf{Organized crime:}} Criminals that try to extract information from the system to blackmail people or steal valuable login credentials that are used across multiple systems.
+\item{\textbf{Competitors:}} Competitors that want to undermine the reputation of iMovie, gain knowledge about company secrets or simply cause them damage.
+\end{description}
 
 \subsection{Risks Definitions}
 
