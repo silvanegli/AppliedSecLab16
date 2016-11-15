@@ -101,15 +101,15 @@ You may have additional sections according to your needs.
 
 \subsection{Assets}
 
-3 points
+\subsubsection{Physical assets}
 
-physical:
-
-- firewall
-- appserver
-- backupserver
-- internal network
-- external network
+\begin{description}
+\item{\textbf{Firewall:}} The firewall is located in a locked and air conditioned room. There is redundant power supply for its server rack.
+\item{\textbf{Application server:}} The application server is located in the same server room with redundant power supply, but in a different rack than the firewall.
+\item{\textbf{Backup server:}} The backup server is located in the same rack as the application server also equipped with redundant power supply.
+\item{\textbf{Internal network:}} The internal network is an Ethernet local area network connecting the above mentioned components. The components are connected using layer 2 switches located in the server room.
+\item{\textbf{External network:}} The external network connects the firewall to the internet by Ethernet cable using a router that is also located in the server room.
+\end{description}
 
 
 logical:
