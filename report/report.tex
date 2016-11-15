@@ -103,6 +103,51 @@ You may have additional sections according to your needs.
 
 3 points
 
+physical:
+
+- firewall
+- appserver
+- backupserver
+- internal network
+- external network
+
+
+logical:
+- connectivity
+
+software:
+- firewall os
+- firewall service
+- appserver os
+- appserver webserver
+- appserver application
+- appserver ca scripts
+- backupserver os
+- backupserver duplicity
+
+information:
+database
+- certificates
+- appserver application configuration (webserver, database, django, ca, ssh)
+- private keys
+- crl
+- backupserver application config
+- Logs
+- Login credentials
+- jwt
+- archive key
+- ca key (intermediate \& root key)
+
+
+persons:
+- user/employee
+- ca administrator
+- system administrator
+- private key holder
+
+intangible:
+- user confidence
+
 Describe the relevant assets and their required security
   properties. For example, data objects, access restrictions,
   configurations, etc.
@@ -110,6 +155,15 @@ Describe the relevant assets and their required security
 \subsection{Threat Sources}
 
 3 points
+
+- Nature
+- user
+- system administrator
+- script kiddies
+- skilled hacker
+- malware
+- organized crime
+- competitors (e.g. JMovie)
 
 Name and describe potential threat sources including their motivation.
 
