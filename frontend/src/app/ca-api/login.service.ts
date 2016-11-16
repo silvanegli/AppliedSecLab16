@@ -40,7 +40,7 @@ export class LoginService {
      * @param tokenString
      * @param permanent
      */
-    private static storeToken(tokenString: string, permanent: boolean = true): void {
+    private static storeToken(tokenString: string, permanent: boolean = false): void {
         if (permanent) {
             sessionStorage.removeItem(TOKEN_NAME);
             localStorage.setItem(TOKEN_NAME, tokenString);
@@ -85,7 +85,7 @@ export class LoginService {
      * @param keepLoggedIn
      * @returns {Observable<void>}
      */
-    public passwordLogin(username: string, password: string, keepLoggedIn: boolean = true): Observable<User> {
+    public passwordLogin(username: string, password: string, keepLoggedIn: boolean = false): Observable<User> {
         return this.apiService.obtainToken(username, password)
             .do((data: any) => {
                 LoginService.storeToken(data.token, keepLoggedIn);
@@ -106,7 +106,7 @@ export class LoginService {
      * @param keepLoggedIn
      * @returns {Observable<void>}
      */
-    public certificateLogin(keepLoggedIn: boolean = true): Observable<User> {
+    public certificateLogin(keepLoggedIn: boolean = false): Observable<User> {
         return this.apiService.obtainCertificateToken()
             .do((data: any) => {
                 LoginService.storeToken(data.token, keepLoggedIn);
@@ -119,39 +119,6 @@ export class LoginService {
                 LoginService.deleteToken();
                 return Observable.throw(error);
             });
-    }
-
-    /**
-     * Renews the login by refreshing the token on the server
-     */
-    public renewLogin(): void {
-        if (!this.hasTokenNotExpired) {
-            // Already too late
-            this.logger.info('Token has expired');
-            LoginService.deleteToken();
-            this.user = null;
-            return;
-        }
-
-        let token = this.token;
-        this.logger.debug('Token originally issued on:', new Date(token.orig_iat * 1000).toLocaleString());
-        this.logger.debug('Token expires on:', new Date(token.exp * 1000).toLocaleString());
-
-        let tokenString = LoginService.loadToken();
-        this.apiService.refreshToken(tokenString)
-            .do((data: any) => {
-                LoginService.storeToken(data.token, this.isLoginPermanent);
-            })
-            .flatMap((data: any) => {
-                return this.retrieveUser(this.token.username);
-            })
-            .subscribe(
-                (user: User) => {this.user = user},
-                (error: CAApiError) => {
-                    LoginService.deleteToken();
-                    this.user = null;
-                }
-            );
     }
 
     /**
@@ -176,23 +143,6 @@ export class LoginService {
         }
     }
 
-    /**
-     * Whether the current login is permanent, return value is only valid if a user is logged in
-     *
-     * @returns {boolean}
-     */
-    private get isLoginPermanent(): boolean {
-        return sessionStorage.getItem(TOKEN_NAME) == null;
-    }
-
-    /**
-     * Whether there is a valid token stored
-     *
-     * @returns {boolean}
-     */
-    private get hasTokenNotExpired(): boolean {
-        return tokenNotExpired(TOKEN_NAME, LoginService.loadToken());
-    }
 
     /**
      * Gets the logged in user from the server

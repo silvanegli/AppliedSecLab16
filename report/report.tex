@@ -104,48 +104,48 @@ You may have additional sections according to your needs.
 
 \subsubsection{Physical assets}
 
-\begin{description}
-\item{\textbf{Firewall:}} The firewall is located in a locked and air conditioned room. There is redundant power supply for its server rack. The states of the firewall are running, compromised and down. Running means everything works as expected, compromised means an unauthorized user has had physical access to the machine and down means the firewall is not running.
-\item{\textbf{Application server:}} The application server is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as in the firewall apply here.
-\item{\textbf{Backup server:}} The backup server is located in the same rack as the application server also equipped with redundant power supply. The same states as in the firewall apply here.
-\item{\textbf{Internal network:}} The internal network is an Ethernet local area network connecting the above mentioned components. The components are connected using layer 2 switches located in the server room. The states are running, compromised and down. A running state indicates that only authorized devices are connected to the network. A compromised state may indicate that an unauthorized user has added his own device to the network and is sniffing connections or injecting and blocking messages. A down state indicates that the network is shut down.
-\item{\textbf{External network:}} The external network connects the firewall to the internet by Ethernet cable using a router that is also located in the server room. The same states as in the internal network apply here.
-\end{description}
+	\begin{description}
+		\item{\textbf{Firewall:}} The firewall is located in a locked and air conditioned room. There is redundant power supply for its server rack. The states of the firewall are running, compromised and down. Running means everything works as expected, compromised means an unauthorized user has had physical access to the machine and down means the firewall is not running.
+		\item{\textbf{Application server:}} The application server is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as in the firewall apply here.
+		\item{\textbf{Backup server:}} The backup server is located in the same rack as the application server also equipped with redundant power supply. The same states as in the firewall apply here.
+		\item{\textbf{Internal network:}} The internal network is an Ethernet local area network connecting the above mentioned components. The components are connected using layer 2 switches located in the server room. The states are running, compromised and down. A running state indicates that only authorized devices are connected to the network. A compromised state may indicate that an unauthorized user has added his own device to the network and is sniffing connections or injecting and blocking messages. A down state indicates that the network is shut down.
+		\item{\textbf{External network:}} The external network connects the firewall to the internet by Ethernet cable using a router that is also located in the server room. The same states as in the internal network apply here.
+	\end{description}
 
 
 \subsubsection{Logical assets}
-\begin{description}
-\item{\textbf{Connectivity:}} Connections between each components and connection to the ISP. For the system to work properly, all components need to be properly connected. The states are connected and not connected.
-\end{description}
+	\begin{description}
+		\item{\textbf{Connectivity:}} Connections between each components and connection to the ISP. For the system to work properly, all components need to be properly connected. The states are connected and not connected.
+	\end{description}
 
 \subsubsection{Logical software assets}
 
-\begin{description}
-\item{\textbf{Firewall operating system:}} The operating system of the firewall is the latest Ubuntu server edition. It is managed by the system administrator who installs all relevant updates and patches within few hours after their release. The states are running, vulnerable, compromised and down. A vulnerable state indicates that the system is not up-to-date and vulnerable to known exploits. A compromised state means the system was already exploited by an attacker.
-\item{\textbf{Firewall service:}} The firewall that separates the internal and external network is the latest edition of the Config Server Firewall (csf). The states are the same as for the Firewall operating system.
-\item{\textbf{Appserver operating system:}} The operating system of the appserver is the same as for the firewall and the same states apply.
-\item{\textbf{Appserver webserver:}} The appserver runs a nginx webserver which handles all http and https requests. It is updated by the system adminstrator. Its states are running, compromised and down. A compromised webserver allows an attacker for example to perform a man-in-the-middle attack.
-\item{\textbf{Appserver application:}} The application is written in python and uses the Django framework. It manages the database and creates, revokes and provides certificates to the user. Both python and the Django framework are regularly updated by the system administrator. The states are similar to the webserver, but in a compromised state, an attacker might change the behaviour of the application.
-\item{\textbf{Appserver certificate authority scripts:}} The functionality as a certificate authority is provided by a set of scripts that rely on the openssl library. The behaviour of the scripts is monitored by the system administrators. The states are the similar to the webserver, but in a compromised state an attacker also has access to certificate related functionality.
-\item{\textbf{Appserver database}} The database is running MySQL and is updated and monitored for misbehaviour by the system administrator. The states are similar to the webserver, but in a compromised state an attacker has altered the database.
-\item{\textbf{Backupserver operating system:}} The operating system of the backupserver is the same as for the firewall and the same states apply.
-\item{\textbf{Backupserver duplicity:}} Duplicity periodically runs on the backupserver and backs up and encrypts valuable data from both the firewall and the appserver such as configurations, logs, certificates, private keys and the database.
-\end{description}
+	\begin{description}
+		\item{\textbf{Firewall operating system:}} The operating system of the firewall is the latest Ubuntu server edition. It is managed by the system administrator who installs all relevant updates and patches within few hours after their release. The states are running, vulnerable, compromised and down. A vulnerable state indicates that the system is not up-to-date and vulnerable to known exploits. A compromised state means the system was already exploited by an attacker.
+		\item{\textbf{Firewall service:}} The firewall that separates the internal and external network is the latest edition of the Config Server Firewall (csf). The states are the same as for the Firewall operating system.
+		\item{\textbf{Appserver operating system:}} The operating system of the appserver is the same as for the firewall and the same states apply.
+		\item{\textbf{Appserver webserver:}} The appserver runs a nginx webserver which handles all http and https requests. It is updated by the system adminstrator. Its states are running, compromised and down. A compromised webserver allows an attacker for example to perform a man-in-the-middle attack.
+		\item{\textbf{Appserver application:}} The application is written in python and uses the Django framework. It manages the database and creates, revokes and provides certificates to the user. Both python and the Django framework are regularly updated by the system administrator. The states are similar to the webserver, but in a compromised state, an attacker might change the behaviour of the application.
+		\item{\textbf{Appserver certificate authority scripts:}} The functionality as a certificate authority is provided by a set of scripts that rely on the openssl library. The behaviour of the scripts is monitored by the system administrators. The states are the similar to the webserver, but in a compromised state an attacker also has access to certificate related functionality.
+		\item{\textbf{Appserver database}} The database is running MySQL and is updated and monitored for misbehaviour by the system administrator. The states are similar to the webserver, but in a compromised state an attacker has altered the database.
+		\item{\textbf{Backupserver operating system:}} The operating system of the backupserver is the same as for the firewall and the same states apply.
+		\item{\textbf{Backupserver duplicity:}} Duplicity periodically runs on the backupserver and backs up and encrypts valuable data from both the firewall and the appserver such as configurations, logs, certificates, private keys and the database.
+	\end{description}
 
 \subsubsection{Logical information assets}
-\begin{description}
-\item{\textbf{User database:}} The database contains user ids, email addresses and hashed passwords. The states are confidential and leaked. A confidential state means that only authorized system administrators and corresponding users have these informations. In a leaked state, an attacker was able to read the whole or part of the database.
-\item{\textbf{Certificates:}} The certificates of each user, the certificate of the webserver and the root certificate. If a certificate is used by someone other than its owner or a certificate is used even though it was revoked, its state is invalid. Otherwise its state is valid. The severity of an invalid certificate depends on which certificate it is and if the usage of such an invalid certificate was detected, since user certificates can easily be revoked.
-\item{\textbf{Appserver configuration:}} Configuration files of different services such as webserver, database, Django, certificate authority or ssh can give insight into how the system behaves and might help detect misconfigured and thus exploitable services. The states are the same as for the user database.
-\item{\textbf{Private keys:}} The private keys for certificates or for ssh connections within the system. Similar states to user database, but the private key is either private or leaked.
-\item{\textbf{Crl:}} The certificate revocation list has to be up-to-date and available to any user. The states are available if any user can get the list and unavailable if this is not the case.
-\item{\textbf{Backupserver configuration:}} Configuration files for services such as duplicity. The states are the same as for appserver configuration.
-\item{\textbf{Logs:}} Logging information about various services. The states are the same as for certificates.
-\item{\textbf{Login credentials:}} Login credentials for ssh connections to different machines that may be leaked by a system administrators and login credentials from users that log into the application server. The states are the same as for the private keys, but for ssh login credential the security concern is much higher.
-\item{\textbf{JWT:}} A JSON web token (JWT) describes an active connection of a user to the webserver. If an attacker manages to compromise the system in a way that he is also part of this connection, the state is compromised. For an active confidential connection the state is confidential and after the connection is closed the state is closed.
-\item{\textbf{Archive key:}} The key that is used to encrypt all backed up data on the backupserver. The states are similar to the private keys.
-\item{\textbf{intermediate \& root key:}} The intermediate key to sign the webserver certificate and user certificates and the root key which signs the intermediate key. The states are similar to private keys.
-\end{description}
+	\begin{description}
+		\item{\textbf{User database:}} The database contains user ids, email addresses and hashed passwords. The states are confidential and leaked. A confidential state means that only authorized system administrators and corresponding users have these informations. In a leaked state, an attacker was able to read the whole or part of the database.
+		\item{\textbf{Certificates:}} The certificates of each user, the certificate of the webserver and the root certificate. If a certificate is used by someone other than its owner or a certificate is used even though it was revoked, its state is invalid. Otherwise its state is valid. The severity of an invalid certificate depends on which certificate it is and if the usage of such an invalid certificate was detected, since user certificates can easily be revoked.
+		\item{\textbf{Appserver configuration:}} Configuration files of different services such as webserver, database, Django, certificate authority or ssh can give insight into how the system behaves and might help detect misconfigured and thus exploitable services. The states are the same as for the user database.
+		\item{\textbf{Private keys:}} The private keys for certificates or for ssh connections within the system. Similar states to user database, but the private key is either private or leaked.
+		\item{\textbf{Crl:}} The certificate revocation list has to be up-to-date and available to any user. The states are available if any user can get the list and unavailable if this is not the case.
+		\item{\textbf{Backupserver configuration:}} Configuration files for services such as duplicity. The states are the same as for appserver configuration.
+		\item{\textbf{Logs:}} Logging information about various services. The states are the same as for certificates.
+		\item{\textbf{Login credentials:}} Login credentials for ssh connections to different machines that may be leaked by a system administrators and login credentials from users that log into the application server. The states are the same as for the private keys, but for ssh login credential the security concern is much higher.
+		\item{\textbf{JWT:}} A JSON web token (JWT) describes an active connection of a user to the webserver. If an attacker manages to compromise the system in a way that he is also part of this connection, the state is compromised. For an active confidential connection the state is confidential and after the connection is closed the state is closed.
+		\item{\textbf{Archive key:}} The key that is used to encrypt all backed up data on the backupserver. The states are similar to the private keys.
+		\item{\textbf{intermediate \& root key:}} The intermediate key to sign the webserver certificate and user certificates and the root key which signs the intermediate key. The states are similar to private keys.
+	\end{description}
 
 \subsubsection{Persons}
 \begin{description}
@@ -284,42 +284,106 @@ Low & The event (1) may result in a loss of some tangible assets or resources or
 In the following section we will give a risk evaluation for all possible threats and their impact on each of our assets described above. 
 
 
-\subsubsection{{\it Evaluation of the physical assets}}
+\subsubsection{{\it Evaluation of the physical hardware assets}}
 
 %Evaluate the likelihood, impact and the resulting risk,  \emph{after implementation of the corresponding countermeasures}. For each threat, clearly name the threat source and the the threat action.
 
-As our physical assets include servers and the network we treat them here as one, because the same threats apply similarly to all of them.
+We can evaluate the risk for our servers and the firewall jointly as the same physical threats apply to them.
 
 \begin{footnotesize}
-\begin{prettytablex}{llp{5.5cm}lll}
-No. & Threat &  Countermeasure(s) & L & I & Risk \\
-\hline
-1 & Nature: Component failure & Standard configuration, configuration backups, spare machines / components & {\it Medium} & {\it Medium} & {\it Medium} \\
-\hline
-2 & Insider: Accidental destruction of components & Spare machines / components & {\it Low} & {\it Medium} & {\it Low} \\
-\hline
-3 & Insider: Intentional destruction of components & Restrictive room access policies, spare machines / components & {\it Low} & {\it Medium} & {\it Low} \\
-\hline
-4 & Nature: Flooding, fire etc. & Place fire alarm and sprinkler in server room, server room is located in a builing on elevated level & {\it Low} & {\it High} & {\it Low} \\
-\hline
-5 & Competitors / Organized crime: Get physical access to server room & Location of server room not public, restrictive access policy & {\it Low} & {\it High} & {\it Low} \\
-\hline
-\end{prettytablex}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & Nature: Component failure & Standard configuration, configuration backups, spare machines / components & {\it Medium} & {\it Medium} & {\it Medium} \\
+		\hline
+		2 & Insider: Accidental or intentional destruction of components & Restrictive room access policies, spare machines / components & {\it Low} & {\it Medium} & {\it Low} \\
+		\hline
+		3 & Nature: Flooding, fire etc. & Place fire alarm and sprinkler in server room, server room is located in a building on elevated level & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		4 & Competitors / Organized crime: Get physical access to server room & Location of server room not public, restrictive access policy & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
 \end{footnotesize}
 
+\subsubsection{{\it Evaluation of the internal network asset}}
 
-
-\subsubsection{{\it Evaluation of logical assets}}
+The networking assets include the network cables and the switches/routers used in the server room.
 
 \begin{footnotesize}
-\begin{prettytablex}{llp{5.5cm}lll}
-No. & Threat & Countermeasure(s) & L & I & Risk \\
-\hline
-1 & ... & ... & {\it Low} & {\it Low} & {\it Low} \\
-\hline
-2 & ... & ...& {\it Medium} & {\it High} & {\it Medium} \\
-\hline
-\end{prettytablex}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & Nature: Component failure & Commodity switch/router, spare cables & {\it Low} & {\it Medium} & {\it Low} \\
+		\hline
+		2 & Insider: Accidental or intentional destruction of components & Restrictive room access policies, spare cables, backup switch & {\it Low} & {\it Medium} & {\it Low} \\
+		\hline
+		3 & Insider: Network misconfiguration & Standard configuration, clear documentation & {\it Medium} & {\it Medium} & {\it Medium} \\
+		\hline
+		4 & Nature: Flooding, fire etc. & Place fire alarm and sprinkler in server room, server room is located in a building on elevated level & {\it Low} & {\it Medium} & {\it Low} \\
+		\hline
+		5 & Competitors / Organized crime: Get physical access to server room & Location of server room not public, restrictive access policy & {\it Low} & {\it Medium} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
+
+\subsubsection{{\it Evaluation of the external network asset}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & Nature: ISP failure & Redundant ISP connection & {\it Low} & {\it Medium} & {\it Low} \\
+	\end{prettytablex}
+\end{footnotesize}
+
+\subsubsection{{\it Evaluation of software assets}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & Nature: ISP failure & Redundant ISP connection & {\it Low} & {\it Medium} & {\it Low} \\
+	\end{prettytablex}
+\end{footnotesize}
+
+\subsubsection{{\it Evaluation of application assets}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & Nature: ISP failure & Redundant ISP connection & {\it Low} & {\it Medium} & {\it Low} \\
+	\end{prettytablex}
+\end{footnotesize}
+
+\subsubsection{{\it Evaluation of information assets}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & Nature: ISP failure & Redundant ISP connection & {\it Low} & {\it Medium} & {\it Low} \\
+	\end{prettytablex}
+\end{footnotesize}
+
+\subsubsection{{\it Evaluation of person assets}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & Nature: ISP failure & Redundant ISP connection & {\it Low} & {\it Medium} & {\it Low} \\
+	\end{prettytablex}
+\end{footnotesize}
+
+\subsubsection{{\it Evaluation of intangible assets}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & Nature: ISP failure & Redundant ISP connection & {\it Low} & {\it Medium} & {\it Low} \\
+	\end{prettytablex}
 \end{footnotesize}
 
 \subsubsection{Detailed Description of Selected Countermeasures}
