@@ -6,14 +6,9 @@ import { LoginService } from './ca-api/login.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 
   constructor(
       private loginService: LoginService
   ) {}
-
-  ngOnInit() {
-    this.loginService.renewLogin();
-  }
-
 }
