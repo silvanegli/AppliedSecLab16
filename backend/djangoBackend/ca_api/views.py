@@ -59,6 +59,7 @@ def revoke_cert(cert):
         cert.revoked = True
         cert.save()
     else:
+        print ('revocation failed')
         raise exceptions.APIException(detail='revocation failed')
 
 
@@ -75,7 +76,7 @@ class CertificateDetails(RetrieveUpdateAPIView):
         name = serializer.validated_data.get('name')
 
         cert = serializer.instance
-
+        print('cert name ' + cert.name + ' new name ' + name)
         if cert.name != name:
             raise exceptions.NotAcceptable(detail='certificate\'s name can not be changed')
 
@@ -141,5 +142,15 @@ def certificate_list(request):
         return HttpResponseForbidden("No or invalid certificate provided. Please import a valid administrator certificate and try again.")
 
     else:
+        serial_number = get_serial()
         certs = Certificate.objects.all().order_by('user')
-        return render(request, 'certificate_list.html', {'certificates': certs})
+        return render(request, 'certificate_list.html', {'certificates': certs, 'serial' : serial_number})
+
+def get_serial():
+    try:
+        with open(settings.SERIAL_FILE, 'r') as f:
+            serial_number = f.readline()
+    except Exception:
+        serial_number = 'not available'
+    
+    return serial_number

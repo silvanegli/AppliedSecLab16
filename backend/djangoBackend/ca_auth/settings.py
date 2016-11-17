@@ -24,9 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'n@=yhp36y8x6%b+j%21n6ubg*r$pmtf!^chtp%7pit70xhz^x('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['web.seclab', 'localhost']
+ALLOWED_HOSTS = ['10.0.0.2', 'web.seclab']
 
 
 AUTH_USER_MODEL = 'ca_auth.DjangoUser'
@@ -54,7 +54,7 @@ JWT_AUTH = {
 # Application definition
 
 INSTALLED_APPS = (
-    'django.contrib.admin',
+#    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -129,6 +129,8 @@ DATABASES = {
 CREATE_CERT_LOCATION = '/home/cadmin/caServer/backend/ca/createCertificate.sh'
 REVOKE_CERT_LOCATION = '/home/cadmin/caServer/backend/ca/revokeCertificate.sh'
 USER_CERT_LOCATION = '/etc/ssl/ca/certs/users/'
+
+SERIAL_FILE = '/etc/ssl/intermediate_ca/serial'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

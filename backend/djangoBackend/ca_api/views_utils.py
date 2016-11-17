@@ -14,6 +14,7 @@ class IsSameUser(BasePermission):
    """
    def has_object_permission(self, request, view, obj):
         user = request.user
+        print('check user permission request.user: ' + user.uid + ' and obj.user ' + obj.uid)
         return obj.uid == user.uid #
 
 
@@ -28,29 +29,25 @@ class IsOwner(BasePermission):
 
 class RetrieveUpdateAPIView_UpdateLegacyUser(RetrieveUpdateAPIView):
 
-    def get(self, request, *args, **kwargs):
-        uid = kwargs.__getitem__('pk')
-        if LegacyUsers.objects.filter(uid=uid).exists():
-            return super(RetrieveUpdateAPIView_UpdateLegacyUser, self).get(request, *args, **kwargs)
-        else:
-            raise exceptions.PermissionDenied()
-
     def put(self, request, *args, **kwargs):
-        uid = kwargs.__getitem__('pk')
+        response = super(RetrieveUpdateAPIView_UpdateLegacyUser, self).put(request, *args, **kwargs) #in order that permission class is called
+        print('updating user info')
+        # try to update the legacy user if one exists
         try:
+            uid = kwargs.__getitem__('pk')
             legacy_user = LegacyUsers.objects.get(uid=uid)
-            response = super(RetrieveUpdateAPIView_UpdateLegacyUser, self).put(request, *args, **kwargs) #in order that permission class is called
+            print('updating legacy user: ' + legacy_user.uid)
+            new_firstname = request.data['first_name']
+            new_lastname = request.data['last_name']
+            new_email = request.data['email']
+
+            legacy_user.firstname = new_firstname
+            legacy_user.lastname = new_lastname
+            legacy_user.email = new_email
+            legacy_user.save()
+
         except LegacyUsers.DoesNotExist:
-            raise exceptions.PermissionDenied() #TODO: maybe use methodNotAllowed
-
-        new_firstname = request.data['first_name']
-        new_lastname = request.data['last_name']
-        new_email = request.data['email']
-
-        legacy_user.firstname = new_firstname
-        legacy_user.lastname = new_lastname
-        legacy_user.email = new_email
-        legacy_user.save()
+            pass
 
         return response
 
