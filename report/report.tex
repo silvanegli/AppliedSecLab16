@@ -14,8 +14,7 @@
 
 
 \newenvironment{prettytablex}[1]{\vspace{0.3cm}\noindent\tabularx{\linewidth}{@{\hspace{\parindent}}#1@{}}}{\endtabularx\vspace{0.3cm}}
-%\newenvironment{prettytable}{\prettytablex{l X}}{\endprettytablex}
-
+\newenvironment{prettytable}{\prettytablex{l X}}{\endprettytablex}
 
 
 \title{\huge\sffamily\bfseries System Description and Risk Analysis}
@@ -291,7 +290,7 @@ In the following section we will give a risk evaluation for all possible threats
 We can evaluate the risk for our servers and the firewall jointly as the same physical threats apply to them.
 
 \begin{footnotesize}
-	\begin{prettytablex}{llp{5.5cm}lll}
+	\begin{prettytablex}{lXp{4cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
 		1 & Nature: Component failure & Standard configuration, configuration backups, spare machines / components & {\it Medium} & {\it Medium} & {\it Medium} \\
@@ -310,7 +309,7 @@ We can evaluate the risk for our servers and the firewall jointly as the same ph
 The networking assets include the network cables and the switches/routers used in the server room.
 
 \begin{footnotesize}
-	\begin{prettytablex}{llp{5.5cm}lll}
+	\begin{prettytablex}{lXp{4cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
 		1 & Nature: Component failure & Commodity switch/router, spare cables & {\it Low} & {\it Medium} & {\it Low} \\
@@ -329,7 +328,7 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation physical asset: External network}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{llp{5.5cm}lll}
+	\begin{prettytablex}{lXp{4cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
 		1 & Nature: ISP failure & Redundant ISP connection & {\it Low} & {\it Medium} & {\it Low} \\
@@ -339,45 +338,284 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation logical asset: Firewall software}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{llp{5.5cm}lll}
+	\begin{prettytablex}{lXp{4cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
 		1 & System administrator: Mis-configure firewall, purposely include backdoor  &  & {\it Low} & {\it High} & {\it Low} \\
 		\hline
 		2 & Skilled hacker: Bypass firewall & Use restrictive access rules, regularly update system, keep access logs & {\it Medium} & {\it Medium} & {\it Medium} \\
 		\hline
-		3 & Competitors / Espionage / Organized crime: Bypass firewall, use zero day exploits & As above & {\it Medium} & {\it Medium} & {\it Medium} \\
+		3 & Espionage / Organized crime: Bypass firewall, use zero day exploits & As above & {\it Medium} & {\it Medium} & {\it Medium} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
 
 \subsubsection{{\it Evaluation logical asset: CA server software}}
 
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{4cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & System Administrator: Install bad software (e.g. sniffer), do not correctly update/configure system  & Use skilled employees for the task, review system by second party  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		2 & Script kiddies: DDoS & Limit incoming connections from same IP in firewall & {\it Medium} & {\it Medium} & {\it Low} \\
+		\hline
+		3 & Skilled hacker / Organized Crime: Get system access  & Stop all unused services, close all unnecessary ports  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		4 & Malware: Use server for sending spam or distribute itself on webpages  & Same as above  & {\it HIgh} & {\it Medium} & {\it Medium} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
+
 \subsubsection{{\it Evaluation logical asset: CA server application}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{4cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & System Administrator: ?  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		2 & Script kiddies / Skilled hacker / Organized Crime: XSS & Validate and sanitize all input  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		3 & Script kiddies / Skilled hacker / Organized Crime: Eavesdrop on communication  & Only use HTTPS for communication & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
 
 \subsubsection{{\it Evaluation logical asset: CA server database}}
 
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{4cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & Script kiddies / Skilled hacker / Organized Crime: SQL injection & Sanitize all inputs & {\it Medium} & {\it High} & {\it Medium} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
+
 \subsubsection{{\it Evaluation logical asset: Backup server software}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{4cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & System administrator: Turn off backup, misconfigure backup (encryption) & Monitor backup service & {\it Low} & {\it Medium} & {\it Low} \\
+		\hline
+		2 & Skilled hacker: Get access to system  & Restrict access, turn off unused services, log activities & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
 
 \subsubsection{{\it Evaluation information asset: User data}}
 
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{4cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & System Administrator: Intentionally or accidentally modify user data & Don't allow data access to administrators & {\it Low} & {\it Medium} & {\it Low} \\
+		\hline
+		2 & Script kiddies / Skilled hacker: Steal data & Always use encrypted communication, store data encrypted on backup, restrict access on user data & {\it Medium} & {\it Medium} & {\it Medium} \\
+	\end{prettytablex}
+\end{footnotesize}
+
 \subsubsection{{\it Evaluation information asset: Certificates}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{4cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & User: Lose the certificate & Ability to revoke certificates & {\it Medium} & {\it Low} & {\it Low} \\
+		\hline
+		2 & System Administrator: Modify data linked to certificate & Restrict data access & {\it Low} & {\it Medium} & {\it Low} \\
+		\hline
+		3 & Skilled hacker: Issue bogus certificate & Don't allow user registration, log certificate creations & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
 
 \subsubsection{{\it Evaluation information asset: Private keys}}
 
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{4cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
+
 \subsubsection{{\it Evaluation information asset: CRL}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{4cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
 
 \subsubsection{{\it Evaluation information asset: Server configuration}}
 
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{4cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
+
 \subsubsection{{\it Evaluation information asset: Logs}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
 
 \subsubsection{{\it Evaluation information asset: Login credentials}}
 
+\begin{footnotesize}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
+
 \subsubsection{{\it Evaluation information asset: JWT}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
 
 \subsubsection{{\it Evaluation information asset: Archive key}}
 
+\begin{footnotesize}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
+
 \subsubsection{{\it Evaluation information asset: Root key}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{llp{5.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
 
 \subsubsection{{\it Evaluation person asset: User/employee}}
 
