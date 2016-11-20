@@ -81,10 +81,13 @@ List all system components and their interfaces, subdivided, for example, into
 
 \subsection{Backdoors}
 
-Describe the implemented backdoors. 
+In the following sections we describe the backdoors we implemented which should give a potential outsider control over the system, such that he can compromise the purpose of the system.
 
-\bigskip\noindent
-\textbf{Hide this subsection in the version handed over to the reviewing team by setting the flag \texttt{showbackdoors} at the top of this document to \texttt{false}.}
+\subsubsection{Easy Backdoor}
+We allowed a known potential vulnerability in some JWT libraries. In JWT the client specifies the algorithm used to sign the token, the library with the vulnerability allow the client to choose the 'none' algorithm. This basically allows the client to create any token with a 'none' signing algorithm where he can omit the signature. Therefore the attacker then can login as any user and perform actions in their name.
+
+\subsubsection{Hard Backdoor}
+The second backdoor finally exposes an open telnet connection with default credentials telnet:telnet which allows the attacker to connect to the CA server as root. To open that channel, the attacker needs to perform two actions: First we implemented port knocking on the firewall, this opens the port TODO. Then we implemented a script listening for a specific ICMP packet on the firewall which will input NAT rules to the firewall, it also sends another packet to the CA server to open the telnet port. 
 
 
 %% do not delete the three lines below
