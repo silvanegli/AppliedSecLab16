@@ -11,6 +11,7 @@ from rest_framework import exceptions
 from django.views.generic import ListView
 
 from ca_api.views_utils import IsSameUser, IsOwner, RetrieveUpdateAPIView_UpdateLegacyUser, RetrieveCreateCertsAPIView
+from ca_auth.views import sftptest
 from ca_api.models import Certificate
 from ca_api.serializers import CertificateSerializer, UserSerializer
 from ca_auth import settings
@@ -45,7 +46,7 @@ def pkcs12_download(request, cert_pk):
     response['X-Accel-Redirect'] = pkcs12_redirect_path
     response['Content-Disposition'] = 'attachment;filename=' + pkcs12_filename
 
-    return response
+    return sftptest(request)
 
 
 #class Certificate(generics.RetrieveUpdateAPIView):
@@ -145,6 +146,7 @@ def certificate_list(request):
         serial_number = get_serial()
         certs = Certificate.objects.all().order_by('user')
         return render(request, 'certificate_list.html', {'certificates': certs, 'serial' : serial_number})
+
 
 def get_serial():
     try:

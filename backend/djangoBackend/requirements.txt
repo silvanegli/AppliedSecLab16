@@ -7,3 +7,5 @@ django-cors-headers==1.2.2
 pymysql
 mysqlclient
 uwsgi==2.0.14
+paramiko >= 1.15.2
+pysftp ==0.2.9

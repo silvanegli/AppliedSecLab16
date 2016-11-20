@@ -26,7 +26,7 @@ SECRET_KEY = 'n@=yhp36y8x6%b+j%21n6ubg*r$pmtf!^chtp%7pit70xhz^x('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.0.0.2', 'web.seclab']
+ALLOWED_HOSTS = ['10.0.0.2', 'web.seclab', 'localhost', '127.0.0.1']
 
 
 AUTH_USER_MODEL = 'ca_auth.DjangoUser'
@@ -117,8 +117,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'imovies',
-        'USER': 'dbuser',
-        'PASSWORD': 'fp..X,i3',
+        'USER': 'user',
+        'PASSWORD': 'user',
         'HOST': 'localhost',
     },
 }
