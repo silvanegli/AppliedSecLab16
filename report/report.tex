@@ -223,6 +223,8 @@ You may have additional sections according to your needs.
 
 %\subsubsection{Tools}
 
+The risk and the likelyhood are both defined qualitatively with the values: \textbf{Low}, \textbf{Medium} and \textbf{High}. The definition of each value is taken from "Applied Information Security - A Hands-on Approach" \cite{basin2011applied}.
+
 \begin{center}
 \begin{table}[h]
 \begin{tabularx}{\textwidth}{|l|X|}
@@ -369,7 +371,7 @@ The networking assets include the network cables and the switches/routers used i
 		\hline
 		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker / Organized Crime: Get system access  & Stop all unused services, close all unnecessary ports  & {\it Low} & {\it High} & {\it Low} \\
 		\hline
-		\stepcounter{evaluationNumber}\theevaluationNumber & Malware: Use server for sending spam or distribute itself on webpages  & Same as above  & {\it HIgh} & {\it Medium} & {\it Medium} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Malware: Use server for sending spam or distribute itself on webpages  & Same as above  & {\it High} & {\it Medium} & {\it Medium} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -504,7 +506,7 @@ The networking assets include the network cables and the switches/routers used i
 	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Forget login credentials & Backup offline, allow login with ssh key & {\it Medium} & {\it High} & {\it Medium} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Forget login credentials & Backup offline, allow login with ssh key & {\it Low} & {\it Low} & {\it Low} \\
 		\hline
 		\stepcounter{evaluationNumber}\theevaluationNumber & Script kiddies / Skilled hacker: Brute force password guessing & Restrict amount of connections from same IP, enforce strong passwords & {\it Low} & {\it High} & {\it Low} \\
 		\hline
@@ -556,6 +558,8 @@ The networking assets include the network cables and the switches/routers used i
 		\hline
 		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / skilled hacker: Steal private key to be able to read email communication & Instruct users how to safely store confidential information, regularly renew certificate, use passphrases or keys to encrypt private key on harddisk & {\it Medium} & {\it Medium} & {\it Medium} \\
 		\hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / organized crime: Blackmail or bribe users to hand over their private key & Have users sign non-disclosure agreements, prosecute them legally & {\it Medium} & {\it Low} & {\it Low} \\
+		\hline
 	\end{prettytablex}
 \end{footnotesize}
 
@@ -567,7 +571,9 @@ The networking assets include the network cables and the switches/routers used i
 		\hline
 		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor: Leak system implementation & Use standard implementations if possible & {\it Low} & {\it Low} & {\it Low} \\
 		\hline
-		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal private key to have access to CA information & Use additional information to get further knowledge about the system & {\it Low} & {\it Low} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal private key to have access to CA information & Encrypt private key on harddisk, sign agreement to follow the company guidelines to keep key secret & {\it Low} & {\it Low} & {\it Low} \\
+                \hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / organized crime: Blackmail or bribe CA administrators to hand over their private key & Have CA administrators sign non-disclosure agreements, prosecute them legally & {\it Medium} & {\it Low} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -578,7 +584,9 @@ The networking assets include the network cables and the switches/routers used i
 	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal private key to have full access to the system & Unmodifiable log files to detect intrusion into \& modification of the system & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal private key to have full access to the system & Encrypt private key on harddisk, unmodifiable log files to detect intrusion into \& modification of the system & {\it Low} & {\it High} & {\it Low} \\
+                \hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / organized crime: Blackmail or bribe system administrators to hand over their private key & Have system administrators sign non-disclosure agreements, prosecute them legally & {\it Medium} & {\it High} & {\it Medium} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -589,7 +597,9 @@ The networking assets include the network cables and the switches/routers used i
 	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal private key to be able to imitate the CA and sign any certificate & No possible countermeasure since all security guarantees are based on the secrecy of this key & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal private key to be able to imitate the CA and sign any certificate & Only store the private key encrypted and on a machine that is isolated. Once the key is stolen, there is no possible countermeasure since most security guarantees are based on the secrecy of this key & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / organized crime: Blackmail or bribe the private key holder to hand over their private key & Have the private key holder sign non-disclosure agreements, prosecute them legally & {\it Medium} & {\it High} & {\it Medium} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -600,7 +610,7 @@ The networking assets include the network cables and the switches/routers used i
 	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor: Hires skilled hacker to breach the security of the system to leak customer data, which reduces the confidence of the user in the system & Increase the security of the system & {\it Low} & {\it Low} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor: Hires skilled hacker to breach the security of the system to leak customer data, which reduces the confidence of the user in the system & Insure against the risk of leaked customer data and the resulting damage & {\it Low} & {\it Low} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -610,50 +620,63 @@ The networking assets include the network cables and the switches/routers used i
 
 %Optionally explain the details of the countermeasures mentioned above.
 
-\begin{footnotesize}
-\begin{prettytablex}{p{2cm}X}
-No. of threat & Detailed Description \\
-\hline
-51? & In the case that the root key is leaked, the system does no longer have any security guarantees since the user has no longer any means of authenticating the system \\
-\hline
-\end{prettytablex}
-\end{footnotesize}
+\paragraph{System design} The system is designed to be as simple as possible while still retaining the necessary functionality, which means we used as few different applications as possible, because every application adds a potential vulnerability to the system. Any unnecessary port is closed and every application is executed with the smallest sufficient set of permissions.
 
+\paragraph{Instruct users} The biggest security concern is the behaviour of the users of the system. We have to train users to be sensitive to security concerns. An attacker can try to gain information about the system or access to the system through social engineering, extract keys from private unprotected machines, install malware on these machines that will infect the system or extract unencrypted mail correspondence from them.
+
+\paragraph{Logging} All relevant log files are periodically incrementally backed up. They should only be readable (and not writable) by the system administrator. If this is the case, an attack can be detected even if the attacker attains the same access rights to the system as the administrator.
+
+\paragraph{Standard configurations} Whenever possible we use standard configurations for our services. The first reason is that one is less likely to misconfigure a service (because of misunderstanding the exact functionality) by using the standard configuration. The second reason is that even if one perfectly understands the service, it is still possible to e.g. have a typo in a config file and introduce a vulnerability.
+
+\paragraph{Redundancy} Whenever there is a hardware component that is critical for the functionality and security of the system there has to be a replacement available at all time or the component has to be redundant itself. Since every configuration file and all applications are backed up, a replacement machine can quickly be installed.
+
+%access control
+
+%restrictive access rules
+
+%validate/sanitize
 
 \subsubsection{Risk Acceptance}
 
-List all medium and high risks, according to the evaluation above. For each risk, propose additional countermeasures that could be implemented to further reduce the risks.
+%List all medium and high risks, according to the evaluation above. For each risk, propose additional countermeasures that could be implemented to further reduce the risks.
+
+We list all risks that are classified as \textbf{Medium} or \textbf{High} and describe further countermeasures that could be implemented against them.
 
 \begin{footnotesize}
 \begin{prettytablex}{p{2cm}X}
 No. of threat & Proposed additional countermeasure including expected impact  \\
 \hline
-1? & Replicated hardware to ensure redundancy in any case \\
+1 & Replicated hardware to ensure redundancy in any case or sign a service-level-agreement with a third party to provide a backup system, which can quickly be deployed. \\
 \hline
-7? & Let an expert from outside the company check the configuration of the internal network \\
+7 & Have the system administrators regularly review each others changes to the system. \\
 \hline
-12? & ? \\
+12 & Insure against the risk of a security breach and the resulting damage. \\
 \hline
-13? & ? \\
+13 & Same as above. \\
 \hline
-15? & ? \\
+15 & Install additional hardware and use a load balancer to be able to handle a bigger amount of requests. \\
 \hline
-17? & ? \\
+17 & Pay an external entity (Security operations center) to monitor the system for patterns that would indicate a malware infection. To protect against malware, it is important to install security updates as soon as possible. \\
 \hline
-21? & ? \\
+21 & Log all SQL requests and do a pattern matching on these logs that detects unusual requests (e.g. \texttt{or ""="}). \\
 \hline
-26? &  \\
+26 & Insure against the risk of leaked user data and the damage that might arise for the company \& the user. \\
 \hline
-35? &  \\
+35 & The same countermeasures as for risk 17 apply here. A modification of the server configuration further impacts the security of the system by possibly introducing new vulnerabilities. \\
 \hline
-38? &  \\
+38 & An attack that modifies the logs is especially problematic because it becomes almost impossible to detect the attack. An undetected attack is much more problematic, because the vulnerability causing it cannot be removed. \\
 \hline
-40? &  \\
+47 & Allow users to only use company certified machines for work which are generally better secured than personal machines. \\
 \hline
-47? & Allow users to only use company certified machines to use the system which can be made more secure \\
+53 & Insure against the risk of a system administrator losing his private key and the resulting damage to the company. \\
+\hline
+55 & Same as above. Additionally the company needs to instruct all users to stop using the (most likely compromised) system immediately, delete the now invalid certificates and create new certificates. \\
 \hline
 \end{prettytablex}
 \end{footnotesize}
+
+\bibliographystyle{plain}
+\bibliography{biblio.bib}
 
 \end{document}
 
