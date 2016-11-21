@@ -129,7 +129,7 @@ You may have additional sections according to your needs.
 		\item{\textbf{Appserver operating system:}} The operating system of the appserver is the same as for the firewall and the same states apply.
 		\item{\textbf{Appserver webserver:}} The appserver runs a nginx webserver which handles all http and https requests. It is updated by the system adminstrator. Its states are running, compromised and down. A compromised webserver allows an attacker for example to perform a man-in-the-middle attack.
 		\item{\textbf{Appserver application:}} The application is written in python and uses the Django framework. It manages the database and creates, revokes and provides certificates to the user. Both python and the Django framework are regularly updated by the system administrator. The states are similar to the webserver, but in a compromised state, an attacker might change the behaviour of the application.
-		\item{\textbf{Appserver certificate authority scripts:}} The functionality as a certificate authority is provided by a set of scripts that rely on the openssl library. The behaviour of the scripts is monitored by the system administrators. The states are the similar to the webserver, but in a compromised state an attacker also has access to certificate related functionality.
+		\item{\textbf{Appserver certificate authority scripts:}} The functionality as a certificate authority is provided by a set of scripts that rely on the openssl library. The behaviour of the scripts is monitored by the system administrators. The states are similar to the webserver states, but in a compromised state an attacker also has access to certificate related functionality.
 		\item{\textbf{Appserver database}} The database is running MySQL and is updated and monitored for misbehaviour by the system administrator. The states are similar to the webserver, but in a compromised state an attacker has altered the database.
 		\item{\textbf{Backupserver operating system:}} The operating system of the backupserver is the same as for the firewall and the same states apply.
 		\item{\textbf{Backupserver duplicity:}} Duplicity periodically runs on the backupserver and backs up and encrypts valuable data from both the firewall and the appserver such as configurations, logs, certificates, private keys and the database.
@@ -137,31 +137,31 @@ You may have additional sections according to your needs.
 
 \subsubsection{Logical information assets}
 	\begin{description}
-		\item{\textbf{User database:}} The database contains user ids, email addresses and hashed passwords. The states are confidential and leaked. A confidential state means that only authorized system administrators and corresponding users have these informations. In a leaked state, an attacker was able to read the whole or part of the database.
+		\item{\textbf{User database:}} The database contains user ids, email addresses and hashed passwords. The states are confidential and leaked. A confidential state means that only authorized system administrators and corresponding users have access to these information. In a leaked state, an attacker was able to read the whole or part of the database.
 		\item{\textbf{Certificates:}} The certificates of each user, the certificate of the webserver and the root certificate. If a certificate is used by someone other than its owner or a certificate is used even though it was revoked, its state is invalid. Otherwise its state is valid. The severity of an invalid certificate depends on which certificate it is and if the usage of such an invalid certificate was detected, since user certificates can easily be revoked.
 		\item{\textbf{Appserver configuration:}} Configuration files of different services such as webserver, database, Django, certificate authority or ssh can give insight into how the system behaves and might help detect misconfigured and thus exploitable services. The states are the same as for the user database.
 		\item{\textbf{Private keys:}} The private keys for certificates or for ssh connections within the system. Similar states to user database, but the private key is either private or leaked.
 		\item{\textbf{Crl:}} The certificate revocation list has to be up-to-date and available to any user. The states are available if any user can get the list and unavailable if this is not the case.
-		\item{\textbf{Backupserver configuration:}} Configuration files for services such as duplicity. The states are the same as for appserver configuration.
+		\item{\textbf{Backupserver configuration:}} Configuration files for services such as duplicity. The states are the same as for the appserver configuration.
 		\item{\textbf{Logs:}} Logging information about various services. The states are the same as for certificates.
 		\item{\textbf{Login credentials:}} Login credentials for ssh connections to different machines that may be leaked by a system administrators and login credentials from users that log into the application server. The states are the same as for the private keys, but for ssh login credential the security concern is much higher.
 		\item{\textbf{JWT:}} A JSON web token (JWT) describes an active connection of a user to the webserver. If an attacker manages to compromise the system in a way that he is also part of this connection, the state is compromised. For an active confidential connection the state is confidential and after the connection is closed the state is closed.
 		\item{\textbf{Archive key:}} The key that is used to encrypt all backed up data on the backupserver. The states are similar to the private keys.
-		\item{\textbf{intermediate \& root key:}} The intermediate key to sign the webserver certificate and user certificates and the root key which signs the intermediate key. The states are similar to private keys.
+		\item{\textbf{Intermediate \& Root key:}} The intermediate key to sign the webserver certificate and user certificates and the root key which signs the intermediate certificate. The states are similar to private keys.
 	\end{description}
 
 \subsubsection{Persons}
 \begin{description}
-\item{\textbf{User/employee:}} The users of the authenticated mail server, which are employees of iMovie. The state of a user is either loyal or unloyal depending on which relation he has to the company.
-\item{\textbf{CA administrator:}} The CA administrators can query the certificate authority for additional information about its state but cannot modify, revoke or create any certificates (except for his own). The states are the same as for User/employee.
-  \item{\textbf{System administrator:}} The system administrators manages the system. The states are the same as for User/employee.
-  \item{\textbf{Private key holder:}} The CA administrator holds the private key of the root certificate. The states are the same as for User/employee.
+\item{\textbf{User/Employee:}} The users of the authenticated mail server, which are employees of iMovie. The state of a user is either loyal or unloyal depending on which relation he has to the company.
+\item{\textbf{CA Administrator:}} The CA administrators can query the certificate authority for additional information about its state but cannot modify, revoke or create any certificates (except for his own). The states are the same as for user/employee.
+  \item{\textbf{System Administrator/Insider:}} The system administrators manages the system. The states are the same as for user/employee.
+  \item{\textbf{Private key holder:}} The CA administrator holds the private key of the root certificate. The states are the same as for user/employee.
 \end{description}
 
 
 \subsubsection{Intangible assets}
 \begin{description}
-\item{\textbf{User confidence:}} The trust a user has in the system. This is influenced by security breaches, usability of the webserver and other factors. The user either has confidence in the system or not, which means there are two states confident and not confident.
+\item{\textbf{User confidence:}} The trust a user has in the system. This is influenced by security breaches, usability of the webserver and other factors. The user either has confidence in the system or not, which means there are two states, confident and not confident.
   \end{description}
 
 %software:
@@ -204,11 +204,11 @@ You may have additional sections according to your needs.
 \subsection{Threat Sources}
 
 \begin{description}
-\item{\textbf{Nature:}} Environmental factors can hinder the execution of the system. There could be water leaks that would cause damage to servers and lost data.
+\item{\textbf{Nature:}} Environmental factors can hinder the execution of the system. There could be water leaks that would cause damage to servers and where data can be lost.
 \item{\textbf{User:}} The employees of iMovie can intentionally misbehave and manipulate the system or unknowingly help an attacker compromise the system.
 \item{\textbf{System administrator/Insider:}} A system administrator is a more impactful threat source to the system than a user, since a compromised system administrator leads to much bigger security concerns than a compromised user.
 \item{\textbf{Script kiddies:}} Script kiddies most likely do not have iMovie as their primary target, but might still try for example to infect the servers with malware to use them in a botnet. They do not have the skills to infiltrate a well protected system and so the usual security measurements and regular updates should be enough to sufficiently protect against them.
-\item{\textbf{Skilled hacker:}} A skilled hacker is a big threat source and the usual security measurements most likely do not give enough protection against such an attacker. He might try to infiltrate the ca server and extract private keys to be able to imitate the webserver itself, issue arbitrary certificates or use the keys to perform man-in-the-middle attacks between employees and extract valuable information. He is most likely to be hired by a competitor or a criminal.
+\item{\textbf{Skilled hacker:}} A skilled hacker is a big threat source and the usual security measurements most likely do not give enough protection against such an attacker. He might try to infiltrate the CA server and extract private keys to be able to imitate the webserver itself, issue arbitrary certificates or use the keys to perform man-in-the-middle attacks between employees and extract valuable information. He is most likely to be hired by a competitor or a criminal.
 \item{\textbf{Malware:}} There is always the possibility of either directed or undirected malware infection if users with infected systems interact with the system.
 \item{\textbf{Organized crime:}} Criminals that try to extract information from the system to blackmail people or steal valuable login credentials that are used across multiple systems.
 \item{\textbf{Competitors:}} Competitors that want to undermine the reputation of iMovie, gain knowledge about company secrets or simply cause them damage.
@@ -338,7 +338,8 @@ The networking assets include the network cables and the switches/routers used i
 	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		\stepcounter{evaluationNumber}\theevaluationNumber & Nature: ISP failure & Redundant ISP connection & {\it Low} & {\it Medium} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Nature: ISP failure & Redundant connection to ISP & {\it Low} & {\it Medium} & {\it Low} \\
+		\hline
 	\end{prettytablex}
 \end{footnotesize}
 
@@ -548,18 +549,18 @@ The networking assets include the network cables and the switches/routers used i
 	\end{prettytablex}
 \end{footnotesize}
 
-\subsubsection{{\it Evaluation person asset: User/employee}}
+\subsubsection{{\it Evaluation person asset: User/Employee}}
 
 \begin{footnotesize}
 	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / skilled hacker: Steal private key to be able to read email communication & Instruct users how to safely store confidential information, regularly renew certificate, use passphrases or keys to encrypt private key on harddisk & {\it Medium} & {\it Medium} & {\it Medium} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / Skilled hacker: Steal private key to be able to read email communication & Instruct users how to safely store confidential information, regularly renew certificate, use passphrases or keys to encrypt private key on harddisk & {\it Medium} & {\it Medium} & {\it Medium} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
 
-\subsubsection{{\it Evaluation person asset: CA administrator / insider}}
+\subsubsection{{\it Evaluation person asset: CA administrator / Insider}}
 
 \begin{footnotesize}
 	\begin{prettytablex}{lXp{3.5cm}lll}
@@ -589,7 +590,8 @@ The networking assets include the network cables and the switches/routers used i
 	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal private key to be able to imitate the CA and sign any certificate & No possible countermeasure since all security guarantees are based on the secrecy of this key & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal private key to be able to imitate the CA and sign any certificate & No possible countermeasure since all security guarantees are based on the secrecy of this key %(key is stored offline in safes though) 
+		& {\it Low} & {\it High} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
