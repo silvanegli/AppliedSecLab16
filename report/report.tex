@@ -42,25 +42,30 @@
 
 \subsection{System Overview}
 
-20 points
+%%20 points
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[scale=0.7]{systemoverview.pdf}
+	\includegraphics[scale=0.5]{src/systemoverview.pdf}
 	\caption{System overview}
 	\label{figure:systemoverview}
 \end{figure}
 
-Describe the system's mission,  the system boundaries,
-and the overall system architecture, including the main subsystems and
-their relationships.   This description should provide a high-level
-overview of the system, e.g., suitable for managers, that complements
-the more technical description that follows.
+The mission of the system consist of providing a certificate authority (CA) service through which employees of the fictional company iMovies can request and revoke digital certificates. These certificates will be used for secure e-mail communication between employees.
+In the following the terms client and user will be used as a synonym for an employee of iMovies.\\
+The architecture of the system is depicted in figure {\ref{figure:systemoverview}}.
+The system consist of three subsystems, namely Firewall, Application and Backup. These subsystems form the internal network. While the firewall interfaces clients residing in the external network with the system, the Application's task is to control the process of issuing and revoking certificates as well as providing an interface for CA Administrators. The Backup is responsible for maintaining a copy of all system relevant data including information on users, certificates, keys, logs and configurations.
+
+%Describe the system's mission,  the system boundaries,
+%and the overall system architecture, including the main subsystems and
+%their relationships.   This description should provide a high-level
+%overview of the system, e.g., suitable for managers, that complements
+%the more technical description that follows.
 
 
 \subsection{System Functionality}
 
-Describe the system's functions.
+
 
 
 \subsection{Security Design}
