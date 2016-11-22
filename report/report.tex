@@ -1,3 +1,4 @@
+
 \documentclass[english]{article}
 
 \usepackage{graphicx}
@@ -18,7 +19,7 @@
 
 
 \title{\huge\sffamily\bfseries System Description and Risk Analysis}
-\author{Cyrill Krähenbühl \and Silvan Egli \and Lukas Bischofberger}
+\author{Cyrill Kr\"ahenb\"uhl \and Silvan Egli \and Lukas Bischofberger}
 \date{\today}
 
 
@@ -86,10 +87,13 @@ List all system components and their interfaces, subdivided, for example, into
 
 \subsection{Backdoors}
 
-Describe the implemented backdoors. 
+In the following sections we describe the backdoors we implemented which should give a potential outsider control over the system, such that he can compromise the purpose of the system.
 
-\bigskip\noindent
-\textbf{Hide this subsection in the version handed over to the reviewing team by setting the flag \texttt{showbackdoors} at the top of this document to \texttt{false}.}
+\subsubsection{Easy Backdoor}
+We allowed a known potential vulnerability in some JWT libraries. In JWT the client specifies the algorithm used to sign the token, the library with the vulnerability allow the client to choose the 'none' algorithm. This basically allows the client to create any token with a 'none' signing algorithm where he can omit the signature. Therefore the attacker then can login as any user and perform actions in their name.
+
+\subsubsection{Hard Backdoor}
+The second backdoor finally exposes an open telnet connection with default credentials telnet:telnet which allows the attacker to connect to the CA server as root. To open that channel, the attacker needs to perform two actions: First we implemented port knocking on the firewall, this opens the port TODO. Then we implemented a script listening for a specific ICMP packet on the firewall which will input NAT rules to the firewall, it also sends another packet to the CA server to open the telnet port. 
 
 
 %% do not delete the three lines below
@@ -130,7 +134,7 @@ You may have additional sections according to your needs.
 		\item{\textbf{Appserver operating system:}} The operating system of the appserver is the same as for the firewall and the same states apply.
 		\item{\textbf{Appserver webserver:}} The appserver runs a nginx webserver which handles all http and https requests. It is updated by the system adminstrator. Its states are running, compromised and down. A compromised webserver allows an attacker for example to perform a man-in-the-middle attack.
 		\item{\textbf{Appserver application:}} The application is written in python and uses the Django framework. It manages the database and creates, revokes and provides certificates to the user. Both python and the Django framework are regularly updated by the system administrator. The states are similar to the webserver, but in a compromised state, an attacker might change the behaviour of the application.
-		\item{\textbf{Appserver certificate authority scripts:}} The functionality as a certificate authority is provided by a set of scripts that rely on the openssl library. The behaviour of the scripts is monitored by the system administrators. The states are the similar to the webserver, but in a compromised state an attacker also has access to certificate related functionality.
+		\item{\textbf{Appserver certificate authority scripts:}} The functionality as a certificate authority is provided by a set of scripts that rely on the openssl library. The behaviour of the scripts is monitored by the system administrators. The states are similar to the webserver states, but in a compromised state an attacker also has access to certificate related functionality.
 		\item{\textbf{Appserver database}} The database is running MySQL and is updated and monitored for misbehaviour by the system administrator. The states are similar to the webserver, but in a compromised state an attacker has altered the database.
 		\item{\textbf{Backupserver operating system:}} The operating system of the backupserver is the same as for the firewall and the same states apply.
 		\item{\textbf{Backupserver duplicity:}} Duplicity periodically runs on the backupserver and backs up and encrypts valuable data from both the firewall and the appserver such as configurations, logs, certificates, private keys and the database.
@@ -138,31 +142,31 @@ You may have additional sections according to your needs.
 
 \subsubsection{Logical information assets}
 	\begin{description}
-		\item{\textbf{User database:}} The database contains user ids, email addresses and hashed passwords. The states are confidential and leaked. A confidential state means that only authorized system administrators and corresponding users have these informations. In a leaked state, an attacker was able to read the whole or part of the database.
+		\item{\textbf{User database:}} The database contains user ids, email addresses and hashed passwords. The states are confidential and leaked. A confidential state means that only authorized system administrators and corresponding users have access to these information. In a leaked state, an attacker was able to read the whole or part of the database.
 		\item{\textbf{Certificates:}} The certificates of each user, the certificate of the webserver and the root certificate. If a certificate is used by someone other than its owner or a certificate is used even though it was revoked, its state is invalid. Otherwise its state is valid. The severity of an invalid certificate depends on which certificate it is and if the usage of such an invalid certificate was detected, since user certificates can easily be revoked.
 		\item{\textbf{Appserver configuration:}} Configuration files of different services such as webserver, database, Django, certificate authority or ssh can give insight into how the system behaves and might help detect misconfigured and thus exploitable services. The states are the same as for the user database.
 		\item{\textbf{Private keys:}} The private keys for certificates or for ssh connections within the system. Similar states to user database, but the private key is either private or leaked.
 		\item{\textbf{Crl:}} The certificate revocation list has to be up-to-date and available to any user. The states are available if any user can get the list and unavailable if this is not the case.
-		\item{\textbf{Backupserver configuration:}} Configuration files for services such as duplicity. The states are the same as for appserver configuration.
+		\item{\textbf{Backupserver configuration:}} Configuration files for services such as duplicity. The states are the same as for the appserver configuration.
 		\item{\textbf{Logs:}} Logging information about various services. The states are the same as for certificates.
 		\item{\textbf{Login credentials:}} Login credentials for ssh connections to different machines that may be leaked by a system administrators and login credentials from users that log into the application server. The states are the same as for the private keys, but for ssh login credential the security concern is much higher.
 		\item{\textbf{JWT:}} A JSON web token (JWT) describes an active connection of a user to the webserver. If an attacker manages to compromise the system in a way that he is also part of this connection, the state is compromised. For an active confidential connection the state is confidential and after the connection is closed the state is closed.
 		\item{\textbf{Archive key:}} The key that is used to encrypt all backed up data on the backupserver. The states are similar to the private keys.
-		\item{\textbf{intermediate \& root key:}} The intermediate key to sign the webserver certificate and user certificates and the root key which signs the intermediate key. The states are similar to private keys.
+		\item{\textbf{Intermediate \& Root key:}} The intermediate key to sign the webserver certificate and user certificates and the root key which signs the intermediate certificate. The states are similar to private keys.
 	\end{description}
 
 \subsubsection{Persons}
 \begin{description}
-\item{\textbf{User/employee:}} The users of the authenticated mail server, which are employees of iMovie. The state of a user is either loyal or unloyal depending on what relation he has with the company.
-\item{\textbf{CA administrator:}} The CA administrators can query the certificate authority for additional information about its state but cannot modify, revoke or create any certificates (except for his own). The states are the same as for User/employee.
-  \item{\textbf{System administrator:}} The system administrators manages the system. The states are the same as for User/employee.
-  \item{\textbf{Private key holder:}} The CA administrator holds the private key of the root certificate. The states are the same as for User/employee.
+\item{\textbf{User/Employee:}} The users of the authenticated mail server, which are employees of iMovie. The state of a user is either loyal or unloyal depending on which relation he has to the company.
+\item{\textbf{CA Administrator:}} The CA administrators can query the certificate authority for additional information about its state but cannot modify, revoke or create any certificates (except for his own). The states are the same as for user/employee.
+  \item{\textbf{System Administrator/Insider:}} The system administrators manages the system. The states are the same as for user/employee.
+  \item{\textbf{Private key holder:}} The CA administrator holds the private key of the root certificate. The states are the same as for user/employee.
 \end{description}
 
 
 \subsubsection{Intangible assets}
 \begin{description}
-\item{\textbf{User confidence:}} The trust a user has in the system. This is influenced by security breaches, usability of the webserver and other factors. The user either has confidence in the system or not, which means there are two states confident and not confident.
+\item{\textbf{User confidence:}} The trust a user has in the system. This is influenced by security breaches, usability of the webserver and other factors. The user either has confidence in the system or not, which means there are two states, confident and not confident.
   \end{description}
 
 %software:
@@ -205,11 +209,11 @@ You may have additional sections according to your needs.
 \subsection{Threat Sources}
 
 \begin{description}
-\item{\textbf{Nature:}} Environmental factors can hinder the execution of the system. There could be water leaks that would cause damage to servers and lost data.
+\item{\textbf{Nature:}} Environmental factors can hinder the execution of the system. There could be water leaks that would cause damage to servers and where data can be lost.
 \item{\textbf{User:}} The employees of iMovie can intentionally misbehave and manipulate the system or unknowingly help an attacker compromise the system.
 \item{\textbf{System administrator/Insider:}} A system administrator is a more impactful threat source to the system than a user, since a compromised system administrator leads to much bigger security concerns than a compromised user.
 \item{\textbf{Script kiddies:}} Script kiddies most likely do not have iMovie as their primary target, but might still try for example to infect the servers with malware to use them in a botnet. They do not have the skills to infiltrate a well protected system and so the usual security measurements and regular updates should be enough to sufficiently protect against them.
-\item{\textbf{Skilled hacker:}} A skilled hacker is a big threat source and the usual security measurements most likely do not give enough protection against such an attacker. He might try to infiltrate the ca server and extract private keys to be able to imitate the webserver itself, issue arbitrary certificates or use the keys to perform man-in-the-middle attacks between employees and extract valuable information. He is most likely to be hired by a competitor or a criminal.
+\item{\textbf{Skilled hacker:}} A skilled hacker is a big threat source and the usual security measurements most likely do not give enough protection against such an attacker. He might try to infiltrate the CA server and extract private keys to be able to imitate the webserver itself, issue arbitrary certificates or use the keys to perform man-in-the-middle attacks between employees and extract valuable information. He is most likely to be hired by a competitor or a criminal.
 \item{\textbf{Malware:}} There is always the possibility of either directed or undirected malware infection if users with infected systems interact with the system.
 \item{\textbf{Organized crime:}} Criminals that try to extract information from the system to blackmail people or steal valuable login credentials that are used across multiple systems.
 \item{\textbf{Competitors:}} Competitors that want to undermine the reputation of iMovie, gain knowledge about company secrets or simply cause them damage.
@@ -223,6 +227,8 @@ You may have additional sections according to your needs.
 %  tables.
 
 %\subsubsection{Tools}
+
+The risk and the likelyhood are both defined qualitatively with the values: \textbf{Low}, \textbf{Medium} and \textbf{High}. The definition of each value is taken from "Applied Information Security - A Hands-on Approach" \cite{basin2011applied}.
 
 \begin{center}
 \begin{table}[h]
@@ -292,19 +298,22 @@ In the following section we will give a risk evaluation for all possible threats
 
 %Evaluate the likelihood, impact and the resulting risk,  \emph{after implementation of the corresponding countermeasures}. For each threat, clearly name the threat source and the the threat action.
 
+\newcounter{evaluationNumber}
+
+
 We can evaluate the risk for our servers and the firewall jointly as the same physical threats apply to them.
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & Nature: Component failure & Standard configuration, configuration backups, spare machines / components & {\it Medium} & {\it Medium} & {\it Medium} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Nature: Component failure & Standard configuration, configuration backups, spare machines / components & {\it Medium} & {\it Medium} & {\it Medium} \\
 		\hline
-		2 & Insider: Accidental or intentional destruction of components & Restrictive room access policies, spare machines / components & {\it Low} & {\it Medium} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Insider: Accidental or intentional destruction of components & Restrictive room access policies, spare machines / components & {\it Low} & {\it Medium} & {\it Low} \\
 		\hline
-		3 & Nature: Flooding, fire etc. & Place fire alarm and sprinkler in server room, server room is located in a building on elevated level & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Nature: Flooding, fire etc. & Place fire alarm and sprinkler in server room, server room is located in a building on elevated level & {\it Low} & {\it High} & {\it Low} \\
 		\hline
-		4 & Competitors / Organized crime: Get physical access to server room & Location of server room not public, restrictive access policy & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitors / Organized crime: Get physical access to server room & Location of server room not public, restrictive access policy & {\it Low} & {\it High} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -314,18 +323,18 @@ We can evaluate the risk for our servers and the firewall jointly as the same ph
 The networking assets include the network cables and the switches/routers used in the server room.
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & Nature: Component failure & Commodity switch/router, spare cables & {\it Low} & {\it Medium} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Nature: Component failure & Commodity switch/router, spare cables & {\it Low} & {\it Medium} & {\it Low} \\
 		\hline
-		2 & Insider: Accidental or intentional destruction of components & Restrictive room access policies, spare cables, backup switch & {\it Low} & {\it Medium} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Insider: Accidental or intentional destruction of components & Restrictive room access policies, spare cables, backup switch & {\it Low} & {\it Medium} & {\it Low} \\
 		\hline
-		3 & Insider: Network misconfiguration & Standard configuration, clear documentation & {\it Medium} & {\it Medium} & {\it Medium} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Insider: Network misconfiguration & Standard configuration, clear documentation & {\it Medium} & {\it Medium} & {\it Medium} \\
 		\hline
-		4 & Nature: Flooding, fire etc. & Place fire alarm and sprinkler in server room, server room is located in a building on elevated level & {\it Low} & {\it Medium} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Nature: Flooding, fire etc. & Place fire alarm and sprinkler in server room, server room is located in a building on elevated level & {\it Low} & {\it Medium} & {\it Low} \\
 		\hline
-		5 & Competitors / Organized crime: Get physical access to server room & Location of server room not public, restrictive access policy & {\it Low} & {\it Medium} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitors / Organized crime: Get physical access to server room & Location of server room not public, restrictive access policy & {\it Low} & {\it Medium} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -333,24 +342,25 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation physical asset: External network}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & Nature: ISP failure & Redundant ISP connection & {\it Low} & {\it Medium} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Nature: ISP failure & Redundant connection to ISP & {\it Low} & {\it Medium} & {\it Low} \\
+		\hline
 	\end{prettytablex}
 \end{footnotesize}
 
 \subsubsection{{\it Evaluation logical asset: Firewall software}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & System administrator: Mis-configure firewall, purposely include backdoor  &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System administrator: Mis-configure firewall, purposely include backdoor  & System administrators check for misbehaviour of other system administrators & {\it Low} & {\it High} & {\it Low} \\
 		\hline
-		2 & Skilled hacker: Bypass firewall & Use restrictive access rules, regularly update system, keep access logs & {\it Medium} & {\it Medium} & {\it Medium} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Bypass firewall & Use restrictive access rules, regularly update system, keep access logs & {\it Medium} & {\it Medium} & {\it Medium} \\
 		\hline
-		3 & Espionage / Organized crime: Bypass firewall, use zero day exploits & As above & {\it Medium} & {\it Medium} & {\it Medium} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Espionage / Organized crime: Bypass firewall, use zero day exploits & As above & {\it Medium} & {\it Medium} & {\it Medium} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -358,16 +368,16 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation logical asset: CA server software}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & System Administrator: Install bad software (e.g. sniffer), do not correctly update/configure system  & Use skilled employees for the task, review system by second party  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Install bad software (e.g. sniffer), do not correctly update/configure system  & Use skilled employees for the task, review system by second party  & {\it Low} & {\it High} & {\it Low} \\
 		\hline
-		2 & Script kiddies: DDoS & Limit incoming connections from same IP in firewall & {\it Medium} & {\it Medium} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Script kiddies: DDoS & Limit incoming connections from same IP in firewall & {\it Medium} & {\it Medium} & {\it Medium} \\
 		\hline
-		3 & Skilled hacker / Organized Crime: Get system access  & Stop all unused services, close all unnecessary ports  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker / Organized Crime: Get system access  & Stop all unused services, close all unnecessary ports  & {\it Low} & {\it High} & {\it Low} \\
 		\hline
-		4 & Malware: Use server for sending spam or distribute itself on webpages  & Same as above  & {\it HIgh} & {\it Medium} & {\it Medium} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Malware: Use server for sending spam or distribute itself on webpages  & Same as above  & {\it High} & {\it Medium} & {\it Medium} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -375,14 +385,14 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation logical asset: CA server application}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & System Administrator: ?  &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Create certificate for some user & Log all certificate creation procedures & {\it Low} & {\it High} & {\it Low} \\
 		\hline
-		2 & Script kiddies / Skilled hacker / Organized Crime: XSS & Validate and sanitize all input  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Script kiddies / Skilled hacker / Organized Crime: XSS & Validate and sanitize all input  & {\it Low} & {\it High} & {\it Low} \\
 		\hline
-		3 & Script kiddies / Skilled hacker / Organized Crime: Eavesdrop on communication  & Only use HTTPS for communication & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Script kiddies / Skilled hacker / Organized Crime: Eavesdrop on communication  & Only use HTTPS for communication & {\it Low} & {\it High} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -390,10 +400,10 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation logical asset: CA server database}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & Script kiddies / Skilled hacker / Organized Crime: SQL injection & Sanitize all inputs & {\it Medium} & {\it High} & {\it Medium} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Script kiddies / Skilled hacker / Organized Crime: SQL injection & Sanitize all inputs & {\it Medium} & {\it High} & {\it Medium} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -401,12 +411,12 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation logical asset: Backup server software}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & System administrator: Turn off backup, misconfigure backup (encryption) & Monitor backup service & {\it Low} & {\it Medium} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System administrator: Turn off backup, misconfigure backup (encryption) & Monitor backup service & {\it Low} & {\it Medium} & {\it Low} \\
 		\hline
-		2 & Skilled hacker: Get access to system  & Restrict access, turn off unused services, log activities & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Get access to system  & Restrict access, turn off unused services, log activities & {\it Low} & {\it High} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -414,26 +424,28 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation information asset: User data}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & System Administrator: Intentionally or accidentally modify user data & Don't allow data access to administrators & {\it Low} & {\it Medium} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & User: Lose their username and password & Allow them to login using a certificate & {\it Low} & {\it Low} & {\it Low} \\
 		\hline
-		2 & Script kiddies / Skilled hacker: Steal data & Always use encrypted communication, store data encrypted on backup, restrict access on user data & {\it Medium} & {\it Medium} & {\it Medium} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Intentionally or accidentally modify user data & Don't allow data access to administrators & {\it Low} & {\it Medium} & {\it Low} \\
+		\hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Script kiddies / Skilled hacker: Steal data & Always use encrypted communication, store data encrypted on backup, restrict access on user data & {\it Medium} & {\it Medium} & {\it Medium} \\
 	\end{prettytablex}
 \end{footnotesize}
 
 \subsubsection{{\it Evaluation information asset: Certificates}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & User: Lose the certificate & Ability to revoke certificates & {\it Medium} & {\it Low} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & User: Lose the certificate & Ability to revoke certificates & {\it Medium} & {\it Low} & {\it Low} \\
 		\hline
-		2 & System Administrator: Modify data linked to certificate & Restrict data access & {\it Low} & {\it Medium} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Modify data linked to certificate & Restrict data access & {\it Low} & {\it Medium} & {\it Low} \\
 		\hline
-		3 & Skilled hacker: Issue bogus certificate & Don't allow user registration, log certificate creations & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Issue bogus certificate & Don't allow user registration, log certificate creations & {\it Low} & {\it High} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -441,22 +453,12 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation information asset: Private keys}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Leak to external party & Only root is allowed to access private keys & {\it Low} & {\it High} & {\it Low} \\
 		\hline
-		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Script kiddies / Skilled hacker: Steal private keys & Private keys are only accessible for root users, keys are encrypted in transfer & {\it Low} & {\it High} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -464,22 +466,10 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation information asset: CRL}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator / script kiddies / skilled hacker: Insert fake or remove real entries & Restrict write access to crl file to root & {\it Low} & {\it High} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -487,22 +477,16 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation information asset: Server configuration}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{lXp{4cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Leak configuration & Place configuration in standard place (secured by access policies) & {\it Low} & {\it Medium} & {\it Low} \\
 		\hline
-		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Script kiddies / Skilled hacker: Alter configuration (e.g. weaken preferred security algorithms) & As above, additionally backup config incrementally (spot alterations) & {\it Low} & {\it High} & {\it Low} \\
 		\hline
-		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Malware: Delete or alter configuration randomly & Backup configuration (incremental), access logs, restrictive access policies & {\it Medium} & {\it High} & {\it Medium} \\
 		\hline
-		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitors / Espionage: Access configuration and use for own system  & Hide internal configurations of the system from the outside & {\it Low} & {\it Medium} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -510,22 +494,14 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation information asset: Logs}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{llp{5.5cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Accidentally or intentionally delete logs & Policy to not delete logs before they are backed up & {\it Low} & {\it Medium} & {\it Low} \\
 		\hline
-		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Script kiddies / Skilled hacker: Insert or delete messages from the logs & Restrict access to logs to application and root & {\it Medium} & {\it Medium} & {\it Medium} \\
 		\hline
-		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Malware: Insert random logs & Restrict access to logs to application and root & {\it Low} & {\it Medium} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -533,22 +509,12 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation information asset: Login credentials}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{llp{5.5cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Forget login credentials & Backup offline, allow login with ssh key & {\it Low} & {\it Low} & {\it Low} \\
 		\hline
-		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Script kiddies / Skilled hacker: Brute force password guessing & Restrict amount of connections from same IP, enforce strong passwords & {\it Low} & {\it High} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -556,22 +522,14 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation information asset: JWT}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{llp{5.5cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & User: Lose JWT & Saved in browser session & {\it Low} & {\it Low} & {\it Low} \\
 		\hline
-		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Script kiddies: Steal JWT from a not closed browser window & Short lifetime of token & {\it Low} & {\it High} & {\it Low} \\
 		\hline
-		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal JWT (e.g. by malicious browser plugin) & Only store JWT in local session, short lifetime of token, enforce PW/certificate login afterwards & {\it Low} & {\it High} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -579,22 +537,10 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation information asset: Archive key}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{llp{5.5cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Lose key (stored offline) & Store at different locations (e.g. in several safes) & {\it Low} & {\it High} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
@@ -602,57 +548,141 @@ The networking assets include the network cables and the switches/routers used i
 \subsubsection{{\it Evaluation information asset: Root key}}
 
 \begin{footnotesize}
-	\begin{prettytablex}{llp{5.5cm}lll}
+	\begin{prettytablex}{lXp{3.5cm}lll}
 		No. & Threat &  Countermeasure(s) & L & I & Risk \\
 		\hline
-		1 & User: ? &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		2 & System Administrator:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		3 & Script kiddies: DDoS &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		4 & Skilled hacker:   &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		5 & Malware  &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		6 & Organized Crime &  & {\it Low} & {\it High} & {\it Low} \\
-		\hline
-		7 & Competitors  &  & {\it Low} & {\it High} & {\it Low} \\
+		\stepcounter{evaluationNumber}\theevaluationNumber & System Administrator: Lose key (stored offline) & Store at different locations (e.g. in several safes) & {\it Low} & {\it High} & {\it Low} \\
 		\hline
 	\end{prettytablex}
 \end{footnotesize}
 
-\subsubsection{{\it Evaluation person asset: User/employee}}
+\subsubsection{{\it Evaluation person asset: User/Employee}}
 
-\subsubsection{{\it Evaluation person asset: CA administrator / insider}}
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{3.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / Skilled hacker: Steal private key to be able to read email communication & Instruct users how to safely store confidential information, regularly renew certificate, use passphrases or keys to encrypt private key on harddisk & {\it Medium} & {\it Medium} & {\it Medium} \\
+		\hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / organized crime: Blackmail or bribe users to hand over their private key & Have users sign non-disclosure agreements, prosecute them legally & {\it Medium} & {\it Low} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
+
+\subsubsection{{\it Evaluation person asset: CA administrator / Insider}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{3.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor: Leak system implementation & Use standard implementations if possible & {\it Low} & {\it Low} & {\it Low} \\
+		\hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal private key to have access to CA information & Encrypt private key on harddisk, sign agreement to follow the company guidelines to keep key secret & {\it Low} & {\it Low} & {\it Low} \\
+                \hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / organized crime: Blackmail or bribe CA administrators to hand over their private key & Have CA administrators sign non-disclosure agreements, prosecute them legally & {\it Medium} & {\it Low} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
 
 \subsubsection{{\it Evaluation person asset: System administrator}}
 
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{3.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal private key to have full access to the system & Encrypt private key on harddisk, unmodifiable log files to detect intrusion into \& modification of the system & {\it Low} & {\it High} & {\it Low} \\
+                \hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / organized crime: Blackmail or bribe system administrators to hand over their private key & Have system administrators sign non-disclosure agreements, prosecute them legally & {\it Medium} & {\it High} & {\it Medium} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
+
 \subsubsection{{\it Evaluation person asset: Private key holder}}
 
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{3.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Skilled hacker: Steal private key to be able to imitate the CA and sign any certificate & Only store the private key encrypted on an isolated machine. Once the key is stolen, there is no possible countermeasure since most security guarantees are based on the secrecy of this key & {\it Low} & {\it High} & {\it Low} \\
+		\hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor / organized crime: Blackmail or bribe the private key holder to hand over their private key & Have the private key holder sign non-disclosure agreements, prosecute them legally & {\it Medium} & {\it High} & {\it Medium} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
+
 \subsubsection{{\it Evaluation intangible asset: User confidence}}
+
+\begin{footnotesize}
+	\begin{prettytablex}{lXp{3.5cm}lll}
+		No. & Threat &  Countermeasure(s) & L & I & Risk \\
+		\hline
+		\stepcounter{evaluationNumber}\theevaluationNumber & Competitor: Hires skilled hacker to breach the security of the system to leak customer data, which reduces the confidence of the user in the system & Insure against the risk of leaked customer data and the resulting damage & {\it Low} & {\it Low} & {\it Low} \\
+		\hline
+	\end{prettytablex}
+\end{footnotesize}
 
 
 \subsubsection{Detailed Description of Selected Countermeasures}
 
-Optionally explain the details of the countermeasures mentioned above.
+%Optionally explain the details of the countermeasures mentioned above.
 
+\paragraph{System design} The system is designed to be as simple as possible while still retaining the necessary functionality, which means we used as few different applications as possible, because every application adds a potential vulnerability to the system. Any unnecessary port is closed and every application is executed with the smallest sufficient set of permissions.
 
+\paragraph{Instruct users} The biggest security concern is the behaviour of the users of the system. We have to train users to be sensitive to security concerns. An attacker can try to gain information about the system or access to the system through social engineering, extract keys from private unprotected machines, install malware on these machines that will infect the system or extract unencrypted mail correspondence from them.
+
+\paragraph{Logging} All relevant log files are periodically incrementally backed up. They should only be readable (and not writable) by the system administrator. If this is the case, an attack can be detected even if the attacker attains the same access rights to the system as the administrator.
+
+\paragraph{Standard configurations} Whenever possible we use standard configurations for our services. The first reason is that one is less likely to misconfigure a service (because of misunderstanding the exact functionality) by using the standard configuration. The second reason is that even if one perfectly understands the service, it is still possible to e.g. have a typo in a config file and introduce a vulnerability.
+
+\paragraph{Redundancy} Whenever there is a hardware component that is critical for the functionality and security of the system there has to be a replacement available at all time or the component has to be redundant itself. Since every configuration file and all applications are backed up, a replacement machine can quickly be installed.
+
+%access control
+
+%restrictive access rules
+
+%validate/sanitize
 
 \subsubsection{Risk Acceptance}
 
-List all medium and high risks, according to the evaluation above. For each risk, propose additional countermeasures that could be implemented to further reduce the risks.
+%List all medium and high risks, according to the evaluation above. For each risk, propose additional countermeasures that could be implemented to further reduce the risks.
+
+We list all risks that are classified as \textbf{Medium} or \textbf{High} and describe further countermeasures that could be implemented against them.
 
 \begin{footnotesize}
 \begin{prettytablex}{p{2cm}X}
 No. of threat & Proposed additional countermeasure including expected impact  \\
 \hline
-... & ... \\
+1 & Replicated hardware to ensure redundancy in any case or sign a service-level-agreement with a third party to provide a backup system, which can quickly be deployed. \\
 \hline
-... & ... \\
+7 & Have the system administrators regularly review each others changes to the system. \\
+\hline
+12 & Insure against the risk of a security breach and the resulting damage. \\
+\hline
+13 & Same as above. \\
+\hline
+15 & Install additional hardware and use a load balancer to be able to handle a bigger amount of requests. \\
+\hline
+17 & Pay an external entity (Security operations center) to monitor the system for patterns that would indicate a malware infection. To protect against malware, it is important to install security updates as soon as possible. \\
+\hline
+21 & Log all SQL requests and do a pattern matching on these logs that detects unusual requests (e.g. \texttt{or ""="}). \\
+\hline
+26 & Insure against the risk of leaked user data and the damage that might arise for the company \& the user. \\
+\hline
+35 & The same countermeasures as for risk 17 apply here. A modification of the server configuration further impacts the security of the system by possibly introducing new vulnerabilities. \\
+\hline
+38 & An attack that modifies the logs is especially problematic because it becomes almost impossible to detect the attack. An undetected attack is much more problematic, because the vulnerability causing it cannot be removed. \\
+\hline
+47 & Allow users to only use company certified machines for work which are generally better secured than personal machines. \\
+\hline
+53 & Insure against the risk of a system administrator losing his private key and the resulting damage to the company. \\
+\hline
+55 & Same as above. Additionally the company needs to instruct all users to stop using the (most likely compromised) system immediately, delete the now invalid certificates and create new certificates. \\
 \hline
 \end{prettytablex}
 \end{footnotesize}
+
+\bibliographystyle{plain}
+\bibliography{biblio.bib}
 
 \end{document}
 
