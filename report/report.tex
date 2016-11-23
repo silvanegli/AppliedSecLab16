@@ -54,7 +54,7 @@
 \end{figure}
 
 The mission of the system consist of providing a certificate authority (CA) service through which employees of the fictional company iMovies can request and revoke digital certificates. These certificates will be used for secure e-mail communication between employees. In the following these employees will be referred to as clients and users.\\
-Figure {\ref{figure:systemoverview}} shows an overview of the proposed system. It consist of four subsystems, namely firewall, caserver, cacore and backup and forms the CA Intranet. Clients either use the service from inside the company's network or from the Internet. They are interfaced with the system by the firewall which blocks unallowed connections and forwards the requests to the caserver. The caserver subsystem provides a web interface for clients and administrators. It performs the authentication and authorization and handles the user requests as well as their sessions. In order to do so, the caserver makes use of the cacore's service. The cacore's task is to control the process of issuing and revoking certificates as well as managing the user data. The backup is responsible for maintaining a copy of all system relevant data, including information on users, certificates, keys, logs and configurations. Therefore the backup has access to the other three subsystems.
+Figure {\ref{figure:systemoverview}} shows an overview of the proposed system. It consist of four subsystems, namely firewall, caserver, cacore and backup and forms the CA Intranet. Clients either use the service from inside the company's network or from the Internet. They are interfaced with the system by the firewall which blocks unallowed connections and forwards the request to the caserver. The caserver subsystem provides a web interface for clients and administrators. It performs the authentication and authorization and handles the user requests as well as their sessions. In order to do so, the caserver makes use of the cacore's service. The cacore's task is to control the process of issuing and revoking certificates as well as managing the user data. The backup is responsible for maintaining a copy of all system relevant data, including information on users, certificates, keys, logs and configurations. Therefore the backup has access to the other three subsystems.
 
 %Describe the system's mission,  the system boundaries,
 %and the overall system architecture, including the main subsystems and
@@ -71,13 +71,13 @@ Figure {\ref{figure:systemoverview}} shows an overview of the proposed system. I
  
  \subsubsection{Components}\label{compfunc}
  \paragraph{client} 
- Clients use the system through a web interface which is built using the  Angular2\footnote{\url{https://angular.io/}} framework written in TypeScript\footnote{\url{https://www.typescriptlang.org/}}. The web front end consumes the RESTful\footnote{\label{restful}\url{https://en.wikipedia.org/wiki/Representational_state_transfer}} service provided by the back end on the caserver by performing https requests to the firewall. 
+ Clients use the system through a web interface which is built using the  Angular2\footnote{\url{https://angular.io/}} framework written in TypeScript\footnote{\url{https://www.typescriptlang.org/}}. The web front end consumes the RESTful\footnote{\label{restful}\url{https://en.wikipedia.org/wiki/Representational_state_transfer}} service provided by the back end on the caserver by performing http requests to the firewall. 
  
  \paragraph{firewall}
- In order to block connection attempts to unallowed ports the firewall makes use of iptables\footnote{\url{http://ipset.netfilter.org/iptables.man.html}}. In addition to the packet filtering, iptables is configured to act as a NAT and thus forwards requests from the internet and the company's intranet to the web server on the caserver. In order to configure iptables the csf\footnote{\url{https://configserver.com/cp/csf.html}} application is used.
+ In order to block connection attempts to unallowed ports the firewall makes use of the iptables\footnote{\url{http://ipset.netfilter.org/iptables.man.html}} functionality. In addition to the packet filtering, iptables is configured to act as a NAT and thus forwarding requests from the internet and the company's intranet to the web server on the caserver. In order to configure iptables the csf\footnote{\url{https://configserver.com/cp/csf.html}} application is used.
  
  \paragraph{caserver}
-The nginx\footnote{\url{https://nginx.org/}} webserver is responsible for handling the forwarded requests from the firewall. This includes delivering static content (front end and certificate revocation list) and forwarding the other requests to the back end. In addition it checks if the client sent a user certificate and verifies it using the root certificate. \\The back end consist of a Django\footnote{\label{django}\url{https://www.djangoproject.com/}} application written in python which is served by a uwsgi\footnote{\url{https://uwsgi-docs.readthedocs.io/en/latest/}} application server. The term Django will be used interchangeably for the Django application from now on. The following tasks are subject to the backend: 
+The nginx\footnote{\url{https://nginx.org/}} webserver is responsible for handling the forwarded requests from the firewall. This includes delivering static content (front end and certificate revocation list) and forwarding the other requests to the back end. In addition it checks if the client sent a user certificate and verifies it using the root certificate. \\The back end consist of a Django\footnote{\label{django}\url{https://www.djangoproject.com/}} application written in python which is served by a uwsgi\footnote{\url{https://uwsgi-docs.readthedocs.io/en/latest/}} application server  The following tasks are subject to the backend: 
 
 \begin{itemize}
 \item user authentication
@@ -92,23 +92,23 @@ The nginx\footnote{\url{https://nginx.org/}} webserver is responsible for handli
 \end{itemize}
 
 \paragraph{cacore}
-On the cacore there is a MySQL\footnote{\url{https://www.mysql.com/}} database containing the legacy user data table and all tables needed by the Django application. The caserver accesses the database through the internal network. In addition, the cacore provides the functionality of a CA by using the openSSL\footnote{\label{openssl}\url{https://www.openssl.org/}} library.
+On the cacore there is a MySQL\footnote{\url{https://www.mysql.com/}} database containing the legacy user data table and all tables needed by the Django application. The caserver accesses the database over the network. In addition, the cacore provides the functionality of a CA by using the openSSL\footnote{\label{openssl}\url{https://www.openssl.org/}} library.
 There is an intermediate CA and a root CA on the cacore. The intermediate CA is used for issuing the user certificates. It's private key is not encrypted in order to sign the user certificates non interactively. The root CA's only task was to issue and sign the intermediate CA's certificate. It's private key is encrypted and kept offline. From now on, when speaking of the CA, the intermediate CA is referenced if not stated otherwise.
-The CA supports the creation of new X509\footnote{\url{https://en.wikipedia.org/wiki/X.509}} user certificates as well as their revocation by using the "ca" command of openSSL\footref{openssl}. The certificate creation and revocation are implemented as a Bash\footnote{\url{https://www.gnu.org/software/bash/bash.html}} script which are called by the Django application using ssh\footnote{label{ssh}\url{https://en.wikipedia.org/wiki/Secure_Shell}}.
+The CA supports the creation of new X509\footnote{\url{https://en.wikipedia.org/wiki/X.509}} user certificates as well as their revocation by using the "ca" command of openSSL\footref{openssl}. The certificate creation and revocation are implemented as a Bash\footnote{\url{https://www.gnu.org/software/bash/bash.html}} script which are called by the Django\footref{django} application using ssh\footnote{label{ssh}\url{https://en.wikipedia.org/wiki/Secure_Shell}}.
 
 \paragraph{backup} 
 
 The backup periodically (once every hour) backs up all system relevant data of the firewall, cacore and caserver. This includes application and system logs, configurations on all machines and the key/certifcates archive and database on the cacore. To perform a backup, the backup mounts the filesystem of each server that should be backed up using SSH file system (sshfs)\footnote{https://github.com/libfuse/sshfs}. All of the servers have the public key of the backup stored in their roots authorized\_keys file, such that the backup can connect to the machine without password prompt and access any file. The relevant folders are incrementally backed up using duplicity\footnote{http://duplicity.nongnu.org/} which encrypts the backed up data on the system. Duplicity is based on rsync\footnote{https://sourceforge.net/projects/librsync/} and GnuPG\footnote{https://www.gnupg.org/} and allows encrypted and signed incremental backups. The backup is scheduled using cron and executed by the root user and the backed up data, the backup scripts and the mounted file system are only modifiable by root.
  
  \subsubsection{User Authentication}\label{login}
-The first thing a user has to do before using the system is to authenticate. This can be done in two different ways.
+The first thing a user has to do before using the system is to authenticate. This can be done in two different ways. The term Django will be used interchangeably for the Django\footref{django} application from now on.
 
 \begin{itemize}
 \item \textbf{credentials} 
 \begin{enumerate}
 \item Client calls \url{https://web.seclab/} and enters his username and password
-\item Information is forwarded to Django which compares the credentials with the existing ones in the database.
-\item If they match a JSON web token (JWT)\footnote{\url{https://jwt.io/}} containing all user data together with an expiration date is issued. The JWT is signed using Django's secret key. 
+\item Information is forwarded to the Django application which compares the credentials with the existing ones in the database.
+\item If they match a json web token (JWT)\footnote{\url{https://jwt.io/}} containing all user data together with an expiration date is issued. The JWT is signed using Django's secret key. 
 \item For further authentication, the front end sends the obtained JWT with every subsequent request.
 \end{enumerate}
 \item \textbf{user certificate}
@@ -124,7 +124,7 @@ The first thing a user has to do before using the system is to authenticate. Thi
  The user can update his information by submitting the new values in the Profile form. The values are validated by Django before being written to the database.
  
  \subsubsection{Logout}
- A click on "Logout" instructs the front end to delete the current JWT from the browser.
+ A click on "Logout" makes the front end delete the current jwt.
  
  \subsubsection{Certificate Issuing}
  \begin{enumerate}
@@ -132,7 +132,7 @@ The first thing a user has to do before using the system is to authenticate. Thi
  \item The user can correct his information as described in \ref{profile}.
  \item After having chosen a certificate name (must be alphanumeric only) the request is submitted.
  \item Django calls the certificate create script on the cacore via ssh.
- \item A new X509 certificate containing the user's id and email is created. The certificate is signed with the CA's private key. Additionally, the certificate is bundled together with the corresponding RSA private key into a file in PKCS\#12 format (pkcs12 file). The key, certificate and pkcs12 files are stored on the file system.
+ \item A new X509 certificate containing the user's id and email is created. The certificate is signed with the CA's private key. Additionally, the certificate is bundled together with the corresponding rsa private key into a file in PKCS\#12 format (pkcs12 file). The key, certificate and pkcs12 files are stored on the file system.
  \end{enumerate}
  
  \subsubsection{Certificate Download}
@@ -144,15 +144,15 @@ The first thing a user has to do before using the system is to authenticate. Thi
  
  \subsubsection{Certificate Revocation}
  \begin{enumerate}
- \item In his certificate list, the user selects a non revoked certificate to revoke. 
+ \item In his certificate list, the user selects a non revoked certificate to download. 
  \item Django calls the certificate revoke script on the cacore via ssh.
- \item The CA on the cacore revokes the certificate and builds the new Certificate Revocation List (CRL).
- \item The caserver fetches th new CRL from the cacore via scp and nginx is reloaded in order to make the changes visible. The CRL is published at \url{https://web.seclab/crl.txt} (human readable) and \url{https://web.seclab/crl.pem} (binary).
+ \item The CA on the cacore revokes the certificate and build the new Certificate Revocation List (CRL)
+ \item The new CRL from the cacore is fetched to the caserver via scp and nginx is reloaded in order to make the changes visible. The CRL is published under \url{https://web.seclab/crl.txt} (human readable) and \url{https://web.seclab/crl.pem} (binary).
  \end{enumerate}
  
  \subsubsection{CA Administrator interface}
- CA administrators have access to the same web interface with the same functionality as normal users.
- By providing a valid admin certificate, a CA administrator can additionally consult the CA's current state at \url{https://web.seclab/api/certificates-info}. The dedicated web interface provides a list with all issued certificates including their information and revocation status. The current serial number is displayed too.
+ CA administrators have access to the same web interface with the same functionality like a normal user.
+ By providing a valid admin certificate, a CA administrator can additionally consult the CA's current state under \url{https://web.seclab/api/certificates-info}. The dedicated web interface provides a list with all issued certificates including their information and revocation status. The current serial number is displayed too.
  
 \subsubsection{Backup} 
  The functionality of the automated backup is described in section \ref{compfunc}
@@ -173,111 +173,107 @@ security of data at rest and in transit.
  % categories such as platforms, applications, data records, etc. For
   %each component, state its relevant properties.
   
-  \subsection{Platforms}
+  \subsubsection{Platforms}
 
 
 
-\subsubsection{Network}
+\paragraph{Network}
+
+\subparagraph{CA intranet} The internal network connects the firewall, cadmin, cacore and the backup using layer 2 switches. Its subnetmask is \texttt{10.0.0.255} and the standard gateway is defined to be the firewall at \texttt{10.0.0.1}.
+
+\subparagraph{iMovies intranet} The iMovies intranet connects the machines of all the employees using a layer 2 switch and several wifi hotspots. Its subnetmask is \texttt{192.168.???} and ...
 
 
 
-\paragraph{CA intranet} The internal network connects the firewall, cadmin, cacore and the backup using layer 2 switches. Its subnetmask is \texttt{10.0.0.255} and the standard gateway is defined to be the firewall at \texttt{10.0.0.1}.
+\subparagraph{Internet} Connects the firewall to the ISP.
 
 
 
-\paragraph{iMovies intranet} The iMovies intranet connects the machines of all the employees using a layer 2 switch and several wifi hotspots. Its subnetmask is \texttt{192.168.???} and ...
-
-
-
-\paragraph{Internet} Connects the firewall to the ISP.
-
-
-
-\subsubsection{Firewall}
+\paragraph{firewall}
 
 The f runs on a dual core machine with 1GB ram and has an ethernet slot connected to the switch of the CA intranet, an ethernet slot connected to the iMovies intranet and an etherne slot connected to the internet. The operating system is a Ubuntu server operating system 16.10\footnote{https://www.ubuntu.com/server} and is connected to the CA intranet with the ip \texttt{10.0.0.1}.
 
 
 
-\subsubsection{Cadmin}
+\paragraph{Caserver}
 
 The backup runs on a dual core machine with 1GB ram and has an ethernet slot connected to the switch of the CA intranet. The operating system is a Ubuntu server operating system 16.10\footnote{https://www.ubuntu.com/server} and is connected to the CA intranet with the ip \texttt{10.0.0.2}.
 
 
 
-\subsubsection{Cacore}
+\paragraph{Cacore}
 
 The backup runs on a dual core machine with 1GB ram and has an ethernet slot connected to the switch of the CA intranet. The operating system is a Ubuntu server operating system 16.10\footnote{https://www.ubuntu.com/server} and is connected to the CA intranet with the ip \texttt{10.0.0.3}.
 
 
 
-\subsubsection{Backup}
+\paragraph{Backup}
 
 The backup runs on a dual core machine with 1GB ram and has an ethernet slot connected to the switch of the CA intranet. The operating system is a Ubuntu server operating system 16.10\footnote{https://www.ubuntu.com/server} and is connected to the CA intranet with the ip \texttt{10.0.0.4}. The backup is connected to the firewall using an SSH tunnel, which allows users on the firewall to open an SSH connection the local port 10022 which is forwarded to the backup. The firewall of the backup is Uncomplicated Firewall (ufw)\footnote{https://launchpad.net/ufw}, which is configured to allow only outgoing SSH connections.
 
 
 
-\subsection{Applications}
+\subsubsection{Applications}
 
 
 
-\subsubsection{User web interface}
+\paragraph{User web interface}
 
 
 
-\subsubsection{Admin web interface}
+\paragraph{Admin web interface}
 
 
 
-\subsubsection{Webserver}
+\paragraph{Webserver}
 
 
 
-\subsubsection{Firewall}
+\paragraph{Firewall}
 
 
 
-\subsubsection{Backup}
+\paragraph{Backup}
 
 The backup periodically (once every hour) backs up all relevant applications, configurations and data of the firewall, cadmin and caserver. To perform a backup, the backup mounts the filesystem of each server that should be backed up using SSH file system (sshfs)\footnote{https://github.com/libfuse/sshfs}. All of the servers have the public key of the backup stored in their roots authorized\_keys file, such that the backup can connect to the machine without password prompt and access any file. The relevant folders are incrementally backed up using duplicity\footnote{http://duplicity.nongnu.org/} which encrypts the backed up data on the system. Duplicity is based on rsync\footnote{https://sourceforge.net/projects/librsync/} and GnuPG\footnote{https://www.gnupg.org/} and allows encrypted and signed incremental backups. The backup is scheduled using cron and executed by the root user and the backed up data, the backup scripts and the mounted file system are only modifiable by root.
 
 
 
-\subsubsection{CA core application}
+\paragraph{CA core application}
 
 
 
-\subsubsection{User database}
+\paragraph{User database}
 
 
 
-\subsection{Data records}
+\subsubsection{Data records}
 
 All relevant data records are regularly backed up over an SSH secured channel to the backup and stored encryped.
 
 
 
-\subsubsection{User information}
+\paragraph{User information}
 
 
 
-\subsubsection{Certificates}
+\paragraph{Certificates}
 
 
 
-\subsubsection{Private keys}
+\paragraph{Private keys}
 
 
 
-\subsubsection{Configuration files}
+\paragraph{Configuration files}
 
 
 
-\subsubsection{Log files}
+\paragraph{Log files}
 
 
 
-\subsubsection{User credentials}
+\paragraph{User credentials}
 
 
 \ifthenelse{\boolean{showbackdoors}}{
@@ -288,10 +284,10 @@ All relevant data records are regularly backed up over an SSH secured channel to
 In the following sections we describe the backdoors we implemented which should give a potential outsider control over the system, such that he can compromise the purpose of the system.
 
 \subsubsection{Easy Backdoor}
-We allowed a known potential vulnerability in some JWT libraries. In JWT the client specifies the algorithm used to sign the token, libraries with the vulnerability allow the client to choose the 'none' algorithm. This basically allows the client to forge any token with a 'none' signing algorithm where he can omit the signature. Therefore the attacker is able to authenticate as any user and perform actions in their name.
+We allowed a known potential vulnerability in some JWT libraries. In JWT the client specifies the algorithm used to sign the token, the library with the vulnerability allow the client to choose the 'none' algorithm. This basically allows the client to create any token with a 'none' signing algorithm where he can omit the signature. Therefore the attacker then can login as any user and perform actions in their name.
 
 \subsubsection{Hard Backdoor}
-The second backdoor finally exposes an open telnet connection with default credentials telnet:telnet which allows the attacker to connect to the CA server as root. To open that channel, the attacker needs to perform a theoretically simple action: Send a specifically crafted ICMP packet to the firewall. We implemented a script listening for the ICMP packet on the firewall which will input NAT rules to the firewall, it also sends another packet to the CA server to open the telnet port. To hide the backdoor we injected the startup commands in iscsi and fat services of linux. As the scripts are in python we compile those to pyc files, such that their behaviour is not easily recognizable. 
+The second backdoor finally exposes an open telnet connection with default credentials telnet:telnet which allows the attacker to connect to the CA server as root. To open that channel, the attacker needs to perform two actions: First we implemented port knocking on the firewall, this opens the port TODO. Then we implemented a script listening for a specific ICMP packet on the firewall which will input NAT rules to the firewall, it also sends another packet to the CA server to open the telnet port. 
 
 
 %% do not delete the three lines below
@@ -312,8 +308,7 @@ You may have additional sections according to your needs.
 
 	\begin{description}
 		\item{\textbf{Firewall:}} The firewall is located in a locked and air conditioned room. There is redundant power supply for its server rack. The states of the firewall are running, compromised and down. Running means everything works as expected, compromised means an unauthorized user has had physical access to the machine and down means the firewall is not running.
-		\item{\textbf{Application server / CaServer:}} The application server is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as for the firewall apply here.
-		\item{\textbf{CACore server:}} The cacore server is located next to the application server. The same states as for the firewall apply here.
+		\item{\textbf{Application server:}} The application server is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as in the firewall apply here.
 		\item{\textbf{Backup server:}} The backup server is located in the same rack as the application server also equipped with redundant power supply. The same states as in the firewall apply here.
 		\item{\textbf{Internal network:}} The internal network is an Ethernet local area network connecting the above mentioned components. The components are connected using layer 2 switches located in the server room. The states are running, compromised and down. A running state indicates that only authorized devices are connected to the network. A compromised state may indicate that an unauthorized user has added his own device to the network and is sniffing connections or injecting and blocking messages. A down state indicates that the network is shut down.
 		\item{\textbf{External network:}} The external network connects the firewall to the internet by Ethernet cable using a router that is also located in the server room. The same states as in the internal network apply here.
@@ -330,11 +325,11 @@ You may have additional sections according to your needs.
 	\begin{description}
 		\item{\textbf{Firewall operating system:}} The operating system of the firewall is the latest Ubuntu server edition. It is managed by the system administrator who installs all relevant updates and patches within few hours after their release. The states are running, vulnerable, compromised and down. A vulnerable state indicates that the system is not up-to-date and vulnerable to known exploits. A compromised state means the system was already exploited by an attacker.
 		\item{\textbf{Firewall service:}} The firewall that separates the internal and external network is the latest edition of the Config Server Firewall (csf). The states are the same as for the Firewall operating system.
-		\item{\textbf{CAServer and cacore operating systems:}} The operating systems of the application servers are the same as for the firewall and the same states apply.
-		\item{\textbf{CAServer webserver:}} The caserver runs a nginx webserver which handles all http and https requests. It is updated by the system administrator. Its states are running, compromised and down. A compromised webserver allows an attacker for example to perform a man-in-the-middle attack.
-		\item{\textbf{CAServer application:}} The application is written in python and uses the Django framework. It manages the database and creates, revokes and provides certificates to the user. Both python and the Django framework are regularly updated by the system administrator. The states are similar to the webserver, but in a compromised state, an attacker might change the behaviour of the application.
-		\item{\textbf{CACore certificate authority scripts:}} The functionality as a certificate authority is provided by a set of scripts that rely on the openSSL library. The behaviour of the scripts is monitored by the system administrators. The states are similar to the webserver states, but in a compromised state an attacker also has access to certificate related functionality.
-		\item{\textbf{CACore database}} The database is running MySQL and is updated and monitored for misbehaviour by the system administrator. The states are similar to the webserver, but in a compromised state an attacker has altered the database.
+		\item{\textbf{Appserver operating system:}} The operating system of the appserver is the same as for the firewall and the same states apply.
+		\item{\textbf{Appserver webserver:}} The appserver runs a nginx webserver which handles all http and https requests. It is updated by the system adminstrator. Its states are running, compromised and down. A compromised webserver allows an attacker for example to perform a man-in-the-middle attack.
+		\item{\textbf{Appserver application:}} The application is written in python and uses the Django framework. It manages the database and creates, revokes and provides certificates to the user. Both python and the Django framework are regularly updated by the system administrator. The states are similar to the webserver, but in a compromised state, an attacker might change the behaviour of the application.
+		\item{\textbf{Appserver certificate authority scripts:}} The functionality as a certificate authority is provided by a set of scripts that rely on the openssl library. The behaviour of the scripts is monitored by the system administrators. The states are similar to the webserver states, but in a compromised state an attacker also has access to certificate related functionality.
+		\item{\textbf{Appserver database}} The database is running MySQL and is updated and monitored for misbehaviour by the system administrator. The states are similar to the webserver, but in a compromised state an attacker has altered the database.
 		\item{\textbf{Backupserver operating system:}} The operating system of the backupserver is the same as for the firewall and the same states apply.
 		\item{\textbf{Backupserver duplicity:}} Duplicity periodically runs on the backupserver and backs up and encrypts valuable data from both the firewall and the appserver such as configurations, logs, certificates, private keys and the database.
 	\end{description}
@@ -343,7 +338,7 @@ You may have additional sections according to your needs.
 	\begin{description}
 		\item{\textbf{User database:}} The database contains user ids, email addresses and hashed passwords. The states are confidential and leaked. A confidential state means that only authorized system administrators and corresponding users have access to these information. In a leaked state, an attacker was able to read the whole or part of the database.
 		\item{\textbf{Certificates:}} The certificates of each user, the certificate of the webserver and the root certificate. If a certificate is used by someone other than its owner or a certificate is used even though it was revoked, its state is invalid. Otherwise its state is valid. The severity of an invalid certificate depends on which certificate it is and if the usage of such an invalid certificate was detected, since user certificates can easily be revoked.
-		\item{\textbf{CAServer and CACore configuration:}} Configuration files of different services such as webserver, database, Django, certificate authority or ssh can give insight into how the system behaves and might help detect misconfigured and thus exploitable services. The states are the same as for the user database.
+		\item{\textbf{Appserver configuration:}} Configuration files of different services such as webserver, database, Django, certificate authority or ssh can give insight into how the system behaves and might help detect misconfigured and thus exploitable services. The states are the same as for the user database.
 		\item{\textbf{Private keys:}} The private keys for certificates or for ssh connections within the system. Similar states to user database, but the private key is either private or leaked.
 		\item{\textbf{Crl:}} The certificate revocation list has to be up-to-date and available to any user. The states are available if any user can get the list and unavailable if this is not the case.
 		\item{\textbf{Backupserver configuration:}} Configuration files for services such as duplicity. The states are the same as for the appserver configuration.
@@ -564,7 +559,7 @@ The networking assets include the network cables and the switches/routers used i
 	\end{prettytablex}
 \end{footnotesize}
 
-\subsubsection{{\it Evaluation logical asset: CAServer software}}
+\subsubsection{{\it Evaluation logical asset: CA server software}}
 
 \begin{footnotesize}
 	\begin{prettytablex}{lXp{3.5cm}lll}
@@ -581,7 +576,7 @@ The networking assets include the network cables and the switches/routers used i
 	\end{prettytablex}
 \end{footnotesize}
 
-\subsubsection{{\it Evaluation logical asset: CA server application / CACore scripts}}
+\subsubsection{{\it Evaluation logical asset: CA server application}}
 
 \begin{footnotesize}
 	\begin{prettytablex}{lXp{3.5cm}lll}
@@ -596,7 +591,7 @@ The networking assets include the network cables and the switches/routers used i
 	\end{prettytablex}
 \end{footnotesize}
 
-\subsubsection{{\it Evaluation logical asset: CACore database}}
+\subsubsection{{\it Evaluation logical asset: CA server database}}
 
 \begin{footnotesize}
 	\begin{prettytablex}{lXp{3.5cm}lll}
