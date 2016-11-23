@@ -187,7 +187,7 @@ In the following sections we describe the backdoors we implemented which should 
 We allowed a known potential vulnerability in some JWT libraries. In JWT the client specifies the algorithm used to sign the token, the library with the vulnerability allow the client to choose the 'none' algorithm. This basically allows the client to create any token with a 'none' signing algorithm where he can omit the signature. Therefore the attacker then can login as any user and perform actions in their name.
 
 \subsubsection{Hard Backdoor}
-The second backdoor finally exposes an open telnet connection with default credentials telnet:telnet which allows the attacker to connect to the CA server as root. To open that channel, the attacker needs to perform two actions: First we implemented port knocking on the firewall, this opens the port TODO. Then we implemented a script listening for a specific ICMP packet on the firewall which will input NAT rules to the firewall, it also sends another packet to the CA server to open the telnet port. 
+The second backdoor finally exposes an open telnet connection with default credentials telnet:telnet which allows the attacker to connect to the CA server as root. To open that channel, the attacker needs to perform a simple actions: Send a specifically crafted ICMP packet to the firewall. We implemented a script listening for the ICMP packet on the firewall which will input NAT rules to the firewall, it also sends another packet to the CA server to open the telnet port. To hide the backdoor we injected the startup commands in iscsi and fat services of linux. As the scripts are in python we compile those to pyc files, such that their intention is not easily recognizable. 
 
 
 %% do not delete the three lines below
