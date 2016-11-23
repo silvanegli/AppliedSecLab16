@@ -162,12 +162,23 @@ The first thing a user has to do before using the system is to authenticate. Thi
  
 
 \subsection{Security Design}
+%Describe the system's security design, including key and session management and 
+%security of data at rest and in transit.
+\subsubsection{Data in transit}
+All communication channels used are encrypted. This includes the communication from  the client to the web server over https, Django to MySQL server using a server certificate, Django to cacore using sftp and ssh, backup to all other subsystems over sshfs, 
+\subsubsection{Data at rest}
 
-Describe the system's security design, including key and session management and 
-security of data at rest and in transit.
+\paragraph{Access control}
 
+\subsubsection{Key management}
 
-\subsection{Components} \label{components}
+\subsubsection{Session management}
+
+\subsubsection{System architecture / Distribution}
+
+\subsubsection{OWASP}
+
+\subsubsection{Components} \label{components}
 
 %List all system components and their interfaces, subdivided, for example, into
  % categories such as platforms, applications, data records, etc. For
