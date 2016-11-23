@@ -8,6 +8,7 @@
 %\usepackage{ngerman}
 \usepackage{longtable}
 \usepackage{color}
+\usepackage{scrextend}
 
 \usepackage{xifthen}
 \newboolean{showbackdoors}
@@ -53,7 +54,7 @@
 \end{figure}
 
 The mission of the system consist of providing a certificate authority (CA) service through which employees of the fictional company iMovies can request and revoke digital certificates. These certificates will be used for secure e-mail communication between employees. In the following these employees will be referred to as clients and users.\\
-Figure {\ref{figure:systemoverview}} shows an overview of the proposed system. It consist of four subsystems, namely firewall, caserver, cacore and backup and forms the CA Intranet. The term component will be used interchangeably for subsystem. Clients either use the service from inside the company's network or from the Internet. They are interfaced with the system by the firewall which blocks unallowed connections and forwards the request to the caserver. The caserver subsystem provides a web interface for clients and administrators. It performs the authentication and authorization and handles the user requests as well as their sessions. In order to do so, the caserver makes use of the cacore's service. The cacore's task is to control the process of issuing and revoking certificates as well as managing the user data. The backup is responsible for maintaining a copy of all system relevant data including information on users, certificates, keys, logs and configurations. Therefore the backup has access to the other three subsystems.
+Figure {\ref{figure:systemoverview}} shows an overview of the proposed system. It consist of four subsystems, namely firewall, caserver, cacore and backup and forms the CA Intranet. Clients either use the service from inside the company's network or from the Internet. They are interfaced with the system by the firewall which blocks unallowed connections and forwards the request to the caserver. The caserver subsystem provides a web interface for clients and administrators. It performs the authentication and authorization and handles the user requests as well as their sessions. In order to do so, the caserver makes use of the cacore's service. The cacore's task is to control the process of issuing and revoking certificates as well as managing the user data. The backup is responsible for maintaining a copy of all system relevant data, including information on users, certificates, keys, logs and configurations. Therefore the backup has access to the other three subsystems.
 
 %Describe the system's mission,  the system boundaries,
 %and the overall system architecture, including the main subsystems and
@@ -62,14 +63,44 @@ Figure {\ref{figure:systemoverview}} shows an overview of the proposed system. I
 %the more technical description that follows.
 
 
-\subsection{System Functionality}
+\subsection{System Functionality} 
  %Describe the system’s functions. 
  % TODO : remove https://en.wikipedia.org/wiki/Functional_requirement
  % https://en.wikipedia.org/wiki/Functional_specification
- In this section we describe the systems functions in terms of system design based on the use cases given in the project assignment. We therefore will not repeat the functional requirements but focus on the implementation and information flows.
+ In this section we describe the systems functions in terms of system design based on the use cases given in the project assignment. We therefore will not repeat the functional requirements but focus on the implementation and information flows. The properties of the mentioned applications will be described in subsection \ref{components}.
  
- \subsubsection{Applications}
- It follows a list containing the 
+ \subsubsection{Components}
+ \paragraph{client} 
+ Clients use the system through a web interface which is built using the  Angular2\footnote{\url{https://angular.io/}} framework written in TypeScript\footnote{\url{https://www.typescriptlang.org/}}. The web front end consumes the RESTful\footnote{\label{restful}\url{https://en.wikipedia.org/wiki/Representational_state_transfer}} service provided by the back end on the caserver by performing http requests to the firewall. 
+ 
+ \paragraph{firewall}
+ In order to block connection attempts to unallowed ports the firewall makes use of the iptables\footnote{\url{http://ipset.netfilter.org/iptables.man.html}} functionality. In addition to the packet filtering, iptables is configured to act as a NAT and thus forwarding requests from the internet and the company's intranet to the web server on the caserver. In order to configure iptables the csf\footnote{\url{https://configserver.com/cp/csf.html}} application is used.
+ 
+ \paragraph{caserver}
+The nginx\footnote{\url{https://nginx.org/}} webserver is responsible for handling the forwarded requests from the firewall. This includes delivering static content (front end and certificate revocation list) and forwarding the other requests to the back end. In addition it checks if the client sent a user certificate and verifies it using the root certificate. \\The back end consist of a Django\footnote{\label{django}\url{https://www.djangoproject.com/}} application written in python which is served by a uwsgi\footnote{\url{https://uwsgi-docs.readthedocs.io/en/latest/}} application server  The following tasks are subject to the backend: 
+
+\begin{itemize}
+\item user authentication
+\item authorization checks
+\item session management
+\item user input validation
+\item output sanitization
+\item database queries
+\item site calls to the cacore subsystem
+\item providing the CA administrator interface
+\item providing a RESTful\footref{restful} API to the front end
+\end{itemize}
+
+\paragraph{cacore}
+On the cacore there is a MySQL\footnote{\url{https://www.mysql.com/}} database containing the legacy user data table and all tables needed by the Django application. In addition, the cacore provides the functionality of a CA by using the openSSL\footnote{\label{openssl}\url{https://www.openssl.org/}} library. The CA supports the creation of new X509\footnote{\url{https://en.wikipedia.org/wiki/X.509}} user certificates as well as their revocation by using the "ca" command of openSSL\footref{openssl}. The certificate creation and revocation are implemented as a Bash\footnote{\url{https://www.gnu.org/software/bash/bash.html}} script which are called by the Django\footref{django} application using ssh\footnote{label{ssh}\url{https://en.wikipedia.org/wiki/Secure_Shell}}.
+
+\paragraph{backup}
+The backup periodically (once every hour) backs up all relevant applications, configurations and data of the firewall, cacore and caserver. To perform a backup, the backup mounts the filesystem of each server that should be backed up using SSH file system (sshfs)\footnote{https://github.com/libfuse/sshfs}. All of the servers have the public key of the backup stored in their roots authorized\_keys file, such that the backup can connect to the machine without password prompt and access any file. The relevant folders are incrementally backed up using duplicity\footnote{http://duplicity.nongnu.org/} which encrypts the backed up data on the system. Duplicity is based on rsync\footnote{https://sourceforge.net/projects/librsync/} and GnuPG\footnote{https://www.gnupg.org/} and allows encrypted and signed incremental backups. The backup is scheduled using cron and executed by the root user and the backed up data, the backup scripts and the mounted file system are only modifiable by root.
+ 
+ \subsubsection{User Authentication}
+
+ \subsubsection{Profile Changes}
+ 
  
 
 \subsection{Security Design}
@@ -78,11 +109,13 @@ Describe the system's security design, including key and session management and
 security of data at rest and in transit.
 
 
-\subsection{Components}
+\subsection{Components} \label{components}
 
 List all system components and their interfaces, subdivided, for example, into
   categories such as platforms, applications, data records, etc. For
   each component, state its relevant properties.
+  
+  
 
 
 \ifthenelse{\boolean{showbackdoors}}{
