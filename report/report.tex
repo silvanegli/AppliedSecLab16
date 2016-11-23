@@ -188,104 +188,76 @@ All communication channels used are encrypted. This includes the communication f
 
 
 
-\paragraph{Network}
+%\paragraph{Network}
 
-\subparagraph{CA intranet} The internal network connects the firewall, cadmin, cacore and the backup using layer 2 switches. Its subnetmask is \texttt{10.0.0.255} and the standard gateway is defined to be the firewall at \texttt{10.0.0.1}.
+%\textit{CA intranet} The internal network connects the firewall, CAServer, CACore and the backup using layer 2 switches. Its subnetmask is \texttt{10.0.0.255} and the standard gateway is defined to be the firewall at \texttt{10.0.0.1}.
 
-\subparagraph{iMovies intranet} The iMovies intranet connects the machines of all the employees using a layer 2 switch and several wifi hotspots. Its subnetmask is \texttt{192.168.???} and ...
+%\textit{iMovies intranet} The iMovies intranet connects the machines of all the employees using a layer 2 switch and several WIFI hotspots. Its subnetmask is \texttt{192.168.1.256}.
 
-
-
-\subparagraph{Internet} Connects the firewall to the ISP.
-
-
-
-\paragraph{firewall}
-
-The f runs on a dual core machine with 1GB ram and has an ethernet slot connected to the switch of the CA intranet, an ethernet slot connected to the iMovies intranet and an etherne slot connected to the internet. The operating system is a Ubuntu server operating system 16.10\footnote{https://www.ubuntu.com/server} and is connected to the CA intranet with the ip \texttt{10.0.0.1}.
-
-
-
-\paragraph{Caserver}
-
-The backup runs on a dual core machine with 1GB ram and has an ethernet slot connected to the switch of the CA intranet. The operating system is a Ubuntu server operating system 16.10\footnote{https://www.ubuntu.com/server} and is connected to the CA intranet with the ip \texttt{10.0.0.2}.
-
-
-
-\paragraph{Cacore}
-
-The backup runs on a dual core machine with 1GB ram and has an ethernet slot connected to the switch of the CA intranet. The operating system is a Ubuntu server operating system 16.10\footnote{https://www.ubuntu.com/server} and is connected to the CA intranet with the ip \texttt{10.0.0.3}.
-
-
-
-\paragraph{Backup}
-
-The backup runs on a dual core machine with 1GB ram and has an ethernet slot connected to the switch of the CA intranet. The operating system is a Ubuntu server operating system 16.10\footnote{https://www.ubuntu.com/server} and is connected to the CA intranet with the ip \texttt{10.0.0.4}. The backup is connected to the firewall using an SSH tunnel, which allows users on the firewall to open an SSH connection the local port 10022 which is forwarded to the backup. The firewall of the backup is Uncomplicated Firewall (ufw)\footnote{https://launchpad.net/ufw}, which is configured to allow only outgoing SSH connections.
-
-
-
-\subsubsection{Applications}
-
-
-
-\paragraph{User web interface}
-
-
-
-\paragraph{Admin web interface}
-
-
-
-\paragraph{Webserver}
-
+%\textit{Internet} Connects the firewall to the ISP.
 
 
 \paragraph{Firewall}
 
+The firewall runs %on a dual core machine with 1GB ram and has an Ethernet slot connected to the switch of the CA intranet, an Ethernet slot connected to the iMovies intranet and an Ethernet slot connected to the Internet. The operating system is 
+a Ubuntu server 16.10\footnote{https://www.ubuntu.com/server} and is connected to the CA intranet with the IP \texttt{10.0.0.1}. Its purpose is the separate the CA network from the internal network of the company and the Internet. For that iptables are used with the CSF interface.
 
+\paragraph{CAServer}
+
+The CAServer runs on %a dual core machine with 1GB ram and has an ethernet slot connected to the switch of the CA intranet. The operating system is 
+a Ubuntu server operating system 16.10 and is connected to the CA intranet with the ip \texttt{10.0.0.2}. It runs the webserver (nginx) and the Django application described later, uwsgi connects these services. The server is protected by Uncomplicated Firewall (UWF)\footnote{https://launchpad.net/ufw} and only necessary ports as SSH, HTTP and HTTPS are open.
+
+\paragraph{CACore}
+
+The CACore runs on %a dual core machine with 1GB ram and has an ethernet slot connected to the switch of the CA intranet. The operating system is 
+a Ubuntu server operating system 16.10 and is connected to the CA intranet with the ip \texttt{10.0.0.3}. It hosts the CA scripts, the mandatory certificates and keys and has the openSSL package installed. This server is also protected by UFW, having only ports for MySQL and SSH open.
 
 \paragraph{Backup}
 
-The backup periodically (once every hour) backs up all relevant applications, configurations and data of the firewall, cadmin and caserver. To perform a backup, the backup mounts the filesystem of each server that should be backed up using SSH file system (sshfs)\footnote{https://github.com/libfuse/sshfs}. All of the servers have the public key of the backup stored in their roots authorized\_keys file, such that the backup can connect to the machine without password prompt and access any file. The relevant folders are incrementally backed up using duplicity\footnote{http://duplicity.nongnu.org/} which encrypts the backed up data on the system. Duplicity is based on rsync\footnote{https://sourceforge.net/projects/librsync/} and GnuPG\footnote{https://www.gnupg.org/} and allows encrypted and signed incremental backups. The backup is scheduled using cron and executed by the root user and the backed up data, the backup scripts and the mounted file system are only modifiable by root.
+The backup runs on %a dual core machine with 1GB ram and has an Ethernet slot connected to the switch of the CA intranet. The operating system is 
+a Ubuntu server 16.10 and is connected to the CA intranet with the IP \texttt{10.0.0.4}. The backup is connected to the firewall using an SSH tunnel, which allows users on the firewall to open an SSH connection the local port 10022 which is forwarded to the backup. The firewall of the backup is as always UFW, which is configured to allow only outgoing SSH connections. As already described above, duplicity is used to backup every server once an hour securely.
 
+\subsubsection{Applications}
 
+\paragraph{User web interface}
 
-\paragraph{CA core application}
+The user web interface is build on Angular2 as a front end application. It does not offer security measures, as they could easily be bypassed by looking at the code. Therefore the app sends requests to the API which performs the appropriate data validation. The requests are secured in transit to the API using an SSL connection, thus providing confidentiality. The API checks the authenticity of the requests using the JWT which the front end app appends to every request in the header.
 
+\paragraph{Admin interface}
 
+The CA admin interface is provided by Django directly. Meaning it can only be reached by one specific URL, thereon Django secures the site access by relying on the certificate validation done by nginx. The admin interface exposes the lists of all issued and revoked certificates with their respective details. It also shows the current serial.
+
+\paragraph{API}
+The API which is part of the Django application is the interface provided the the user web interface. It receives the requests, authenticates them based on the JWT and issues further actions. Theses actions include accessing the database directly to modify data or calling scripts on the CACore server to create and revoke certificates. The API also sends back the downloadable certificates to the front end.
+
+\paragraph{CACore scripts}
+The CACore scripts are called by the Django application. They then use the openSSL package to perform the necessary actions. The certificates which get created like this, are stored in the filesystem.
 
 \paragraph{User database}
-
-
+The database consists of an mysql server running on the CACore server. It receives connections from Django to read and write data.
 
 \subsubsection{Data records}
 
-All relevant data records are regularly backed up over an SSH secured channel to the backup and stored encryped.
-
-
+All relevant data records are regularly backed up over an SSH secured channel to the backup and stored encrypted.
 
 \paragraph{User information}
-
-
+The user information consists of the legacy MySQL database which is stored as a table on the new database. This includes username, first name and last name as well as the users email and password.
 
 \paragraph{Certificates}
-
+All the certificates created for the clients, they are signed using the CA intermediate key and are stored on the CACore server and eventually backed up. From the certificates and private keys, client certificates can be created, which the client can download.
 
 
 \paragraph{Private keys}
-
-
+The private keys corresponding to the certificates. They are also stored next to the certificates.
 
 \paragraph{Configuration files}
-
-
+Configuration files include all files needed to configure a service our system uses. They usually lie in the /etc folder of every server, they are backed up regularly.
 
 \paragraph{Log files}
-
-
+Log files in the /var/log folder of every server contain the valuable information produced by the running services. They can help the system administrator find error sources and irregular behaviour.
 
 \paragraph{User credentials}
-
+User credentials are user data, the users need to authenticate themselves to the application.
 
 \ifthenelse{\boolean{showbackdoors}}{
 % show for handed-in version
@@ -319,8 +291,14 @@ You may have additional sections according to your needs.
 
 	\begin{description}
 		\item{\textbf{Firewall:}} The firewall is located in a locked and air conditioned room. There is redundant power supply for its server rack. The states of the firewall are running, compromised and down. Running means everything works as expected, compromised means an unauthorized user has had physical access to the machine and down means the firewall is not running.
+<<<<<<< HEAD
+		\item{\textbf{CaServer:}} The caserver is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as for the firewall apply here.
+		\item{\textbf{CACore server:}} The cacore server is located next to the caserver. The same states as for the firewall apply here.
+		\item{\textbf{Backup server:}} The backup server is located in the same rack as the caserver also equipped with redundant power supply. The same states as in the firewall apply here.
+=======
 		\item{\textbf{Application server:}} The application server is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as in the firewall apply here.
 		\item{\textbf{Backup server:}} The backup server is located in the same rack as the application server also equipped with redundant power supply. The same states as in the firewall apply here.
+>>>>>>> ce7f7af0b61c0c5ac0d3570f1ae740a09a8eab32
 		\item{\textbf{Internal network:}} The internal network is an Ethernet local area network connecting the above mentioned components. The components are connected using layer 2 switches located in the server room. The states are running, compromised and down. A running state indicates that only authorized devices are connected to the network. A compromised state may indicate that an unauthorized user has added his own device to the network and is sniffing connections or injecting and blocking messages. A down state indicates that the network is shut down.
 		\item{\textbf{External network:}} The external network connects the firewall to the internet by Ethernet cable using a router that is also located in the server room. The same states as in the internal network apply here.
 	\end{description}
@@ -354,7 +332,7 @@ You may have additional sections according to your needs.
 		\item{\textbf{Crl:}} The certificate revocation list has to be up-to-date and available to any user. The states are available if any user can get the list and unavailable if this is not the case.
 		\item{\textbf{Backupserver configuration:}} Configuration files for services such as duplicity. The states are the same as for the appserver configuration.
 		\item{\textbf{Logs:}} Logging information about various services. The states are the same as for certificates.
-		\item{\textbf{Login credentials:}} Login credentials for ssh connections to different machines that may be leaked by a system administrators and login credentials from users that log into the application server. The states are the same as for the private keys, but for ssh login credential the security concern is much higher.
+		\item{\textbf{Login credentials:}} Login credentials for ssh connections to different machines that may be leaked by a system administrators and login credentials from users that log into the caserver. The states are the same as for the private keys, but for ssh login credential the security concern is much higher.
 		\item{\textbf{JWT:}} A JSON web token (JWT) describes an active connection of a user to the webserver. If an attacker manages to compromise the system in a way that he is also part of this connection, the state is compromised. For an active confidential connection the state is confidential and after the connection is closed the state is closed.
 		\item{\textbf{Archive key:}} The key that is used to encrypt all backed up data on the backupserver. The states are similar to the private keys.
 		\item{\textbf{Intermediate \& Root key:}} The intermediate key to sign the webserver certificate and user certificates and the root key which signs the intermediate certificate. The states are similar to private keys.
@@ -587,7 +565,11 @@ The networking assets include the network cables and the switches/routers used i
 	\end{prettytablex}
 \end{footnotesize}
 
+<<<<<<< HEAD
+\subsubsection{{\it Evaluation logical asset: CAServer app. / CACore scripts}}
+=======
 \subsubsection{{\it Evaluation logical asset: CA server application}}
+>>>>>>> ce7f7af0b61c0c5ac0d3570f1ae740a09a8eab32
 
 \begin{footnotesize}
 	\begin{prettytablex}{lXp{3.5cm}lll}
