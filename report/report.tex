@@ -312,7 +312,8 @@ You may have additional sections according to your needs.
 
 	\begin{description}
 		\item{\textbf{Firewall:}} The firewall is located in a locked and air conditioned room. There is redundant power supply for its server rack. The states of the firewall are running, compromised and down. Running means everything works as expected, compromised means an unauthorized user has had physical access to the machine and down means the firewall is not running.
-		\item{\textbf{Application server:}} The application server is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as in the firewall apply here.
+		\item{\textbf{Application server / CaServer:}} The application server is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as for the firewall apply here.
+		\item{\textbf{CACore server:}} The cacore server is located next to the application server. The same states as for the firewall apply here.
 		\item{\textbf{Backup server:}} The backup server is located in the same rack as the application server also equipped with redundant power supply. The same states as in the firewall apply here.
 		\item{\textbf{Internal network:}} The internal network is an Ethernet local area network connecting the above mentioned components. The components are connected using layer 2 switches located in the server room. The states are running, compromised and down. A running state indicates that only authorized devices are connected to the network. A compromised state may indicate that an unauthorized user has added his own device to the network and is sniffing connections or injecting and blocking messages. A down state indicates that the network is shut down.
 		\item{\textbf{External network:}} The external network connects the firewall to the internet by Ethernet cable using a router that is also located in the server room. The same states as in the internal network apply here.
@@ -329,11 +330,11 @@ You may have additional sections according to your needs.
 	\begin{description}
 		\item{\textbf{Firewall operating system:}} The operating system of the firewall is the latest Ubuntu server edition. It is managed by the system administrator who installs all relevant updates and patches within few hours after their release. The states are running, vulnerable, compromised and down. A vulnerable state indicates that the system is not up-to-date and vulnerable to known exploits. A compromised state means the system was already exploited by an attacker.
 		\item{\textbf{Firewall service:}} The firewall that separates the internal and external network is the latest edition of the Config Server Firewall (csf). The states are the same as for the Firewall operating system.
-		\item{\textbf{Appserver operating system:}} The operating system of the appserver is the same as for the firewall and the same states apply.
-		\item{\textbf{Appserver webserver:}} The appserver runs a nginx webserver which handles all http and https requests. It is updated by the system adminstrator. Its states are running, compromised and down. A compromised webserver allows an attacker for example to perform a man-in-the-middle attack.
-		\item{\textbf{Appserver application:}} The application is written in python and uses the Django framework. It manages the database and creates, revokes and provides certificates to the user. Both python and the Django framework are regularly updated by the system administrator. The states are similar to the webserver, but in a compromised state, an attacker might change the behaviour of the application.
-		\item{\textbf{Appserver certificate authority scripts:}} The functionality as a certificate authority is provided by a set of scripts that rely on the openssl library. The behaviour of the scripts is monitored by the system administrators. The states are similar to the webserver states, but in a compromised state an attacker also has access to certificate related functionality.
-		\item{\textbf{Appserver database}} The database is running MySQL and is updated and monitored for misbehaviour by the system administrator. The states are similar to the webserver, but in a compromised state an attacker has altered the database.
+		\item{\textbf{CAServer and cacore operating systems:}} The operating systems of the application servers are the same as for the firewall and the same states apply.
+		\item{\textbf{CAServer webserver:}} The caserver runs a nginx webserver which handles all http and https requests. It is updated by the system administrator. Its states are running, compromised and down. A compromised webserver allows an attacker for example to perform a man-in-the-middle attack.
+		\item{\textbf{CAServer application:}} The application is written in python and uses the Django framework. It manages the database and creates, revokes and provides certificates to the user. Both python and the Django framework are regularly updated by the system administrator. The states are similar to the webserver, but in a compromised state, an attacker might change the behaviour of the application.
+		\item{\textbf{CACore certificate authority scripts:}} The functionality as a certificate authority is provided by a set of scripts that rely on the openSSL library. The behaviour of the scripts is monitored by the system administrators. The states are similar to the webserver states, but in a compromised state an attacker also has access to certificate related functionality.
+		\item{\textbf{CACore database}} The database is running MySQL and is updated and monitored for misbehaviour by the system administrator. The states are similar to the webserver, but in a compromised state an attacker has altered the database.
 		\item{\textbf{Backupserver operating system:}} The operating system of the backupserver is the same as for the firewall and the same states apply.
 		\item{\textbf{Backupserver duplicity:}} Duplicity periodically runs on the backupserver and backs up and encrypts valuable data from both the firewall and the appserver such as configurations, logs, certificates, private keys and the database.
 	\end{description}
@@ -342,7 +343,7 @@ You may have additional sections according to your needs.
 	\begin{description}
 		\item{\textbf{User database:}} The database contains user ids, email addresses and hashed passwords. The states are confidential and leaked. A confidential state means that only authorized system administrators and corresponding users have access to these information. In a leaked state, an attacker was able to read the whole or part of the database.
 		\item{\textbf{Certificates:}} The certificates of each user, the certificate of the webserver and the root certificate. If a certificate is used by someone other than its owner or a certificate is used even though it was revoked, its state is invalid. Otherwise its state is valid. The severity of an invalid certificate depends on which certificate it is and if the usage of such an invalid certificate was detected, since user certificates can easily be revoked.
-		\item{\textbf{Appserver configuration:}} Configuration files of different services such as webserver, database, Django, certificate authority or ssh can give insight into how the system behaves and might help detect misconfigured and thus exploitable services. The states are the same as for the user database.
+		\item{\textbf{CAServer and CACore configuration:}} Configuration files of different services such as webserver, database, Django, certificate authority or ssh can give insight into how the system behaves and might help detect misconfigured and thus exploitable services. The states are the same as for the user database.
 		\item{\textbf{Private keys:}} The private keys for certificates or for ssh connections within the system. Similar states to user database, but the private key is either private or leaked.
 		\item{\textbf{Crl:}} The certificate revocation list has to be up-to-date and available to any user. The states are available if any user can get the list and unavailable if this is not the case.
 		\item{\textbf{Backupserver configuration:}} Configuration files for services such as duplicity. The states are the same as for the appserver configuration.
@@ -563,7 +564,7 @@ The networking assets include the network cables and the switches/routers used i
 	\end{prettytablex}
 \end{footnotesize}
 
-\subsubsection{{\it Evaluation logical asset: CA server software}}
+\subsubsection{{\it Evaluation logical asset: CAServer software}}
 
 \begin{footnotesize}
 	\begin{prettytablex}{lXp{3.5cm}lll}
@@ -580,7 +581,7 @@ The networking assets include the network cables and the switches/routers used i
 	\end{prettytablex}
 \end{footnotesize}
 
-\subsubsection{{\it Evaluation logical asset: CA server application}}
+\subsubsection{{\it Evaluation logical asset: CA server application / CACore scripts}}
 
 \begin{footnotesize}
 	\begin{prettytablex}{lXp{3.5cm}lll}
@@ -595,7 +596,7 @@ The networking assets include the network cables and the switches/routers used i
 	\end{prettytablex}
 \end{footnotesize}
 
-\subsubsection{{\it Evaluation logical asset: CA server database}}
+\subsubsection{{\it Evaluation logical asset: CACore database}}
 
 \begin{footnotesize}
 	\begin{prettytablex}{lXp{3.5cm}lll}
