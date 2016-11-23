@@ -52,10 +52,8 @@
 	\label{figure:systemoverview}
 \end{figure}
 
-The mission of the system consist of providing a certificate authority (CA) service through which employees of the fictional company iMovies can request and revoke digital certificates. These certificates will be used for secure e-mail communication between employees.
-In the following the terms client and user will be used as a synonym for an employee of iMovies.\\
-The architecture of the system is depicted in figure {\ref{figure:systemoverview}}.
-The system consist of three subsystems, namely Firewall, Application and Backup. These subsystems form the internal network. While the firewall interfaces clients residing in the external network with the system, the Application's task is to control the process of issuing and revoking certificates as well as providing an interface for CA Administrators. The Backup is responsible for maintaining a copy of all system relevant data including information on users, certificates, keys, logs and configurations.
+The mission of the system consist of providing a certificate authority (CA) service through which employees of the fictional company iMovies can request and revoke digital certificates. These certificates will be used for secure e-mail communication between employees. In the following these employees will be referred to as clients and users.\\
+Figure {\ref{figure:systemoverview}} shows an overview of the proposed system. It consist of four subsystems, namely firewall, caserver, cacore and backup and forms the CA Intranet. The term component will be used interchangeably for subsystem. Clients either use the service from inside the company's network or from the Internet. They are interfaced with the system by the firewall which blocks unallowed connections and forwards the request to the caserver. The caserver subsystem provides a web interface for clients and administrators. It performs the authentication and authorization and handles the user requests as well as their sessions. In order to do so, the caserver makes use of the cacore's service. The cacore's task is to control the process of issuing and revoking certificates as well as managing the user data. The backup is responsible for maintaining a copy of all system relevant data including information on users, certificates, keys, logs and configurations. Therefore the backup has access to the other three subsystems.
 
 %Describe the system's mission,  the system boundaries,
 %and the overall system architecture, including the main subsystems and
@@ -65,9 +63,14 @@ The system consist of three subsystems, namely Firewall, Application and Backup.
 
 
 \subsection{System Functionality}
-
-
-
+ %Describe the system’s functions. 
+ % TODO : remove https://en.wikipedia.org/wiki/Functional_requirement
+ % https://en.wikipedia.org/wiki/Functional_specification
+ In this section we describe the systems functions in terms of system design based on the use cases given in the project assignment. We therefore will not repeat the functional requirements but focus on the implementation and information flows.
+ 
+ \subsubsection{Applications}
+ It follows a list containing the 
+ 
 
 \subsection{Security Design}
 
