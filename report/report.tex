@@ -223,35 +223,30 @@ The API which is part of the Django application is the interface provided the th
 The CACore scripts are called by the Django application. They then use the openSSL package to perform the necessary actions. The certificates which get created like this, are stored in the filesystem.
 
 \paragraph{User database}
+The database consists of an mysql server running on the CACore server. It receives connections from Django to read and write data.
 
 \subsubsection{Data records}
 
-All relevant data records are regularly backed up over an SSH secured channel to the backup and stored encryped.
-
-
+All relevant data records are regularly backed up over an SSH secured channel to the backup and stored encrypted.
 
 \paragraph{User information}
-
-
+The user information consists of the legacy MySQL database which is stored as a table on the new database. This includes username, first name and last name as well as the users email and password.
 
 \paragraph{Certificates}
-
+All the certificates created for the clients, they are signed using the CA intermediate key and are stored on the CACore server and eventually backed up. From the certificates and private keys, client certificates can be created, which the client can download.
 
 
 \paragraph{Private keys}
-
-
+The private keys corresponding to the certificates. They are also stored next to the certificates.
 
 \paragraph{Configuration files}
-
-
+Configuration files include all files needed to configure a service our system uses. They usually lie in the /etc folder of every server, they are backed up regularly.
 
 \paragraph{Log files}
-
-
+Log files in the /var/log folder of every server contain the valuable information produced by the running services. They can help the system administrator find error sources and irregular behaviour.
 
 \paragraph{User credentials}
-
+User credentials are user data, the users need to authenticate themselves to the application.
 
 \ifthenelse{\boolean{showbackdoors}}{
 % show for handed-in version
