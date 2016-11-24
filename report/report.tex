@@ -54,7 +54,7 @@
 \end{figure}
 
 The mission of the system consist of providing a certificate authority (CA) service through which employees of the fictional company iMovies can request and revoke digital certificates. These certificates will be used for secure e-mail communication between employees. In the following these employees will be referred to as clients and users.\\
-Figure {\ref{figure:systemoverview}} shows an overview of the proposed system. It consist of four subsystems, namely firewall, caserver, cacore and backup and forms the CA Intranet. Clients either use the service from inside the company's network or from the Internet. They are interfaced with the system by the firewall which blocks unallowed connections and forwards the request to the caserver. The caserver subsystem provides a web interface for clients and administrators. It performs the authentication and authorization and handles the user requests as well as their sessions. In order to do so, the caserver makes use of the cacore's service. The cacore's task is to control the process of issuing and revoking certificates as well as managing the user data. The backup is responsible for maintaining a copy of all system relevant data, including information on users, certificates, keys, logs and configurations. Therefore the backup has access to the other three subsystems.
+Figure {\ref{figure:systemoverview}} shows an overview of the proposed system. It consist of four subsystems, namely firewall, CAServer, CACore and backup and forms the CA Intranet. Clients either use the service from inside the company's network or from the Internet. They are interfaced with the system by the firewall which blocks unallowed connections and forwards the request to the caserver. The CAServer subsystem provides a web interface for clients and administrators. It performs the authentication and authorization and handles the user requests as well as their sessions. In order to do so, the CAServer makes use of the CACore's service. The CACore's task is to control the process of issuing and revoking certificates as well as managing the user data. The backup is responsible for maintaining a copy of all system relevant data, including information on users, certificates, keys, logs and configurations. Therefore the backup has access to the other three subsystems.
 
 %Describe the system's mission,  the system boundaries,
 %and the overall system architecture, including the main subsystems and
@@ -86,19 +86,19 @@ The nginx\footnote{\url{https://nginx.org/}} webserver is responsible for handli
 \item user input validation
 \item output sanitization
 \item database queries
-\item site calls to the cacore subsystem
+\item site calls to the CACore subsystem
 \item providing the CA administrator interface
 \item providing a RESTful\footref{restful} API to the front end
 \end{itemize}
 
-\paragraph{cacore}
-On the cacore there is a MySQL\footnote{\url{https://www.mysql.com/}} database containing the legacy user data table and all tables needed by the Django application. The caserver accesses the database over the network. In addition, the cacore provides the functionality of a CA by using the openSSL\footnote{\label{openssl}\url{https://www.openssl.org/}} library.
-There is an intermediate CA and a root CA on the cacore. The intermediate CA is used for issuing the user certificates. It's private key is not encrypted in order to sign the user certificates non interactively. The root CA's only task was to issue and sign the intermediate CA's certificate. It's private key is encrypted and kept offline. From now on, when speaking of the CA, the intermediate CA is referenced if not stated otherwise.
+\paragraph{CACore}
+On the CACore there is a MySQL\footnote{\url{https://www.mysql.com/}} database containing the legacy user data table and all tables needed by the Django application. The caserver accesses the database over the network. In addition, the CACore provides the functionality of a CA by using the openSSL\footnote{\label{openssl}\url{https://www.openssl.org/}} library.
+There is an intermediate CA and a root CA on the CACore. The intermediate CA is used for issuing the user certificates. It's private key is not encrypted in order to sign the user certificates non interactively. The root CA's only task was to issue and sign the intermediate CA's certificate. It's private key is encrypted and kept offline. From now on, when speaking of the CA, the intermediate CA is referenced if not stated otherwise.
 The CA supports the creation of new X509\footnote{\url{https://en.wikipedia.org/wiki/X.509}} user certificates as well as their revocation by using the "ca" command of openSSL\footref{openssl}. The certificate creation and revocation are implemented as a Bash\footnote{\url{https://www.gnu.org/software/bash/bash.html}} script which are called by the Django\footref{django} application using ssh\footnote{label{ssh}\url{https://en.wikipedia.org/wiki/Secure_Shell}}.
 
-\paragraph{backup} 
+\paragraph{Backup} 
 
-The backup periodically (once every hour) backs up all system relevant data of the firewall, cacore and caserver. This includes application and system logs, configurations on all machines and the key/certifcates archive and database on the cacore. To perform a backup, the backup mounts the filesystem of each server that should be backed up using SSH file system (sshfs)\footnote{https://github.com/libfuse/sshfs}. All of the servers have the public key of the backup stored in their roots authorized\_keys file, such that the backup can connect to the machine without password prompt and access any file. The relevant folders are incrementally backed up using duplicity\footnote{http://duplicity.nongnu.org/} which encrypts the backed up data on the system. Duplicity is based on rsync\footnote{https://sourceforge.net/projects/librsync/} and GnuPG\footnote{https://www.gnupg.org/} and allows encrypted and signed incremental backups. The backup is scheduled using cron and executed by the root user and the backed up data, the backup scripts and the mounted file system are only modifiable by root.
+The backup periodically (once every hour) backs up all system relevant data of the firewall, CACore and CAServer. This includes application and system logs, configurations on all machines and the key/certifcates archive and database on the CACore. To perform a backup, the backup mounts the filesystem of each server that should be backed up using SSH file system (sshfs)\footnote{https://github.com/libfuse/sshfs}. All of the servers have the public key of the backup stored in their roots authorized\_keys file, such that the backup can connect to the machine without password prompt and access any file. The relevant folders are incrementally backed up using duplicity\footnote{http://duplicity.nongnu.org/} which encrypts the backed up data on the system. Duplicity is based on rsync\footnote{https://sourceforge.net/projects/librsync/} and GnuPG\footnote{https://www.gnupg.org/} and allows encrypted and signed incremental backups. The backup is scheduled using cron and executed by the root user and the backed up data, the backup scripts and the mounted file system are only modifiable by root.
  
  \subsubsection{User Authentication}\label{login}
 The first thing a user has to do before using the system is to authenticate. This can be done in two different ways. The term Django will be used interchangeably for the Django\footref{django} application from now on.
@@ -178,7 +178,7 @@ All communication channels used are encrypted. This includes the communication f
 
 \subsubsection{OWASP}
 
-\subsubsection{Components} \label{components}
+\subsection{Components} \label{components}
 
 %List all system components and their interfaces, subdivided, for example, into
  % categories such as platforms, applications, data records, etc. For
@@ -294,6 +294,9 @@ You may have additional sections according to your needs.
 	\begin{description}
 		\item{\textbf{Firewall:}} The firewall is located in a locked and air conditioned room. There is redundant power supply for its server rack. The states of the firewall are running, compromised and down. Running means everything works as expected, compromised means an unauthorized user has had physical access to the machine and down means the firewall is not running.
 		\item{\textbf{Application server:}} The application server is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as in the firewall apply here.
+		\item{\textbf{CaServer:}} The caserver is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as for the firewall apply here.
+		-		\item{\textbf{CACore server:}} The cacore server is located next to the caserver. The same states as for the firewall apply here.
+		-		\item{\textbf{Backup server:}} The backup server is located in the same rack as the caserver also equipped with redundant power supply. The same states as in the firewall apply here.
 		\item{\textbf{Backup server:}} The backup server is located in the same rack as the application server also equipped with redundant power supply. The same states as in the firewall apply here.
 		\item{\textbf{Internal network:}} The internal network is an Ethernet local area network connecting the above mentioned components. The components are connected using layer 2 switches located in the server room. The states are running, compromised and down. A running state indicates that only authorized devices are connected to the network. A compromised state may indicate that an unauthorized user has added his own device to the network and is sniffing connections or injecting and blocking messages. A down state indicates that the network is shut down.
 		\item{\textbf{External network:}} The external network connects the firewall to the internet by Ethernet cable using a router that is also located in the server room. The same states as in the internal network apply here.
