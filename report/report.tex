@@ -12,7 +12,7 @@
 
 \usepackage{xifthen}
 \newboolean{showbackdoors}
-\setboolean{showbackdoors}{true}  % set to false to hide subsection on backdoors for reviewing group
+\setboolean{showbackdoors}{false}  % set to false to hide subsection on backdoors for reviewing group
 
 
 \newenvironment{prettytablex}[1]{\vspace{0.3cm}\noindent\tabularx{\linewidth}{@{\hspace{\parindent}}#1@{}}}{\endtabularx\vspace{0.3cm}}
@@ -157,7 +157,7 @@ The first thing a user has to do before using the system is to authenticate. Thi
 \subsubsection{Backup} 
  The functionality of the automated backup is described in section \ref{compfunc}
  \subsubsection{System Administration}
- In order to administrate the system remotely, all subsystem except from the backup run an openSSH\footnote{\url{https://help.ubuntu.com/lts/serverguide/openssh-server.html}} server which is accessible from the firewall. The backup is only accessible through a reverse ssh tunnel \footnote{\url{http://unix.stackexchange.com/questions/46235/how-does-reverse-ssh-tunneling-work}}. The tunnel from the backup to the firewall is established using autossh\footnote{\url{https://linux.die.net/man/1/autossh}}
+ In order to administrate the system remotely, all subsystem except from the backup run an openSSH\footnote{\url{https://help.ubuntu.com/lts/serverguide/openssh-server.html}} server which is accessible from the firewall. The backup is only accessible through a reverse ssh tunnel \footnote{\url{http://unix.stackexchange.com/questions/46235/how-does-reverse-ssh-tunneling-work}}. The tunnel from the backup to the firewall is established using autossh\footnote{\url{https://linux.die.net/man/1/autossh}}.
  
  
 
@@ -234,13 +234,13 @@ The user web interface is build on Angular2 as a front end application. It does 
 The CA admin interface is provided by Django directly. Meaning it can only be reached by one specific URL, thereon Django secures the site access by relying on the certificate validation done by nginx. The admin interface exposes the lists of all issued and revoked certificates with their respective details. It also shows the current serial.
 
 \paragraph{API}
-The API which is part of the Django application is the interface provided the the user web interface. It receives the requests, authenticates them based on the JWT and issues further actions. Theses actions include accessing the database directly to modify data or calling scripts on the CACore server to create and revoke certificates. The API also sends back the downloadable certificates to the front end.
+The API which is part of the Django application (Version 1.10) is the interface provided to the user web interface. It receives the requests, authenticates them based on the JWT and issues further actions. Theses actions include accessing the database directly to modify data or calling scripts on the CACore server to create and revoke certificates. The API also sends back the downloadable certificates to the front end.
 
 \paragraph{CACore scripts}
-The CACore scripts are called by the Django application. They then use the openSSL package to perform the necessary actions. The certificates which get created like this, are stored in the filesystem.
+The CACore scripts are called by the Django application. They then use the openSSL package to perform the necessary actions. The certificates which get created like this, are stored on the filesystem.
 
 \paragraph{User database}
-The database consists of an mysql server running on the CACore server. It receives connections from Django to read and write data.
+The database consists of an mysql server running on the CACore server. It receives connections from Django to read and write data. The user that can access it remotely (dbuser) has restricted rights and is only allowed to setup a connection from the CAServer.
 
 \subsubsection{Data records}
 
@@ -250,20 +250,20 @@ All relevant data records are regularly backed up over an SSH secured channel to
 The user information consists of the legacy MySQL database which is stored as a table on the new database. This includes username, first name and last name as well as the users email and password.
 
 \paragraph{Certificates}
-All the certificates created for the clients, they are signed using the CA intermediate key and are stored on the CACore server and eventually backed up. From the certificates and private keys, client certificates can be created, which the client can download.
+All the certificates created for the clients, they are signed using the CA intermediate key and are stored on the CACore server and eventually backed up. The certificates as well as the private keys are read only.
 
 
 \paragraph{Private keys}
 The private keys corresponding to the certificates. They are also stored next to the certificates.
 
 \paragraph{Configuration files}
-Configuration files include all files needed to configure a service our system uses. They usually lie in the /etc folder of every server, they are backed up regularly.
+Configuration files include all files needed to configure a service our system uses. They usually lie in the /etc folder of every server, they are backed up regularly. 
 
 \paragraph{Log files}
-Log files in the /var/log folder of every server contain the valuable information produced by the running services. They can help the system administrator find error sources and irregular behaviour.
+Log files in the /var/log folder of every server contain valuable information produced by the running services. They can help the system administrator find error sources and irregular behaviour.
 
 \paragraph{User credentials}
-User credentials are user data, the users need to authenticate themselves to the application.
+User credentials are user data with which the users need to authenticate themselves to the application.
 
 \ifthenelse{\boolean{showbackdoors}}{
 % show for handed-in version
@@ -286,8 +286,6 @@ The second backdoor finally exposes an open telnet connection with default crede
 
 \subsection{Additional Material}
 
-You may have additional sections according to your needs.
-
 \paragraph{Firewall}
 seclab: e3sk15mlp
 
@@ -305,7 +303,7 @@ backupuser: xsitdn4783\\
 
 \paragraph{Client}
 client: 123456\\
-\textbf{Admin:}\\
+\textbf{Admin User:}\\
 admin: gz\_51Mq*
 
 
@@ -319,8 +317,8 @@ admin: gz\_51Mq*
 		\item{\textbf{Firewall:}} The firewall is located in a locked and air conditioned room. There is redundant power supply for its server rack. The states of the firewall are running, compromised and down. Running means everything works as expected, compromised means an unauthorized user has had physical access to the machine and down means the firewall is not running.
 		\item{\textbf{Application server:}} The application server is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as in the firewall apply here.
 		\item{\textbf{CaServer:}} The CAServer is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as for the firewall apply here.
-		-		\item{\textbf{CACore server:}} The CACore server is located next to the CAServer. The same states as for the firewall apply here.
-		-		\item{\textbf{Backup server:}} The backup server is located in the same rack as the CAServer also equipped with redundant power supply. The same states as in the firewall apply here.
+				\item{\textbf{CACore server:}} The CACore server is located next to the CAServer. The same states as for the firewall apply here.
+				\item{\textbf{Backup server:}} The backup server is located in the same rack as the CAServer also equipped with redundant power supply. The same states as in the firewall apply here.
 		\item{\textbf{Backup server:}} The backup server is located in the same rack as the application server also equipped with redundant power supply. The same states as in the firewall apply here.
 		\item{\textbf{Internal network:}} The internal network is an Ethernet local area network connecting the above mentioned components. The components are connected using layer 2 switches located in the server room. The states are running, compromised and down. A running state indicates that only authorized devices are connected to the network. A compromised state may indicate that an unauthorized user has added his own device to the network and is sniffing connections or injecting and blocking messages. A down state indicates that the network is shut down.
 		\item{\textbf{External network:}} The external network connects the firewall to the internet by Ethernet cable using a router that is also located in the server room. The same states as in the internal network apply here.
