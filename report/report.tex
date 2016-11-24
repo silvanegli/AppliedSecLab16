@@ -166,10 +166,10 @@ The first thing a user has to do before using the system is to authenticate. Thi
 %security of data at rest and in transit.
 
 \subsubsection{Data in transit}
-All communication channels used are encrypted. This includes the communication from  the client to the web server over https, Django to MySQL server using a server certificate, Django to cacore using sftp and ssh, backup to all other subsystems over sshfs.
+All communication channels used are encrypted. This includes the communication from  the client to the web server over https, Django to MySQL server using a server certificate, Django to CACore using sftp and ssh, backup to all other subsystems over sshfs.
 \subsubsection{Data at rest}
 \paragraph{Cacore}
-All keys and certificates are read only by the main user (cadmin). The MySQL database is restricted to local root access as well remote access for a dedicated user from the caserver only. 
+All keys and certificates are read only by the main user (cadmin). The MySQL database is restricted to local root access as well remote access for a dedicated user from the CAServer only. 
 \paragraph{Caserver}
 The nginx web server is run as www-data user which is limited to read the static files, the CRL and CA certificate. The Django settings file containing the database credentials and the applications secret key is only modifiable by the main user (cadmin).
 \paragraph{Backup}
