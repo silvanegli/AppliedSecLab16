@@ -173,6 +173,7 @@ All communication channels used are encrypted. This includes the communication f
 \subsubsection{Key management}
 
 \subsubsection{Session management}
+In this system user sessions are explicitly created when a user signs in. When sending his credentials to the server he receives a token (JWT) as return. This token can then be added by the user (e.g. the front end application) to every request in the HTTP header. In the browser the JWT is saved in the local session, thus it is deleted once the tab is closed. Also, when the user logs out, the token is deleted. There is no possibility for session stealing if the user does not disclose his token to anyone, otherwise its trivial. The token alone is responsible to authenticate the user, it contains the necessary infos as username and privileges. To counter token forgery, every token is signed by the issuer with its private key. So as long as the private key is kept secret and the signing algorithm is chosen from a secure set, an adversary is not able to forge a token.
 
 \subsubsection{System architecture / Distribution}
 
@@ -283,6 +284,26 @@ The second backdoor finally exposes an open telnet connection with default crede
 \subsection{Additional Material}
 
 You may have additional sections according to your needs.
+
+\paragraph{Firewall}
+seclab: e3sk15mlp
+
+\paragraph{CAServer}
+cadmin: g68?M\_tk
+
+\paragraph{CACore}
+coreadmin: pF.ooa5,\\
+\textbf{mysql:}\\ dbuser: fp..X,i3\\
+root: \_Zr.M2gW
+
+\paragraph{Backup}
+backupuser: xsitdn4783\\
+\textbf{duplicity:} : ocneitns37
+
+\paragraph{Client}
+client: 123456\\
+\textbf{Admin:}\\
+admin: gz\_51Mq*
 
 
 \section{Risk Analysis and Security Measures}
