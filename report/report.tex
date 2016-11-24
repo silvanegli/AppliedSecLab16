@@ -219,6 +219,8 @@ a Ubuntu server 16.10 and is connected to the CA intranet with the IP \texttt{10
 
 \subsubsection{Applications}
 
+
+
 \paragraph{User web interface}
 
 The user web interface is build on Angular2 as a front end application. It does not offer security measures, as they could easily be bypassed by looking at the code. Therefore the app sends requests to the API which performs the appropriate data validation. The requests are secured in transit to the API using an SSL connection, thus providing confidentiality. The API checks the authenticity of the requests using the JWT which the front end app appends to every request in the header.
@@ -291,14 +293,8 @@ You may have additional sections according to your needs.
 
 	\begin{description}
 		\item{\textbf{Firewall:}} The firewall is located in a locked and air conditioned room. There is redundant power supply for its server rack. The states of the firewall are running, compromised and down. Running means everything works as expected, compromised means an unauthorized user has had physical access to the machine and down means the firewall is not running.
-<<<<<<< HEAD
-		\item{\textbf{CaServer:}} The caserver is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as for the firewall apply here.
-		\item{\textbf{CACore server:}} The cacore server is located next to the caserver. The same states as for the firewall apply here.
-		\item{\textbf{Backup server:}} The backup server is located in the same rack as the caserver also equipped with redundant power supply. The same states as in the firewall apply here.
-=======
 		\item{\textbf{Application server:}} The application server is located in the same server room with redundant power supply, but in a different rack than the firewall. The same states as in the firewall apply here.
 		\item{\textbf{Backup server:}} The backup server is located in the same rack as the application server also equipped with redundant power supply. The same states as in the firewall apply here.
->>>>>>> ce7f7af0b61c0c5ac0d3570f1ae740a09a8eab32
 		\item{\textbf{Internal network:}} The internal network is an Ethernet local area network connecting the above mentioned components. The components are connected using layer 2 switches located in the server room. The states are running, compromised and down. A running state indicates that only authorized devices are connected to the network. A compromised state may indicate that an unauthorized user has added his own device to the network and is sniffing connections or injecting and blocking messages. A down state indicates that the network is shut down.
 		\item{\textbf{External network:}} The external network connects the firewall to the internet by Ethernet cable using a router that is also located in the server room. The same states as in the internal network apply here.
 	\end{description}
@@ -565,11 +561,9 @@ The networking assets include the network cables and the switches/routers used i
 	\end{prettytablex}
 \end{footnotesize}
 
-<<<<<<< HEAD
+
 \subsubsection{{\it Evaluation logical asset: CAServer app. / CACore scripts}}
-=======
-\subsubsection{{\it Evaluation logical asset: CA server application}}
->>>>>>> ce7f7af0b61c0c5ac0d3570f1ae740a09a8eab32
+
 
 \begin{footnotesize}
 	\begin{prettytablex}{lXp{3.5cm}lll}
