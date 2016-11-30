@@ -61,7 +61,9 @@ Does the system meet the functional and security requirements given in the assig
 
 \subsubsection*{Observations}
 input/request: unusual username ( $<$script$>$alert(1)$<$/script$>$)/ request certificate\\
-output/response:  certificate request error containing sh exception as html comment $<$ !-- /bin/sh syntax error .... --$>$
+output/response:  certificate request error containing sh exception as html comment $<$ !-- /bin/sh syntax error .... --$>$\\
+input/request: shell code as username (Vorname) e.g \$(/bin/ls) then request certificate
+output: certificate with evaluated expression in Organizational unit (OU) e.g. app -> backdoor
 
 
 \subsection{System Security Testing}
