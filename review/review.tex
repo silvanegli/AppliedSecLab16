@@ -5,6 +5,7 @@
 \usepackage{url}
 %\usepackage{ngerman}
 \usepackage{color}
+\usepackage{enumitem}
 
 
 \title{\huge\sffamily\bfseries Review of Group a by Group b}
@@ -57,8 +58,33 @@ Are the countermeasures appropriate?
  
 \subsection{Compliance with Requirements} 
 
-Does the system meet the functional and security requirements given in the assignment? Are they implemented correctly? If not, list any missing functionality or security measure.
+%Does the system meet the functional and security requirements given in the assignment? Are they implemented correctly? If not, list any missing functionality %or security measure.
+In the following we will analyze the implementation of the functional and security requirements given in the project assignment.
 
+\subsubsection{Functional Requirements}
+
+\begin{enumerate}
+
+\item \textbf{Certificate Issuing}
+\item \textbf{Certificate Revocation} 
+\item \textbf{CA Administrator Interface}
+\item \textbf{Key Backup}
+\item \textbf{System Administration and Maintenance}
+\end{enumerate}
+\subsubsection{Security Requirements}
+\begin{enumerate}
+
+\item \textbf{Access Control with regard to CA Functionality and Data}
+\item \textbf{Secrecy and Integrity for Private Keys in Backup}
+\item \textbf{Secrecy and Integrity for User Data}
+\item \textbf{Access Control on all Components}
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{Firewall}:
+\item \textbf{Webbox}:
+\item \textbf{Sqlbox}:
+\item \textbf{Logbox}:
+\end{enumerate}
+\end{enumerate}
 \subsubsection*{Observations}
 input/request: unusual username ( $<$script$>$alert(1)$<$/script$>$)/ request certificate\\
 output/response:  certificate request error containing sh exception as html comment $<$ !-- /bin/sh syntax error .... --$>$\\
