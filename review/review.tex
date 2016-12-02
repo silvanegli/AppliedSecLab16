@@ -6,6 +6,8 @@
 %\usepackage{ngerman}
 \usepackage{color}
 \usepackage{enumitem}
+\usepackage{listings}
+
 
 
 \title{\huge\sffamily\bfseries Review of Group a by Group b}
@@ -52,7 +54,7 @@ Is the risk analysis coherent and complete? That is, are all relevant assets, th
 Are the risk definitions (likelihood, impact, and risk) reasonable?
 %
 Are the countermeasures appropriate?
-
+2.4.5 -2 -> HTTPS does not prevent MITM attack
 
 \section{Implementation Review}
  
@@ -94,16 +96,31 @@ output: certificate with evaluated expression in Organizational unit (OU) e.g. a
 
 \subsection{System Security Testing}
 
-Systematically investigate the system. Are the countermeasures implemented as described? Do you see any security problems? Analyze the system using both black-box as well as white-box testing.
+%Systematically investigate the system. Are the countermeasures implemented as %described? Do you see any security problems? Analyze the system using both %black-box as well as white-box testing.
 
 \subsubsection{Countermeasures}
-In this section we will briefly discuss the implementation of all the countermeasures proposed in the risk analysis.
+In this section we will discuss the implementation of the proposed countermeasures in the risk analysis. The number after each countermeasure corresponds to the number in the risk analysis.
 
-\paragraph{alskdfj} asdflkjlasdjf
+\paragraph{WebServer}
+\begin{enumerate}[label=(\alph*)] \item \textbf{FDE\footnote{\url{https://en.wikipedia.org/wiki/Disk_encryption}}}:
+\item \textbf{DDOS (2)}
+\item \textbf{Monitor Intrusion and Attacks (4)}:
+\item \textbf{Monitoring Logs (5)}:
+\end{enumerate} 
 
+\paragraph{Private Keys}
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{Access Control (1)}:
+\item \textbf{HTTPS (2)}:
+\item \textbf{Notification Channel for Irregularities (3)}
+\end{enumerate} 
 
-
-\subsubsection{Title}
+\paragraph{User Data}
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{Access Control (1)}:
+\item \textbf{HTTPS (2)}:
+\item \textbf{Notification Channel for Irregularities (3)}
+\end{enumerate} 
 
 
 \subsubsection{Testing}
@@ -128,7 +145,31 @@ White box testing
 
 \subsection{Backdoors}
 
-Describe all backdoors that you found on the system. It may be that you also find unintended backdoors (only the group's presentation will show whether they were intended or not).
+%Describe all backdoors that you found on the system. It may be that you also %find unintended backdoors (only the group's presentation will show whether %they were intended or not).
+
+\subsubsection{Command Injection}
+Command injection is an attack in which the goal is execution of arbitrary commands on the host operating system via a vulnerable application \footnote{\url{https://www.owasp.org/index.php/Command_Injection}}.\\
+ When issuing a new user certificate, the Flask application takes the information on the user from the database and creates an openssl system command in the form of a string. This command is then executed by making use of Python's subprocess module \footnote{\url{https://docs.python.org/2/library/subprocess.html}} with the privileges of the Flask application (caweb user). The certificate's subject field contains an organizationalUnitName (OU) attribute which maps to the user's first name. 
+ 
+ \paragraph{Vulnerability:}
+ The vulnerability arises from two inattentions:
+\begin{enumerate}
+\item \textbf{Insufficient user input validation:} The only restriction on the user's first name is the length of 64 characters. Appart from that any string is allowed.
+\item \textbf{shell=True:} Setting shell=True in Python's subprocess module makes the command beeing executed through the shell, allowing any useage of shell supported features such as command substitution. 
+\end{enumerate}
+
+\paragraph{Exploit:}
+The space of possible commands beeing executed by any user is only limited by the privileges of the caweb user. As an example: by setting the first name to the following string 
+\begin{lstlisting}[language=bash]
+	$(grep -rw secret_key app/|sed 's/\ /*/g;s/\//*/g'\)
+\end{lstlisting}
+we were able to compromise the applications secret key. The command will be substituted as shell=True is set and the result is used as input for the OU attribute in the certificates subject field.
+
+\paragraph{Mitigation:} The vulnerability could be mitigated by
+\begin{enumerate}
+\item Properly sanitize the user's input by allowing only alphanumerical characters for example. Note that this should be done on any field not only first name as they are vulnerable too. 
+\item Setting shell=False in the subprocess module and therefore disable all shell based features. In case the application relies on any shell based features it should use the wrappers provided by python. (e.g. os.walk())
+\end{enumerate}
 
 
 
@@ -143,3 +184,5 @@ Compare your system with the external system you were given for the review. Are 
 %%% mode: latex
 %%% TeX-master: "../../book"
 %%% End: 
+
+%Maybe useful : https://netsec.ws/?p=309
