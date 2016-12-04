@@ -48,6 +48,7 @@ int32_t die(int32_t str) {
 // Address range: 0x804889a - 0x8048dbf
 int main(int argc, char ** argv) {
     int32_t fds[2]; // 0x8048c55
+    // create internet udp socket
     uint32_t sock_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); // 0x80488b8
     if (sock_fd <= 0) {
         // 0x80488c9
@@ -58,7 +59,7 @@ int main(int argc, char ** argv) {
     int32_t addr;
     memset((char *)&addr, 0, 16);
     addr = 2;
-    htons(0x3039);
+    htons(0x3039); // 12345
     htonl(0);
     int32_t addr_len = 16;
     if (bind(sock_fd, (struct sockaddr *)&addr, 16) <= 0) {
@@ -74,7 +75,7 @@ int main(int argc, char ** argv) {
     int32_t v3;
     char v4 = v3;
     // branch -> 0x804894a
-  lab_0x804894a_4:;
+  block_1:;
     char v5;
     int32_t str2;
     int32_t str;
@@ -82,21 +83,21 @@ int main(int argc, char ** argv) {
     while (true) {
         char v6 = v2;
         // branch -> 0x804894a
-      lab_0x804894a_2:
+      block_2:
         while (true) {
             // 0x804894a
             int32_t buf;
             memset((char *)&buf, 0, 20);
             memset((char *)&str2, 0, 20);
             memset((char *)&str, 0, 2000);
-            str2 = 0x6d397036;
+            str2 = 0x6d397036; //m9p6
             // branch -> 0x804894a
             while (recvfrom(sock_fd, (char *)&buf, 2000, 0, (struct sockaddr *)&addr2, &addr_len) <= 0) {
                 // 0x804894a
                 memset((char *)&buf, 0, 20);
                 memset((char *)&str2, 0, 20);
                 memset((char *)&str, 0, 2000);
-                str2 = 0x6d397036;
+                str2 = 0x6d397036; //m9p6
                 // continue -> 0x804894a
             }
             // 0x80489cc
@@ -124,13 +125,13 @@ int main(int argc, char ** argv) {
         int32_t v8 = recvfrom(sock_fd, (char *)&str, 2000, 0, (struct sockaddr *)&addr2, &addr_len); // 0x8048a90
         if (v8 > 0) {
             // break (via goto) -> 0x8048aa6
-            goto lab_0x8048aa6;
+            goto block_3;
         }
         v6 = v5;
         // continue (via goto) -> 0x804894a
-        goto lab_0x804894a_2;
+        goto block_2;
     }
-  lab_0x8048aa6:
+  block_3:
     // 0x8048aa6
     strlen((char *)&str);
     char v9 = v4;
@@ -141,30 +142,30 @@ int main(int argc, char ** argv) {
         // branch -> 0x8048ae4
     }
     int32_t strcmp_rc = strcmp((char *)&str2, (char *)&str); // 0x8048af9
-    str = strcmp_rc == 0 ? 0x636c6577 : 0x74746562;
+    str = strcmp_rc == 0 ? 0x636c6577 : 0x74746562; //clew : tteb
     int32_t len2 = strlen((char *)&str); // 0x8048bb0
     sendto(sock_fd, (char *)&str, len2, 0, (struct sockaddr *)&addr2, addr_len);
     if (strcmp_rc == 0) {
         // break (via goto) -> 0x8048be5
-        goto lab_0x8048be5;
+        goto block_4;
     }
     v2 = v5;
     v4 = v9;
     // continue (via goto) -> 0x804894a
-    goto lab_0x804894a_4;
-  lab_0x8048be5:
+    goto block_1;
+  block_4:
     // 0x8048be5
     memset((char *)&str, 0, 2000);
     int32_t v10 = recvfrom(sock_fd, (char *)&str, 2000, 0, (struct sockaddr *)&addr2, &addr_len); // 0x8048c1a
     if (v10 > 0) {
         // break (via goto) -> 0x8048c30
-        goto lab_0x8048c30;
+        goto block_5;
     }
     v2 = v5;
     v4 = v9;
     // continue (via goto) -> 0x804894a
-    goto lab_0x804894a_4;
-  lab_0x8048c30:
+    goto block_1;
+  block_5:
     // 0x8048c30
     fd = 0;
     pipe(fds);
@@ -197,7 +198,7 @@ int main(int argc, char ** argv) {
     v2 = v5;
     v4 = v9;
     // branch -> 0x804894a
-    goto lab_0x804894a_4;
+    goto block_1;
 }
 
 // --------------- Dynamically Linked Functions ---------------
