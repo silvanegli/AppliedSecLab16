@@ -10,9 +10,9 @@
 
 
 
-\title{\huge\sffamily\bfseries Review of Group a by Group b}
-\author{ w \and x \and y \and z}
-\date{\dots}
+\title{\huge\sffamily\bfseries Review of Group 4 by Group 1}
+\author{Cyrill Kr\"ahenb\"uhl \and Silvan Egli \and Lukas Bischofberger}
+\date{\today}
 
 
 \begin{document}
@@ -171,7 +171,8 @@ we were able to compromise the applications secret key. The command will be subs
 \item Setting shell=False in the subprocess module and therefore disable all shell based features. In case the application relies on any shell based features it should use the wrappers provided by python. (e.g. os.walk())
 \end{enumerate}
 
-
+\subsection{UDP Port}
+The UDP port 12345 is open on the firewall and nated to the webserver. There a script in /home/admin/.hidden is listening on that port. Reverse engineering didn't show the specific packet which needs to be sent to open a shell on the webserver.
 
 \section{Comparison}
 
