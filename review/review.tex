@@ -42,12 +42,12 @@
 
 Study the documentation that came with the external system and evaluation. 
 
-\subsection{System Architecture and Security Concepts}
+\subsection{System Architecture and Security Concepts} (TODO Cyrill)
 
 Is the chosen architecture well-suited for the tasks specified in the requirements? Are the security design decisions well motivated and justified? List positive and negative aspects for each question.
 
 
-\subsection{Risk Analysis}
+\subsection{Risk Analysis} (TODO Lukas)
 
 Is the risk analysis coherent and complete? That is, are all relevant assets, threat sources, and threats listed? 
 %
@@ -56,6 +56,9 @@ Are the risk definitions (likelihood, impact, and risk) reasonable?
 Are the countermeasures appropriate?
 2.4.5 -2 -> HTTPS does not prevent MITM attack
 
+\subsubsection{for each asset}
+	
+
 \section{Implementation Review}
  
 \subsection{Compliance with Requirements} 
@@ -63,7 +66,7 @@ Are the countermeasures appropriate?
 %Does the system meet the functional and security requirements given in the assignment? Are they implemented correctly? If not, list any missing functionality %or security measure.
 In the following we will analyze the implementation of the functional and security requirements given in the project assignment.
 
-\subsubsection{Functional Requirements}
+\subsubsection{Functional Requirements} (TODO Silvan)
 
 \begin{enumerate}
 
@@ -73,7 +76,7 @@ In the following we will analyze the implementation of the functional and securi
 \item \textbf{Key Backup}
 \item \textbf{System Administration and Maintenance}
 \end{enumerate}
-\subsubsection{Security Requirements}
+\subsubsection{Security Requirements} (TODO Cyrill)
 \begin{enumerate}
 
 \item \textbf{Access Control with regard to CA Functionality and Data}
@@ -94,7 +97,7 @@ input/request: shell code as username (Vorname) e.g \$(/bin/ls) then request cer
 output: certificate with evaluated expression in Organizational unit (OU) e.g. app -> backdoor
 
 
-\subsection{System Security Testing}
+\subsection{System Security Testing} (TODO alle)
 
 %Systematically investigate the system. Are the countermeasures implemented as %described? Do you see any security problems? Analyze the system using both %black-box as well as white-box testing.
 
@@ -171,12 +174,18 @@ we were able to compromise the applications secret key. The command will be subs
 \item Setting shell=False in the subprocess module and therefore disable all shell based features. In case the application relies on any shell based features it should use the wrappers provided by python. (e.g. os.walk())
 \end{enumerate}
 
-\subsection{UDP Port}
+\subsection{UDP Port} (TODO Lukas)
 The UDP port 12345 is open on the firewall and nated to the webserver. There a script in /home/admin/.hidden is listening on that port. Reverse engineering didn't show the specific packet which needs to be sent to open a shell on the webserver.
 
-\section{Comparison}
+6p9mkXhw
+
+\section{Comparison} (TODO alle)
 
 Compare your system with the external system you were given for the review. Are there any remarkable highlights in your system or the external system?
+
+\subsection{Functional}
+
+\subsection{Security}
 
 
 \end{document}
