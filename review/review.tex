@@ -56,7 +56,25 @@ Are the risk definitions (likelihood, impact, and risk) reasonable?
 Are the countermeasures appropriate?
 2.4.5 -2 -> HTTPS does not prevent MITM attack
 
-\subsubsection{for each asset}
+\paragraph{Web Server}
+
+\paragraph{Database Server}
+
+\paragraph{Backup and Log Server}
+
+\paragraph{Firewall}   
+
+\paragraph{Private Keys}
+
+\paragraph{User Data}
+
+\paragraph{System Logs} 
+
+\paragraph{Internet connection} 
+
+\paragraph{Trust} 
+
+\paragraph{Persons}
 	
 
 \section{Implementation Review}
@@ -202,6 +220,14 @@ Then we got access to the webserver bash as a root user, which allows to execute
 \section{Comparison} (TODO alle)
 
 Compare your system with the external system you were given for the review. Are there any remarkable highlights in your system or the external system?
+
+\begin{itemize}
+	\item we didn't do FDE for usability reasons
+	\item We use a separate CA server, they have CA stuff on the webserver
+	\item they encrypt the client certificates with a password, we don't. but as they use the same key for all certificates security doesn't really increase
+	\item they have no ddos protection
+	\item 
+\end{itemize}
 
 \subsection{Functional}
 
