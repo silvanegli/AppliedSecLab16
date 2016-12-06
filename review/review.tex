@@ -174,10 +174,13 @@ we were able to compromise the applications secret key. The command will be subs
 \item Setting shell=False in the subprocess module and therefore disable all shell based features. In case the application relies on any shell based features it should use the wrappers provided by python. (e.g. os.walk())
 \end{enumerate}
 
-\subsection{UDP Port} (TODO Lukas)
-The UDP port 12345 is open on the firewall and nated to the webserver. There a script in /home/admin/.hidden is listening on that port. Reverse engineering didn't show the specific packet which needs to be sent to open a shell on the webserver.
+\subsection{UDP Bash}
+We discovered, that the port 12345 for UDP packets is open on the firewall. Upon further inspection we discovered, that communication on this port is nated to the webserver where a hidden process (executed by root, located in /home/admin/.hidden/a.out) is listening on the port. Using some reverse engineering we discovered the password (6p9mkXhw) which needs to be sent when connecting to the mentioned port using e.g.
+\begin{lstlisting}[language=bash]
+$nc 192.168.56.10 12345 -u
+\end{lstlisting}
 
-6p9mkXhw
+Then we got access to the webserver bash as a root user, which allows to execute whatever command we like.
 
 \section{Comparison} (TODO alle)
 
