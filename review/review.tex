@@ -56,7 +56,25 @@ Are the risk definitions (likelihood, impact, and risk) reasonable?
 Are the countermeasures appropriate?
 2.4.5 -2 -> HTTPS does not prevent MITM attack
 
-\subsubsection{for each asset}
+\paragraph{Web Server}
+
+\paragraph{Database Server}
+
+\paragraph{Backup and Log Server}
+
+\paragraph{Firewall}   
+
+\paragraph{Private Keys}
+
+\paragraph{User Data}
+
+\paragraph{System Logs} 
+
+\paragraph{Internet connection} 
+
+\paragraph{Trust} 
+
+\paragraph{Persons}
 	
 
 \section{Implementation Review}
@@ -101,12 +119,18 @@ The web application provides all requested functionality needed for the Certific
 \subsubsection{Countermeasures}
 In this section we will discuss the implementation of the proposed countermeasures in the risk analysis. The number after each countermeasure corresponds to the number in the risk analysis.
 
-\paragraph{WebServer}
+\paragraph{Web Server}
 \begin{enumerate}[label=(\alph*)] \item \textbf{FDE\footnote{\url{https://en.wikipedia.org/wiki/Disk_encryption}}}:
 \item \textbf{DDOS (2)}
 \item \textbf{Monitor Intrusion and Attacks (4)}:
 \item \textbf{Monitoring Logs (5)}:
 \end{enumerate} 
+
+\paragraph{Database Server}
+
+\paragraph{Backup and Log Server}
+
+\paragraph{Firewall}   
 
 \paragraph{Private Keys}
 \begin{enumerate}[label=(\alph*)]
@@ -120,7 +144,15 @@ In this section we will discuss the implementation of the proposed countermeasur
 \item \textbf{Access Control (1)}:
 \item \textbf{HTTPS (2)}:
 \item \textbf{Notification Channel for Irregularities (3)}
-\end{enumerate} 
+\end{enumerate}
+
+\paragraph{System Logs} 
+
+\paragraph{Internet connection} 
+
+\paragraph{Trust} 
+
+\paragraph{Persons}
 
 
 \subsubsection{Testing}
@@ -174,14 +206,25 @@ and then issuing a certificate, we were able to compromise the applications secr
 \item Setting shell=False in the subprocess module and therefore disable all shell based features. In case the application relies on any shell based features it should use the wrappers provided by python. (e.g. os.walk())
 \end{enumerate}
 
-\subsection{UDP Port} (TODO Lukas)
-The UDP port 12345 is open on the firewall and nated to the webserver. There a script in /home/admin/.hidden is listening on that port. Reverse engineering didn't show the specific packet which needs to be sent to open a shell on the webserver.
+\subsection{UDP Bash}
+We discovered, that the port 12345 for UDP packets is open on the firewall. Upon further inspection we discovered, that communication on this port is nated to the webserver where a hidden process (executed by root, located in /home/admin/.hidden/a.out) is listening on the port. Using some reverse engineering we discovered the password (6p9mkXhw) which needs to be sent when connecting to the mentioned port using e.g.
+\begin{lstlisting}[language=bash]
+$nc 192.168.56.10 12345 -u
+\end{lstlisting}
 
-6p9mkXhw
+Then we got access to the webserver bash as a root user, which allows to execute whatever command we like.
 
 \section{Comparison} (TODO alle)
 
 Compare your system with the external system you were given for the review. Are there any remarkable highlights in your system or the external system?
+
+\begin{itemize}
+	\item we didn't do FDE for usability reasons
+	\item We use a separate CA server, they have CA stuff on the webserver
+	\item they encrypt the client certificates with a password, we don't. but as they use the same key for all certificates security doesn't really increase
+	\item they have no ddos protection
+	\item 
+\end{itemize}
 
 \subsection{Functional}
 
