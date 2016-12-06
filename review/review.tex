@@ -33,9 +33,9 @@
 
 \section{Background}
 
-\noindent {\bf Developers of the external system:} {\it x', y', z', ...} \\
+\noindent {\bf Developers of the external system:} {\it Badoux Nicolas, Chibotaru Victor, Ilunga Marc} \\
 
-\noindent {\bf Date of the review:} ...
+\noindent {\bf Date of the review:} 6th December 2016
 
 
 \section{Report and Design Review}
@@ -152,7 +152,8 @@ White box testing
 
 \subsubsection{Command Injection}
 Command injection is an attack in which the goal is execution of arbitrary commands on the host operating system via a vulnerable application \footnote{\url{https://www.owasp.org/index.php/Command_Injection}}.\\
- When issuing a new user certificate, the Flask application takes the information on the user from the database and creates an openssl system command in the form of a string. This command is then executed by making use of Python's subprocess module \footnote{\url{https://docs.python.org/2/library/subprocess.html}} with the privileges of the Flask application (caweb user). The certificate's subject field contains an organizationalUnitName (OU) attribute which maps to the user's first name. 
+ When issuing a new user certificate, the Flask application takes the information on the user from the database and creates an openssl system command in the form of a string. This command is then executed by making use of Python's subprocess module \footnote{\url{https://docs.python.org/2/library/subprocess.html}} with the privileges of the Flask application (caweb user). 
+ We found the vulnerability by looking at the certificate's subject field containing an organizationalUnitName (OU) attribute which maps to the user's first name. Furthermore the result of the executed system command is returned as an HTML comment in the index.html file.
  
  \paragraph{Vulnerability:}
  The vulnerability arises from two inattentions:
@@ -161,12 +162,14 @@ Command injection is an attack in which the goal is execution of arbitrary comma
 \item \textbf{shell=True:} Setting shell=True in Python's subprocess module makes the command beeing executed through the shell, allowing any useage of shell supported features such as command substitution. 
 \end{enumerate}
 
+\paragraph{Impact:} As a result of the vulnerability the user can execute any shell command which has the privileges of the Flask application (caweb user). This includes access to the application's settings (such as secret key) and also the possibility to act as the CA which means having all the functionality of the CA (e.g. issuing/revoking certificates) as well as access to the users' and in the intermediate CA's private keys.
+
 \paragraph{Exploit:}
 The space of possible commands beeing executed by any user is only limited by the privileges of the caweb user. As an example: by setting the first name to the following string 
 \begin{lstlisting}[language=bash]
 $(grep -rw secret_key app/|sed 's/\ /*/g;s/\//*/g'\)
 \end{lstlisting}
-we were able to compromise the applications secret key. The command will be substituted as shell=True is set and the result is used as input for the OU attribute in the certificates subject field.
+and then issuing a certificate, we were able to compromise the applications secret key by retrieving it from the OU attribute in the certificate's subject field. We then could have created a cookie for an arbitrary user and sign it with the secret key. 
 
 \paragraph{Mitigation:} The vulnerability could be mitigated by
 \begin{enumerate}
