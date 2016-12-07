@@ -115,7 +115,9 @@ In the following we will analyze the implementation of the functional and securi
 \begin{enumerate}
 
 \item \textbf{Certificate Issuing}
-\item \textbf{Certificate Revocation} 
+The web application provides all requested functionality needed for the Certificate Issuing Process. This includes login with credentials or user certificate, changing the user's information, requesting a new certificate, display the the new certificate in a list along with all other certificates with the possibility to download all valid (not yet revoked) certificates. 
+\item \textbf{Certificate Revocation}
+
 \item \textbf{CA Administrator Interface}
 \item \textbf{Key Backup}
 \item \textbf{System Administration and Maintenance}
@@ -135,11 +137,6 @@ In the following we will analyze the implementation of the functional and securi
 \end{enumerate}
 \end{enumerate}
 \subsubsection*{Observations}
-input/request: unusual username ( $<$script$>$alert(1)$<$/script$>$)/ request certificate\\
-output/response:  certificate request error containing sh exception as html comment $<$ !-- /bin/sh syntax error .... --$>$\\
-input/request: shell code as username (Vorname) e.g \$(/bin/ls) then request certificate
-output: certificate with evaluated expression in Organizational unit (OU) e.g. app -> backdoor
-
 
 \subsection{System Security Testing} (TODO alle)
 
