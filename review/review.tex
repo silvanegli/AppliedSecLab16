@@ -47,34 +47,60 @@ Study the documentation that came with the external system and evaluation.
 Is the chosen architecture well-suited for the tasks specified in the requirements? Are the security design decisions well motivated and justified? List positive and negative aspects for each question.
 
 
-\subsection{Risk Analysis} (TODO Lukas)
+\subsection{Risk Analysis} %(TODO Lukas)
 
-Is the risk analysis coherent and complete? That is, are all relevant assets, threat sources, and threats listed? 
+%Is the risk analysis coherent and complete? That is, are all relevant assets, threat sources, and threats listed? 
 %
-Are the risk definitions (likelihood, impact, and risk) reasonable?
+%Are the risk definitions (likelihood, impact, and risk) reasonable?
 %
-Are the countermeasures appropriate?
-2.4.5 -2 -> HTTPS does not prevent MITM attack
+%Are the countermeasures appropriate?
+%2.4.5 -2 -> HTTPS does not prevent MITM attack
+In this section we will discuss the evaluated assets, the according threats and countermeasures. We point out the validity of the threats and countermeasures and if their likelihood and impacts are defined appropriately. For this we list up the assets:
 
 \paragraph{Web Server}
+In general the threats and their countermeasure seem appropriate, but there are a few threats missing. The analysis focuses mostly on rendering the service unavailable but does not talk about integrity of the systems. For example a possible threat that a hacker or malware could get access to the system and install sniffing software or similar is not considered. Also it does not mention the possibility of changing the service in a non-destructive manner.
+Furthermore we think that the impact of a DDoS is rated too high, as it would probably only cause a temporary service outage which is nowhere as bad as a compromise of e.g the CA root key. 
 
 \paragraph{Database Server}
+fine
 
 \paragraph{Backup and Log Server}
+install stuff again?
 
 \paragraph{Firewall}   
+firewall not serving its purpose?
+
+Physical assets are not discussed enough regarding their physical threats. What about component failure? (various reasons) 
+Disk encryption seems not enough?
+Copy paste -> verbosity not useful
+Networks?
+countermeasures seem correct for the proposed threats, but hard to implement in practice
+
 
 \paragraph{Private Keys}
+steal private keys impact is too high, likelihood too low
+
+where are sever keys?
 
 \paragraph{User Data}
+likelihoods possibly too low
 
 \paragraph{System Logs} 
+what about internal tampering? deleting logs, adding logs?
 
 \paragraph{Internet connection} 
+availability missing
+internal vs external internet?
+hardware components?
 
 \paragraph{Trust} 
+data leakage of some sort for some reason?
 
 \paragraph{Persons}
+
+DDOS can be helped even in a simple approach
+CA keys?
+system configurations and implementation?
 	
 
 \section{Implementation Review}
@@ -224,7 +250,7 @@ Compare your system with the external system you were given for the review. Are 
 \begin{itemize}
 	\item we didn't do FDE for usability reasons
 	\item We use a separate CA server, they have CA stuff on the webserver
-	\item they encrypt the client certificates with a password, we don't. but as they use the same key for all certificates security doesn't really increase
+	\item they encrypt the client certificates with a password, we don't. but as they use the same key for all certificates security doesn't really increase. can even lead to false security feeling.
 	\item they have no ddos protection
 	\item 
 \end{itemize}
