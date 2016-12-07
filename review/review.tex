@@ -59,48 +59,38 @@ In this section we will discuss the evaluated assets, the according threats and 
 
 \paragraph{Web Server}
 In general the threats and their countermeasure seem appropriate, but there are a few threats missing. The analysis focuses mostly on rendering the service unavailable but does not talk about integrity of the systems. For example a possible threat that a hacker or malware could get access to the system and install sniffing software or similar is not considered. Also it does not mention the possibility of changing the service in a non-destructive manner.
-Furthermore we think that the impact of a DDoS is rated too high, as it would probably only cause a temporary service outage which is nowhere as bad as a compromise of e.g the CA root key. 
+Furthermore we think that the impact of a DDoS is rated too high, as it would probably only cause a temporary service outage which is nowhere as bad as a compromise of e.g the CA root key. Additionally the risk acceptance discusses the possible solution for DDos but ignores the possibility for simple counter measures.
 
-\paragraph{Database Server}
-fine
-
-\paragraph{Backup and Log Server}
-install stuff again?
+\paragraph{Database / Backup and Log Server}
+The listed threats and countermeasures seem fine, only for threat \#3 it is not clearly described how this should be a threat. It is not clear if the term "employee" is used differently than described in section 2.1, because it is odd that a client of the system could somehow delete the database, logs or the backups.
 
 \paragraph{Firewall}   
-firewall not serving its purpose?
+Here the possible misconfiguration of the firewall is missing, also the threat of bypassing the firewall (e.g. its malfunctioning or not serving its purpose) should be listed. This would probably introduce a higher risk than the ones listed currently.\\
 
-Physical assets are not discussed enough regarding their physical threats. What about component failure? (various reasons) 
-Disk encryption seems not enough?
-Copy paste -> verbosity not useful
-Networks?
-countermeasures seem correct for the proposed threats, but hard to implement in practice
-
+For all the physical assets we are missing natural threats, e.g. component failure, bad components, compromised hardware or impact of nature. There are various threats that could not only impact the availability but also the integrity of the system. The use of FDE is mentioned, but devaluated in the same sentence. It is not quite clear how much it really helps. In general a lot of attention is given to availability but the integrity of the systems is mostly disregarded, on all the systems introduction of backdoors, sniffers or loggers are not discussed. Another asset we were missing in the evaluation was the system configurations and application code. This could either be stolen or modified in a way what allows easier compromise of the system. 
 
 \paragraph{Private Keys}
-steal private keys impact is too high, likelihood too low
-
-where are sever keys?
+The impact for threat \#2 seems to high as certificates can be revoked and new keys would then be generated. On the other hand the likelihood should be increased as stealing private keys of the user is probably the easiest entry point to the system.  
 
 \paragraph{User Data}
-likelihoods possibly too low
+The threats and countermeasures seem appropriate but the likelihoods again should be increased, as user data is probably the most interesting and most targeted asset.
 
 \paragraph{System Logs} 
-what about internal tampering? deleting logs, adding logs?
+The evaluation doesn't mention the possible tampering/deletion of logs through insiders. Also it ignores the explicit threat of malware or hackers deleting, modifying or injecting false logs. 
 
 \paragraph{Internet connection} 
-availability missing
-internal vs external internet?
-hardware components?
+First, the connection aspect could/should be separated in internal and external connectivity. For both assets the availability aspect is missing. For the internal network / connectivity threats to hardware should probably be discussed.
 
 \paragraph{Trust} 
-data leakage of some sort for some reason?
+The possible threats to trust are potentially much bigger and therefore more threats should be considered. E.g. the leakage of data of some form by anyone could be considered.
 
 \paragraph{Persons}
+The evaluation of the persons asset should be split into several evaluations as very different threats apply to system administrators and employees. Thus also very different countermeasures can be taken.
+\\
 
-DDOS can be helped even in a simple approach
-CA keys?
-system configurations and implementation?
+In general we would like to point out, that a spell correction would have helped the analysis formally and it seems that a lot of sections were copy pasted. This was shown by the fact that the system names were not updated after copying. Also in our opinion referring to the already proposed countermeasure would have been better than copy pasting the same all over (verbosity not helpful).  
+
+In conclusion we would like to mention that we liked most of the countermeasures described but for some we are not sure how they can be realized in practice and how effective their implementation would be.
 	
 
 \section{Implementation Review}
