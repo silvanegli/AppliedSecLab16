@@ -114,7 +114,12 @@ For the login with client certificates, the web server (nginx) verifies the cert
 In the list of valid certificates there is a revoke link allowing the user to revoke the corresponding certificate. Before revoking, the backend  checks if the certificate was not already revoked. The revocation process includes the update of the CRL. Login with revoked certificates is prevented by the backend as described above. The newly generated CRL is published on the web server. The CRL however is only accessible for loged in users for which we don't see any specific reason. Moreover, the CRL contains no signature which bars the user from verifying the CRL's authenticity.
 
 \item \textbf{CA Administrator Interface: }
+CA administrators can inspect the CA's current state through a dedicated web interface. They must provide a valid user certificate in order to authenticate. The implementation of the authentication is handled in the same way as for a normal user. As a last step, the backend checks if the user in the certificate is listed in the ca_admins.txt file which contains the name of all CA administrators. This prevents a normal user from accessing the admin interface.
+
 \item \textbf{Key Backup: }
+
+
+
 \item \textbf{System Administration and Maintenance: }
 \end{enumerate}
 \subsubsection{Security Requirements} (TODO Cyrill)
