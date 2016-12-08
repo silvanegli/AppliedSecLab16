@@ -114,7 +114,7 @@ For the login with client certificates, the web server (nginx) verifies the cert
 In the list of valid certificates there is a revoke link allowing the user to revoke the corresponding certificate. Before revoking, the backend  checks if the certificate was not already revoked. The revocation process includes the update of the CRL. Login with revoked certificates is prevented by the backend as described above. The newly generated CRL is published on the web server. The CRL however is only accessible for loged in users for which we don't see any specific reason. Moreover, the CRL contains no signature which bars the user from verifying the CRL's authenticity.
 
 \item \textbf{CA Administrator Interface: }
-CA administrators can inspect the CA's current state through a dedicated web interface. They must provide a valid user certificate in order to authenticate. The implementation of the authentication is handled in the same way as for a normal user. As a last step, the backend checks if the user in the certificate is listed in the ca_admins.txt file which contains the name of all CA administrators. This prevents a normal user from accessing the admin interface.
+CA administrators can inspect the CA's current state through a dedicated web interface. They must provide a valid user certificate in order to authenticate. The implementation of the authentication is handled in the same way as for a normal user. As a last step, the backend checks if the user in the certificate is listed in the ca\_admins.txt file which contains the name of all CA administrators. This prevents a normal user from accessing the admin interface.
 
 \item \textbf{Key Backup: }
 
@@ -141,6 +141,7 @@ CA administrators can inspect the CA's current state through a dedicated web int
 \subsection{System Security Testing} (TODO alle)
 
 %Systematically investigate the system. Are the countermeasures implemented as %described? Do you see any security problems? Analyze the system using both %black-box as well as white-box testing.
+We examined the system using white and black box testing, for this we roughly followed the OWASP testing guide\footnote{https://www.owasp.org/index.php/OWASP\_Testing\_Guide\_v4\_Table\_of\_Contents}. Black box web application testing 
 
 \subsubsection{Countermeasures}
 In this section we will discuss the implementation of the proposed countermeasures in the risk analysis. The number after each countermeasure corresponds to the number in the risk analysis.
@@ -153,36 +154,51 @@ In this section we will discuss the implementation of the proposed countermeasur
 \end{enumerate} 
 
 \paragraph{Database Server}
+\begin{enumerate}[label=(\alph*)]
+	\item \textbf{Monitor Intrusion and Attacks (2):} System could not be found.
+	\item \textbf{Backup (3.1)}: TODO Silvan
+	\item \textbf{Protect DB against user misbehavior (3.2)}: TODO - how???
+\end{enumerate} 
 
 \paragraph{Backup and Log Server}
+\begin{enumerate}[label=(\alph*)]
+	\item \textbf{Monitor Intrusion and Attacks (2):} System could not be found.
+	\item \textbf{Request double credentials to delete)}: TODO Cyrill
+\end{enumerate} 
 
 \paragraph{Firewall}   
 \begin{enumerate}[label=(\alph*)] 
-	\item \textbf{Alert system for status} 
+	\item \textbf{Alert system for status(2)}: There is no alert system implemented.
 \end{enumerate}
 
 \paragraph{Private Keys}
 \begin{enumerate}[label=(\alph*)]
-\item \textbf{Access Control (1)}:
-\item \textbf{HTTPS (2)}:
-\item \textbf{Notification Channel for Irregularities (3)}
+\item \textbf{Access Control (1)}: TODO
+\item \textbf{HTTPS (2)}: TODO
+\item \textbf{Notification Channel for Irregularities (3):} Could not be found.
 \end{enumerate} 
 
 \paragraph{User Data}
 \begin{enumerate}[label=(\alph*)]
-\item \textbf{Access Control (1)}:
-\item \textbf{HTTPS (2)}:
-\item \textbf{Notification Channel for Irregularities (3)}
+\item \textbf{Access Control (1):} TODO
+\item \textbf{HTTPS (2):} HTTPS is implemented and no weak ciphers are allowed.
+\item \textbf{Notification Channel for Irregularities (3):} No notification channels have been found.
 \end{enumerate}
 
 \paragraph{System Logs} 
+\begin{enumerate}[label=(\alph*)]
+	\item \textbf{SSH (1):} TODO
+	\item \textbf{Log encryption (2.1):} TODO
+	\item \textbf{Integrity control (2.2):} TODO
+	\item \textbf{Notification channel (2.4):} Not found.
+\end{enumerate}
 
 \paragraph{Internet connection} 
+\begin{enumerate}[label=(\alph*)]
+	\item \textbf{SSH and HTTPS:} TODO
+\end{enumerate}
 
-\paragraph{Trust} 
-
-\paragraph{Persons}
-
+For assets as trust and people no technical implementations were proposed, thus they were not evaluated in the review.
 
 \subsubsection{Testing}
 
@@ -245,7 +261,8 @@ Then we got access to the webserver bash as a root user, which allows to execute
 
 \section{Comparison} (TODO alle)
 
-Compare your system with the external system you were given for the review. Are there any remarkable highlights in your system or the external system?
+%Compare your system with the external system you were given for the review. Are there any remarkable highlights in your system or the external system?
+In this section we would like to compare our system to the one we reviewed.
 
 \begin{itemize}
 	\item we didn't do FDE for usability reasons
