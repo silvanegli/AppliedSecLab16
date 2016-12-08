@@ -90,7 +90,7 @@ The evaluation of the persons asset should be split into several evaluations as 
 
 In general we would like to point out, that a spell correction would have helped the analysis formally and it seems that a lot of sections were copy pasted. This was shown by the fact that the system names were not updated after copying. Also in our opinion referring to the already proposed countermeasure would have been better than copy pasting the same all over (verbosity not helpful).  
 
-In conclusion we would like to mention that we liked most of the countermeasures described but for some we are not sure how they can be realized in practice and how effective their implementation would be.
+In conclusion we would like to mention that we liked most of the countermeasures described but for some we are not sure how they can be realized in practice and how effective their implementation would be. Further we were surprised by the specified impacts and likelihoods, in our opinion it is not realistic if the risk always evaluates to "low".
 	
 
 \section{Implementation Review}
@@ -141,7 +141,7 @@ CA administrators can inspect the CA's current state through a dedicated web int
 \subsection{System Security Testing} (TODO alle)
 
 %Systematically investigate the system. Are the countermeasures implemented as %described? Do you see any security problems? Analyze the system using both %black-box as well as white-box testing.
-We examined the system using white and black box testing, for this we roughly followed the OWASP testing guide\footnote{https://www.owasp.org/index.php/OWASP\_Testing\_Guide\_v4\_Table\_of\_Contents}. Black box web application testing 
+We examined the system using white and black box testing, for this we roughly followed the OWASP testing guide\footnote{https://www.owasp.org/index.php/OWASP\_Testing\_Guide\_v4\_Table\_of\_Contents}, from where we picked several test cases. For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}. For white box testing we used e.g. code review, privilege escalation techniques and a lot of information gathering approaches\footnote{https://netsec.ws/?p=309}.
 
 \subsubsection{Countermeasures}
 In this section we will discuss the implementation of the proposed countermeasures in the risk analysis. The number after each countermeasure corresponds to the number in the risk analysis.
