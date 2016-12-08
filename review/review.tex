@@ -104,29 +104,34 @@ In the following we will analyze the implementation of the functional and securi
 
 \begin{enumerate}
 
-\item \textbf{Certificate Issuing: }
+\item \textbf{Certificate Issuing:}
 The web application provides all requested functionality needed for the Certificate Issuing Process. This includes login with credentials or user certificate, changing the user's information, requesting a new certificate, displaying the the new certificate in a list along with all other valid (not yet revoked) certificates and the possibility to download all valid certificates. Client certificates are issued by an intermediate CA which uses a certificate signed by the root CA. 
 
-\item \textbf {Login with client certificate: }
+\item \textbf {Login with client certificate:}
 For the login with client certificates, the web server (nginx) verifies the certificate using the intermediate and root CA's certificates. The result is then forwarded together with the user certificate to the backend (Flask application) which checks if the certificate is not revoked and whether the user id (uid) provided in the certificate's subject field exists. If so the user gets loged in.
 
-\item \textbf{Certificate Revocation: }
+\item \textbf{Certificate Revocation:}
 In the list of valid certificates there is a revoke link allowing the user to revoke the corresponding certificate. Before revoking, the backend  checks if the certificate was not already revoked. The revocation process includes the update of the CRL. Login with revoked certificates is prevented by the backend as described above. The newly generated CRL is published on the web server. The CRL however is only accessible for loged in users for which we don't see any specific reason. Moreover, the CRL contains no signature which bars the user from verifying the CRL's authenticity.
 
-\item \textbf{CA Administrator Interface: }
+\item \textbf{CA Administrator Interface:}
 CA administrators can inspect the CA's current state through a dedicated web interface. They must provide a valid user certificate in order to authenticate. The implementation of the authentication is handled in the same way as for a normal user. As a last step, the backend checks if the user in the certificate is listed in the ca\_admins.txt file which contains the name of all CA administrators. This prevents a normal user from accessing the admin interface.
 
-\item \textbf{Key Backup: }
+\item \textbf{Key Backup:}
+The backup for client as well as CA keys and certificates is located on the logbox machine. Newly issued client certificates and keys are transferred after creation over an SSH connection from the webbox to the backup. However, if the logbox is not running (e.g maintenance reasons) or the connection fails for other reasons, the backup will not be performed. This is a problem as there is no regular key backup (mentioned in section 1.3 of the report),
+ meaning that if the backup of client keys and certificates at creation time fails, there will never be a backup created for those. 
 
+\item \textbf{System Administration and Maintenance:}
+The remote system administration all happens over SSH. Every component runs an sshd process listening for incoming SSH connections on port 22. The firewall forwards incoming TCP connections on the ports 12346, 12347, 12348 to port 22 on the webbox, sqlbox and logbox respectively. The automated backup solution is partly implemented. For the logs they use rsyslog which forwards the configured logs (TODO: is this really implemented ?) to the logbox. The configuration files are not backed up automatically and neither is the user database.
 
+Summarizing, even though the system lacks  
 
-\item \textbf{System Administration and Maintenance: }
 \end{enumerate}
 \subsubsection{Security Requirements} (TODO Cyrill)
 \begin{enumerate}
 
 \item \textbf{Access Control with regard to CA Functionality and Data}
 \item \textbf{Secrecy and Integrity for Private Keys in Backup}
+ backup files are append-only (see lsattr) (-> no deletion)
 \item \textbf{Secrecy and Integrity for User Data}
 \item \textbf{Access Control on all Components}
 \begin{enumerate}[label=(\alph*)]
@@ -267,9 +272,13 @@ In this section we would like to compare our system to the one we reviewed.
 \begin{itemize}
 	\item we didn't do FDE for usability reasons
 	\item We use a separate CA server, they have CA stuff on the webserver
-	\item they encrypt the client certificates with a password, we don't. but as they use the same key for all certificates security doesn't really increase. can even lead to false security feeling.
+	\item they encrypt the client keys with a password, we don't. but as they use the same passphrase for all keys, security doesn't really increase. can even lead to false security feeling.
 	\item they have no ddos protection
-	\item 
+	\item we don't check revocation status in backend (only nginx -> worse for error handling)
+	\item they don't have a periodical backup of configuration and keys. (only for logs via rsyslog)
+	\item their application is more lightweight (-> principle of simplicity)
+	
+	
 \end{itemize}
 
 \subsection{Functional}
