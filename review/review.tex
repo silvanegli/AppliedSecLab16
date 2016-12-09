@@ -256,7 +256,7 @@ and then issuing a certificate, we were able to compromise the applications secr
 \item Setting shell=False in the subprocess module and therefore disable all shell based features. In case the application relies on any shell based features it should use the wrappers provided by python. (e.g. os.walk())
 \end{enumerate}
 
-\subsection{UDP Bash}
+\subsubsection{UDP Bash}
 We discovered, that the port 12345 for UDP packets is open on the firewall. Upon further inspection we discovered, that communication on this port is nated to the webserver where a hidden process (executed by root, located in /home/admin/.hidden/a.out) is listening on the port. Using some reverse engineering we discovered the password (6p9mkXhw) which needs to be sent when connecting to the mentioned port using e.g.
 \begin{lstlisting}[language=bash]
 $nc 192.168.56.10 12345 -u
