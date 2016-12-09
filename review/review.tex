@@ -193,7 +193,7 @@ In this section we briefly discuss the implementation of the proposed countermea
 \paragraph{Backup and Log Server}
 \begin{enumerate}[label=(\alph*)]
 	\item \textbf{Monitor Intrusion and Attacks (2):} The same applies as for the Web Server.
-	\item \textbf{Request double credentials to delete (3)}: The same applies as for the Database Server.
+	\item \textbf{Require two credentials to delete (3)}: The same applies as for the Database Server.
 \end{enumerate} 
 
 \paragraph{Firewall}   
@@ -278,12 +278,14 @@ In this section we would like to compare our system to the one we reviewed.
 
 \begin{itemize}
 	\item we didn't do FDE for usability reasons
-	\item We use a separate CA server, they have CA stuff on the webserver
+	\item We use a separate CA server, they have CA stuff on the webserver (-\> principle of separation of concerns)
 	\item they encrypt the client keys with a password, we don't. but as they use the same passphrase for all keys, security doesn't really increase. can even lead to false security feeling.
 	\item they have no ddos protection
 	\item we don't check revocation status in backend (only nginx -> worse for error handling)
 	\item they don't have a periodical backup of configuration and keys. (only for logs via rsyslog)
-	\item their application is more lightweight (-> principle of simplicity)
+	\item they don't back up the user database
+	\item they do the backup (rsyslog) in the "other" direction than we do		
+	\item their application is more lightweight (-\> principle of simplicity)
 	
 	
 \end{itemize}
