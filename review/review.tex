@@ -125,11 +125,11 @@ The remote system administration all happens over SSH. Every component runs an s
 
 
 \end{enumerate}
-\subsubsection{Security Requirements} (TODO Cyrill)
+\subsubsection{Security Requirements}\label{sec_req} (TODO Cyrill)
 \begin{enumerate}
 
 \item \textbf{Access Control with regard to CA Functionality and Data}
-The Flask backend restricts access to the CA Functionality over https to loged in users only. It also checks whether a user is authorized to download or revoke the certificate in question. The webserver verifies the signature of provided user certificates in order to prevent access with a faked certificate. 
+The Flask backend restricts access to the CA Functionality over https to loged in users only. It also checks whether a user is authorized to download or revoke the certificate in question. The webserver verifies the signature of provided user certificates in order to prevent access with a faked certificate. As the application server (uwsgi) is started as service with user caweb and group www-data this implies that the issued user keys and pk12 files are accessible by the web server which contradicts the principles of least privilege and separation of concern.
 
 \item \textbf{Secrecy and Integrity for Private Keys in Backup}
  backup files are append-only (see lsattr) (-> no deletion)
@@ -178,22 +178,22 @@ In this section we briefly discuss the implementation of the proposed countermea
 \begin{enumerate}[label=(\alph*)] 
 \item \textbf{FDE \footnote{\url{https://en.wikipedia.org/wiki/Disk_encryption}}:} Implemented using Debian's encryption capabilities 
 \item \textbf{DDOS (2):} The mentioned proposals in the risk acceptance seem legitimate. However we want to mention that all types of ACK and SYN-ACK DDoS attacks as well as DDoS attacks that use bogus TCP flags could already be prevented by adding some additional iptables rules that DROP those packages \footnote{\url{https://javapipe.com/iptables-ddos-protection}}. One could also argue to perform the DDOoS prevention on the firewall might be more appropriate as it then happens at an earlier stage and can be implemented on top of the already existing iptables rules.
-\item \textbf{Monitor Intrusion and Attacks (4):} The intrusion and attacks are logged in the nginx, uwsgi and Debian's system logs. However, the system administrator needs to scan them manually in order to detect any strange behavior. Furthermore, once an attacker gains root access, these files can be modified too. More sophisticated solutions could aim for Host Based Intrusion Detection, automated Log File Monitoring or File Integrity Checks using tools like Tripwire \footnote{\url{http://www.tripwire.org/}} for example.
+\item \textbf{Monitor Intrusion and Attacks (4):} The intrusion and attacks are logged in the nginx, uwsgi and Debian's system logs. However, the system administrator needs to scan them manually in order to detect any strange behavior. Furthermore, once an attacker gains root access, these files can be modified too. More sophisticated solutions could aim for Host Based Intrusion Detection, automated Log File Monitoring, automated alerting system or File Integrity Checks using tools like Tripwire \footnote{\url{http://www.tripwire.org/}} for example.
 \item \textbf{Monitoring Logs (5)}: Likewise here, a system administrator manually needs to observe the logs of the application server (uwsgi) in order to detect harming employees. Probably a more realistic approach would be to include a verification step into the process of issuing user certificates.
 \item \textbf{Access to CA private key with two user credentials(5):} Even if we don't understand how this helps against harmful employees, this is not implemented.
 \end{enumerate} 
 
 \paragraph{Database Server}
 \begin{enumerate}[label=(\alph*)]
-	\item \textbf{Monitor Intrusion and Attacks (2):} System could not be found.
-	\item \textbf{Backup (3.1)}: TODO Silvan
-	\item \textbf{Protect DB against user misbehavior (3.2)}: TODO - how???
+	\item \textbf{Monitor Intrusion and Attacks (2):} The same applies as for the Web Server.
+	\item \textbf{Backup (3)}: There is no backup of the MySQL database.
+	\item \textbf{Protect DB against user misbehavior (3)}: There is no protection against the misbehavior of a single employee in the form of requiring two user credentials or something similar.
 \end{enumerate} 
 
 \paragraph{Backup and Log Server}
 \begin{enumerate}[label=(\alph*)]
-	\item \textbf{Monitor Intrusion and Attacks (2):} System could not be found.
-	\item \textbf{Request double credentials to delete)}: TODO Cyrill (siegli: as far as i can see not implemented )
+	\item \textbf{Monitor Intrusion and Attacks (2):} The same applies as for the Web Server.
+	\item \textbf{Request double credentials to delete (3)}: The same applies as for the Database Server.
 \end{enumerate} 
 
 \paragraph{Firewall}   
@@ -203,15 +203,15 @@ In this section we briefly discuss the implementation of the proposed countermea
 
 \paragraph{Private Keys}
 \begin{enumerate}[label=(\alph*)]
-\item \textbf{Access Control (1)}: TODO
-\item \textbf{HTTPS (2)}: TODO
+\item \textbf{Access Control (1)}: As mentioned in \ref{sec_req} the private keys and the pk12 files of the users are accessible to the web server. This is not needed as the files are passed through the backend for download anyways and should therefore be changed.
+\item \textbf{HTTPS (2)}: HTTPS is properly implemented on the webserver and weak cyphers are disallowed.
 \item \textbf{Notification Channel for Irregularities (3):} Could not be found.
 \end{enumerate} 
 
 \paragraph{User Data}
 \begin{enumerate}[label=(\alph*)]
 \item \textbf{Access Control (1):} TODO
-\item \textbf{HTTPS (2):} HTTPS is implemented and no weak ciphers are allowed.
+\item \textbf{HTTPS (2):} As for the Private Keys, HTTPS is implemented and no weak ciphers are allowed.
 \item \textbf{Notification Channel for Irregularities (3):} No notification channels have been found.
 \end{enumerate}
 
@@ -234,6 +234,7 @@ For assets as trust and people no technical implementations were proposed, thus 
 \subsection{Backdoors}
 
 %Describe all backdoors that you found on the system. It may be that you also %find unintended backdoors (only the group's presentation will show whether %they were intended or not).
+We were able to find the following two backdoors using a combination of both, black- and whitebox testing.
 
 \subsubsection{Command Injection}
 Command injection is an attack in which the goal is execution of arbitrary commands on the host operating system via a vulnerable application \footnote{\url{https://www.owasp.org/index.php/Command_Injection}}.\\
