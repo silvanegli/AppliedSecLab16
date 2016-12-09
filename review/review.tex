@@ -59,7 +59,7 @@ In this section we will discuss the evaluated assets, the according threats and 
 
 \paragraph{Web Server}
 In general the threats and their countermeasure seem appropriate, but there are a few threats missing. The analysis focuses mostly on rendering the service unavailable but does not talk about integrity of the systems. For example a possible threat that a hacker or malware could get access to the system and install sniffing software or similar is not considered. Also it does not mention the possibility of changing the service in a non-destructive manner.
-Furthermore we think that the impact of a DDoS is rated too high, as it would probably only cause a temporary service outage which is nowhere as bad as a compromise of e.g the CA root key. Additionally the risk acceptance discusses the possible solution for DDos but ignores the possibility for simple counter measures.
+Furthermore we think that the impact of a DDoS is rated too high, as it would probably only cause a temporary service outage which is nowhere as bad as a compromise of e.g the CA root key. Additionally the risk acceptance discusses the possible solution for DDos but ignores the possibility for simple counter measures (e.g additional rules for iptables).
 
 \paragraph{Database / Backup and Log Server}
 The listed threats and countermeasures seem fine, only for threat \#3 it is not clearly described how this should be a threat. It is not clear if the term "employee" is used differently than described in section 2.1, because it is odd that a client of the system could somehow delete the database, logs or the backups.
@@ -121,19 +121,21 @@ The backup for client as well as CA keys and certificates is located on the logb
  meaning that if the backup of client keys and certificates at creation time fails, there will never be a backup created for those. 
 
 \item \textbf{System Administration and Maintenance:}
-The remote system administration all happens over SSH. Every component runs an sshd process listening for incoming SSH connections on port 22. The firewall forwards incoming TCP connections on the ports 12346, 12347, 12348 to port 22 on the webbox, sqlbox and logbox respectively. The automated backup solution is partly implemented. For the logs they use rsyslog which forwards the configured logs (TODO: is this really implemented ?) to the logbox. The configuration files are not backed up automatically and neither is the user database.
+The remote system administration all happens over SSH. Every component runs an sshd process listening for incoming SSH connections on port 22. The firewall forwards incoming TCP connections on the ports 12346, 12347, 12348 to port 22 on the webbox, sqlbox and logbox respectively. The automated backup solution is partly implemented. For the logs they use rsyslog which forwards the system and application logs to the logbox. The configuration files are not backed up automatically and neither is the user database.
 
-Summarizing, even though the system lacks  
 
 \end{enumerate}
 \subsubsection{Security Requirements} (TODO Cyrill)
 \begin{enumerate}
 
 \item \textbf{Access Control with regard to CA Functionality and Data}
+The Flask backend restricts access to the CA Functionality over https to loged in users only. It also checks whether a user is authorized to download or revoke the certificate in question. The webserver verifies the signature of provided user certificates in order to prevent access with a faked certificate. 
+
 \item \textbf{Secrecy and Integrity for Private Keys in Backup}
  backup files are append-only (see lsattr) (-> no deletion)
 \item \textbf{Secrecy and Integrity for User Data}
 \item \textbf{Access Control on all Components}
+(File Permission/user stuff...)
 \begin{enumerate}[label=(\alph*)]
 \item \textbf{Firewall}:
 \item \textbf{Webbox}:
@@ -141,7 +143,6 @@ Summarizing, even though the system lacks
 \item \textbf{Logbox}:
 \end{enumerate}
 \end{enumerate}
-\subsubsection*{Observations}
 
 \subsection{System Security Testing} (TODO alle)
 
@@ -149,13 +150,15 @@ Summarizing, even though the system lacks
 We examined the system using white and black box testing, for this we roughly followed the OWASP testing guide\footnote{https://www.owasp.org/index.php/OWASP\_Testing\_Guide\_v4\_Table\_of\_Contents}, from where we picked several test cases. For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}. For white box testing we used e.g. code review, privilege escalation techniques and a lot of information gathering approaches\footnote{https://netsec.ws/?p=309}.
 
 \subsubsection{Countermeasures}
-In this section we will discuss the implementation of the proposed countermeasures in the risk analysis. The number after each countermeasure corresponds to the number in the risk analysis.
+In this section we briefly discuss the implementation of the proposed countermeasures in the risk analysis. The number after each countermeasure corresponds to the number in the risk analysis.
 
 \paragraph{Web Server}
-\begin{enumerate}[label=(\alph*)] \item \textbf{FDE\footnote{\url{https://en.wikipedia.org/wiki/Disk_encryption}}}:
-\item \textbf{DDOS (2)}
-\item \textbf{Monitor Intrusion and Attacks (4)}:
-\item \textbf{Monitoring Logs (5)}:
+\begin{enumerate}[label=(\alph*)] 
+\item \textbf{FDE \footnote{\url{https://en.wikipedia.org/wiki/Disk_encryption}}:} Implemented using Debian's encryption capabilities 
+\item \textbf{DDOS (2):} The mentioned proposals in the risk acceptance seem legitimate. However we want to mention that all types of ACK and SYN-ACK DDoS attacks as well as DDoS attacks that use bogus TCP flags could already be prevented by adding some additional iptables rules that DROP those packages \footnote{\url{https://javapipe.com/iptables-ddos-protection}}. One could also argue to perform the DDOoS prevention on the firewall might be more appropriate as it then happens at an earlier stage and can be implemented on top of the already existing iptables rules.
+\item \textbf{Monitor Intrusion and Attacks (4):} The intrusion and attacks are logged in the nginx, uwsgi and Debian's system logs. However, the system administrator needs to scan them manually in order to detect any strange behavior. Furthermore, once an attacker gains root access, these files can be modified too. More sophisticated solutions could aim for Host Based Intrusion Detection, automated Log File Monitoring or File Integrity Checks using tools like Tripwire \footnote{\url{http://www.tripwire.org/}} for example.
+\item \textbf{Monitoring Logs (5)}: Likewise here, a system administrator manually needs to observe the logs of the application server (uwsgi) in order to detect harming employees. Probably a more realistic approach would be to include a verification step into the process of issuing user certificates.
+\item \textbf{Access to CA private key with two user credentials(5):} Even if we don't understand how this helps against harmful employees, this is not implemented.
 \end{enumerate} 
 
 \paragraph{Database Server}
@@ -168,7 +171,7 @@ In this section we will discuss the implementation of the proposed countermeasur
 \paragraph{Backup and Log Server}
 \begin{enumerate}[label=(\alph*)]
 	\item \textbf{Monitor Intrusion and Attacks (2):} System could not be found.
-	\item \textbf{Request double credentials to delete)}: TODO Cyrill
+	\item \textbf{Request double credentials to delete)}: TODO Cyrill (siegli: as far as i can see not implemented )
 \end{enumerate} 
 
 \paragraph{Firewall}   
@@ -280,10 +283,6 @@ In this section we would like to compare our system to the one we reviewed.
 	
 	
 \end{itemize}
-
-\subsection{Functional}
-
-\subsection{Security}
 
 
 \end{document}
