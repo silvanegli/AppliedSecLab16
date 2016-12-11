@@ -40,12 +40,27 @@
 
 \section{Report and Design Review}
 
-Study the documentation that came with the external system and evaluation. 
+%Study the documentation that came with the external system and evaluation. 
 
-\subsection{System Architecture and Security Concepts} (TODO Cyrill)
+\subsection{System Architecture and Security Concepts} %(TODO Cyrill)
 
-Is the chosen architecture well-suited for the tasks specified in the requirements? Are the security design decisions well motivated and justified? List positive and negative aspects for each question.
+%Is the chosen architecture well-suited for the tasks specified in the requirements? Are the security design decisions well motivated and justified? List positive and negative aspects for each question.
 
+\subsubsection{Positive aspects}
+\begin{itemize}
+\item There is a firewall on a separate machine where all incoming and outgoing traffic passes through. This makes it easy to manage connections to the system.
+\item The database server is on a separate machine. Even if part of the system (e.g. the webserver) is compromised the user data may still be uncompromised.
+\item The log files from different machines, applications and configurations are backed up to a separate machine. This helps detecting intrusions and modifications of the system and restoring the system after failures.
+\item They apply the minimum exposure principle whenever possible. For example only sending data between the webserver and the database server, only accessing the backup server directly from the firewall and sending logs and backups to the backup server but not sending anything the other direction.
+\item The root CA, which signs the intermediate CA is not used in the running system which is a good practice, since the intermediate CA private key can be compromised and then the root CA can create and sign another intermediate CA.
+  
+\end{itemize}
+
+\subsubsection{Negative aspects}
+\begin{itemize}
+\item CA server and Webserver are not separated. Separating them would increase the resilience against parial compromise.
+%  \item The database is not backed up to another machine and thus there is no resilience against failure in this component
+\end{itemize}
 
 \subsection{Risk Analysis} %(TODO Lukas)
 
@@ -125,22 +140,25 @@ The remote system administration all happens over SSH. Every component runs an s
 
 
 \end{enumerate}
-\subsubsection{Security Requirements}\label{sec_req} (TODO Cyrill)
+\subsubsection{Security Requirements}\label{sec_req} %(TODO Cyrill)
 \begin{enumerate}
 
 \item \textbf{Access Control with regard to CA Functionality and Data}
-The Flask backend restricts access to the CA Functionality over https to loged in users only. It also checks whether a user is authorized to download or revoke the certificate in question. The webserver verifies the signature of provided user certificates in order to prevent access with a faked certificate. As the application server (uwsgi) is started as service with user caweb and group www-data this implies that the issued user keys and pk12 files are accessible by the web server which contradicts the principles of least privilege and separation of concern.
+The Flask backend restricts access to the CA Functionality over https to logged in users only. It also checks whether a user is authorized to download or revoke the certificate in question. The webserver verifies the signature of provided user certificates in order to prevent access with a faked certificate. As the application server (uwsgi) is started as service with user caweb and group www-data this implies that the issued user keys and pk12 files are accessible by the web server which contradicts the principles of least privilege and separation of concern.
 
 \item \textbf{Secrecy and Integrity for Private Keys in Backup}
- backup files are append-only (see lsattr) (-> no deletion)
+  The harddrive of the logbox machine is encrypted which protects against physical theft. The machines are all in the internal network which makes eavesdropping on the logs difficult for an attacker outside this network. The log files belong to the user syslog and are created with the attribute \texttt{a} which makes the files append-only. These attributes work on ext4 file systems and they are modified using \texttt{chattr}. Since the files are append-only, an attacker that does not get the same rights as the syslog user cannot remove its traces by modifying the log files.
+  
+ %backup files are append-only (see lsattr) (-> no deletion)
 \item \textbf{Secrecy and Integrity for User Data}
+  The harddrive of the sqlbox machine is encrypted which protects against physical theft. The user data which is sent between the client and the system uses https, which protects against an eavesdropping attacker. A user can only change its user informations after authenticating himself to the system which guarantees the integrity of the user data. The system reveals user data only to the user that authenticated himself.
 \item \textbf{Access Control on all Components}
-(File Permission/user stuff...)
+%(File Permission/user stuff...)
 \begin{enumerate}[label=(\alph*)]
-\item \textbf{Firewall}:
-\item \textbf{Webbox}:
-\item \textbf{Sqlbox}:
-\item \textbf{Logbox}:
+\item \textbf{Firewall}: There are two user accounts on this machine: admin and syslog. The user admin has its home folder \texttt{/home/admin} and \texttt{/var/mail/admin}. The user syslog also has its own home folder and logs the iptables stored under \texttt{/var/log/iptables}.
+\item \textbf{Webbox}: There are three user accounts: admin, caweb and syslog. The users admin and syslog are similar as in the firewall. The user caweb stores all CA scripts and webserver functionality in its own home folder \texttt{/home/caweb}. 
+\item \textbf{Sqlbox}: There are two user accounts: admin and syslog. Both are similar as in the firewall. 
+\item \textbf{Logbox}: There are three user accounts: admin, syslog and backups. The user admin behaves similar as in the firewall. The user syslog has logs from all machines (including itself) stored under \texttt{/var/syslog/<machine name>/<application name>.log}. The user backups backs up different CA settings in his home folder \texttt{/home/backups}.
 \end{enumerate}
 \end{enumerate}
 
@@ -210,16 +228,16 @@ In this section we briefly discuss the implementation of the proposed countermea
 
 \paragraph{User Data}
 \begin{enumerate}[label=(\alph*)]
-\item \textbf{Access Control (1):} TODO
+\item \textbf{Access Control (1):} There are three users for the mysql database on the sqlbox machine: root@localhost, caweb@webbox and rsyslog@localhost. root can access any database. caweb can only access the iMovies database and rsyslog can only access the Syslog database. If an attacker would gain access to the mysql database but not as user caweb or root he would not be able to extract user informations.
 \item \textbf{HTTPS (2):} As for the Private Keys, HTTPS is implemented and no weak ciphers are allowed.
 \item \textbf{Notification Channel for Irregularities (3):} No notification channels have been found.
 \end{enumerate}
 
 \paragraph{System Logs} 
 \begin{enumerate}[label=(\alph*)]
-	\item \textbf{SSH (1):} TODO
-	\item \textbf{Log encryption (2.1):} TODO
-	\item \textbf{Integrity control (2.2):} TODO
+	\item \textbf{SSH (1):} The administrators connect to the system using SSH and thus the communication is confidential and no logging information should be leaked.
+	\item \textbf{Log encryption (2.1):} The harddisk where the logs are stored is encrypted.
+	\item \textbf{Integrity control (2.2):} Using the ext filesystem attribute \texttt{a} which only allows appending to files, the integrity of the logs is ensured after each backup (unless the attacker gains syslog or root privileges on the logbox machine).
 	\item \textbf{Notification channel (2.4):} Not found.
 \end{enumerate}
 
@@ -278,14 +296,14 @@ In this section we would like to compare our system to the one we reviewed.
 
 \begin{itemize}
 	\item we didn't do FDE for usability reasons
-	\item We use a separate CA server, they have CA stuff on the webserver (-\> principle of separation of concerns)
+	\item We use a separate CA server, they have CA stuff on the webserver (-> principle of separation of concerns)
 	\item they encrypt the client keys with a password, we don't. but as they use the same passphrase for all keys, security doesn't really increase. can even lead to false security feeling.
 	\item they have no ddos protection
 	\item we don't check revocation status in backend (only nginx -> worse for error handling)
 	\item they don't have a periodical backup of configuration and keys. (only for logs via rsyslog)
 	\item they don't back up the user database
 	\item they do the backup (rsyslog) in the "other" direction than we do		
-	\item their application is more lightweight (-\> principle of simplicity)
+	\item their application is more lightweight (-> principle of simplicity)
 	
 	
 \end{itemize}
