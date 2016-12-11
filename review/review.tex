@@ -48,17 +48,17 @@
 
 \subsubsection{Positive aspects}
 \begin{itemize}
-\item There is a firewall on a separate machine where all incoming and outgoing traffic passes through. This makes it easy to manage connections to the system.
+\item There is a firewall on a separate machine where all incoming and outgoing traffic passes through. Using such a setup, it is easy to manage any connection between the system and the outside.
 \item The database server is on a separate machine. Even if part of the system (e.g. the webserver) is compromised the user data may still be uncompromised.
-\item The log files from different machines, applications and configurations are backed up to a separate machine. This helps detecting intrusions and modifications of the system and restoring the system after failures.
-\item They apply the minimum exposure principle whenever possible. For example only sending data between the webserver and the database server, only accessing the backup server directly from the firewall and sending logs and backups to the backup server but not sending anything the other direction.
+\item The log files from different machines, all applications and all configurations are backed up to a separate machine. This helps detecting intrusions into the system, modifications of the system and restoring the system after failures.
+\item They apply the minimum exposure principle whenever possible. For example only sending data between the webserver and the database server, only accessing the backup server directly from the firewall and sending logs and backups to the backup server but not sending anything in the other direction.
 \item The root CA, which signs the intermediate CA is not used in the running system which is a good practice, since the intermediate CA private key can be compromised and then the root CA can create and sign another intermediate CA.
   
 \end{itemize}
 
 \subsubsection{Negative aspects}
 \begin{itemize}
-\item CA server and Webserver are not separated. Separating them would increase the resilience against parial compromise.
+\item CA server and Webserver are not separated. Separating them would increase the resilience against partial compromise and also it becomes harder to exploit vulnerabilities in the webserver to impact the certificate authority and vice versa.
 %  \item The database is not backed up to another machine and thus there is no resilience against failure in this component
 \end{itemize}
 
@@ -147,18 +147,18 @@ The remote system administration all happens over SSH. Every component runs an s
 The Flask backend restricts access to the CA Functionality over https to logged in users only. It also checks whether a user is authorized to download or revoke the certificate in question. The webserver verifies the signature of provided user certificates in order to prevent access with a faked certificate. As the application server (uwsgi) is started as service with user caweb and group www-data this implies that the issued user keys and pk12 files are accessible by the web server which contradicts the principles of least privilege and separation of concern.
 
 \item \textbf{Secrecy and Integrity for Private Keys in Backup}
-  The harddrive of the logbox machine is encrypted which protects against physical theft. The machines are all in the internal network which makes eavesdropping on the logs difficult for an attacker outside this network. The log files belong to the user syslog and are created with the attribute \texttt{a} which makes the files append-only. These attributes work on ext4 file systems and they are modified using \texttt{chattr}. Since the files are append-only, an attacker that does not get the same rights as the syslog user cannot remove its traces by modifying the log files.
+  The harddrive of the logbox machine is encrypted which protects against physical theft. The machines are all in the internal network which makes eavesdropping on the logs difficult for an attacker outside this network. The log files belong to the user syslog and are created with the ext file system attribute \texttt{a} which makes the files append-only. These attributes can be modified using \texttt{chattr}. Since the files are append-only, an attacker that does not have the same rights as the syslog user or root rights cannot remove his traces by modifying the log files.
   
  %backup files are append-only (see lsattr) (-> no deletion)
 \item \textbf{Secrecy and Integrity for User Data}
-  The harddrive of the sqlbox machine is encrypted which protects against physical theft. The user data which is sent between the client and the system uses https, which protects against an eavesdropping attacker. A user can only change its user informations after authenticating himself to the system which guarantees the integrity of the user data. The system reveals user data only to the user that authenticated himself.
+  The harddrive of the sqlbox machine is encrypted which protects against physical theft. The user data which is sent between the client and the system uses HTTPS, which protects against an eavesdropping attacker. A user can only change his own user informations after authenticating to the system which guarantees the integrity of the user data. The system reveals user data only to the user that authenticated himself.
 \item \textbf{Access Control on all Components}
 %(File Permission/user stuff...)
 \begin{enumerate}[label=(\alph*)]
-\item \textbf{Firewall}: There are two user accounts on this machine: admin and syslog. The user admin has its home folder \texttt{/home/admin} and \texttt{/var/mail/admin}. The user syslog also has its own home folder and logs the iptables stored under \texttt{/var/log/iptables}.
-\item \textbf{Webbox}: There are three user accounts: admin, caweb and syslog. The users admin and syslog are similar as in the firewall. The user caweb stores all CA scripts and webserver functionality in its own home folder \texttt{/home/caweb}. 
-\item \textbf{Sqlbox}: There are two user accounts: admin and syslog. Both are similar as in the firewall. 
-\item \textbf{Logbox}: There are three user accounts: admin, syslog and backups. The user admin behaves similar as in the firewall. The user syslog has logs from all machines (including itself) stored under \texttt{/var/syslog/<machine name>/<application name>.log}. The user backups backs up different CA settings in his home folder \texttt{/home/backups}.
+\item \textbf{Firewall}: There are two user accounts on this machine: \textit{admin} and \textit{syslog}. The user \textit{admin} has its home folder \texttt{/home/admin} and \texttt{/var/mail/admin}. The user \textit{syslog} also has its own home folder \texttt{/home/syslog} and logs the iptables in \texttt{/var/log/iptables}.
+\item \textbf{Webbox}: There are three user accounts: \textit{admin}, \textit{caweb} and \textit{syslog}. The users \textit{admin} and \textit{syslog} are similar as in the firewall. The user \textit{caweb} stores all CA scripts and webserver functionality in its own home folder \texttt{/home/caweb}. 
+\item \textbf{Sqlbox}: There are two user accounts: \textit{admin} and \textit{syslog}. Both are similar as in the firewall. 
+\item \textbf{Logbox}: There are three user accounts: \textit{admin}, \textit{syslog} and \textit{backups}. The user \textit{admin} behaves similar as in the firewall. The user \textit{syslog} has logs from all machines (including itself) stored under \texttt{/var/syslog/<machine name>/<application name>.log}. The user \textit{backups} backs up different CA settings in his home folder \texttt{/home/backups}.
 \end{enumerate}
 \end{enumerate}
 
