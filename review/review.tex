@@ -170,14 +170,15 @@ The Flask backend restricts access to the CA Functionality over https to logged 
 \end{enumerate}
 \end{enumerate}
 
-\subsection{System Security Testing} (TODO alle)
+\subsection{System Security Testing} %(TODO alle)
 
 %Systematically investigate the system. Are the countermeasures implemented as %described? Do you see any security problems? Analyze the system using both %black-box as well as white-box testing.
 We examined the system using white and black box testing, for this we roughly followed the OWASP testing guide\footnote{https://www.owasp.org/index.php/OWASP\_Testing\_Guide\_v4\_Table\_of\_Contents}, from where we picked several test cases.
 
 % TODO Lukas
 \subsubsection{Black box testing}
-For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}. Furthermore, we examined the system's functionality and security design by clicking through the application. We looked at the used csrf tokens, cookies and certificates (server and user) where we found the command injection vulnerability. Also access control regarding to the CA functionality (e.g. downloading the certificate of another user, login with a forged certificate) was tested by hand. In order to scan and connect to open ports we used, amongst others, the system commands \code{nmap}, \code{telnet} and \code{netcat}.
+For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}. No weak ciphers have been detected for HTTPS, also no XSS attacks or SQL injections have been found. We only discovered, that UDP port 12345 was open inexplicably. TCP ports 12346-12348 were open and an SSH daemon was listening, as described in the system architecture. Furthermore, we examined the system's functionality and security design by clicking through the application. We looked at the used csrf tokens and cookies which also looked secure. By inspecting the fields of the user certificates we found the command injection vulnerability. Also access control regarding to the CA functionality (e.g. downloading the certificate of another user, login with a forged certificate) was tested by hand. In order to scan and connect to open ports we used, amongst others, the system commands \code{nmap}, \code{telnet} and \code{netcat}.
+
 
 % TODO CYrill, Silvan
 \subsubsection{White box testing}
