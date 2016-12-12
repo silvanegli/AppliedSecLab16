@@ -166,30 +166,14 @@ The Flask backend restricts access to the CA Functionality over https to logged 
 \end{enumerate}
 \end{enumerate}
 
-\subsection{System Security Testing} (TODO alle)
+\subsection{System Security Testing} %(TODO alle)
 
 %Systematically investigate the system. Are the countermeasures implemented as %described? Do you see any security problems? Analyze the system using both %black-box as well as white-box testing.
 We examined the system using white and black box testing, for this we roughly followed the OWASP testing guide\footnote{https://www.owasp.org/index.php/OWASP\_Testing\_Guide\_v4\_Table\_of\_Contents}, from where we picked several test cases.
 
-Black box testing
-\begin{itemize}
-	
-	\item Nessus scanner
-	\item nmap -> 12345 is open UDP
-	\item ZAP
-	\item By Hand
-	
-\end{itemize}
-
-White box testing
-
-\begin{itemize}
-	\item Firewall: 12345 -> to webbox\\ openssh-sftp-server installed,  
-\end{itemize}
-
 % TODO Lukas
-\subsubsection{Black box testing} TODO: alle -> results of testing
-For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}.
+\subsubsection{Black box testing} %TODO: alle -> results of testing
+For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}. No weak ciphers have been detected for HTTPS, also no XSS attacks or SQL injections have been found. We only discovered, that UDP port 12345 was open inexplicably. TCP ports 12346-12348 were open and an SSH daemon was listening, as described in the system architecture.
 
 % TODO CYrill, Silvan
 \subsubsection{White box testing} TODO: alle -> results of testing
