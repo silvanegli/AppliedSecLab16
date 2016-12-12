@@ -7,7 +7,11 @@
 \usepackage{color}
 \usepackage{enumitem}
 \usepackage{listings}
+\usepackage{verbatim}
+\usepackage{subcaption}
 
+% Inline-Code
+\newcommand{\code}[1]{\texttt{#1}}
 
 
 \title{\huge\sffamily\bfseries Review of Group 4 by Group 1}
@@ -172,12 +176,20 @@ The Flask backend restricts access to the CA Functionality over https to logged 
 We examined the system using white and black box testing, for this we roughly followed the OWASP testing guide\footnote{https://www.owasp.org/index.php/OWASP\_Testing\_Guide\_v4\_Table\_of\_Contents}, from where we picked several test cases.
 
 % TODO Lukas
-\subsubsection{Black box testing} %TODO: alle -> results of testing
-For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}. No weak ciphers have been detected for HTTPS, also no XSS attacks or SQL injections have been found. We only discovered, that UDP port 12345 was open inexplicably. TCP ports 12346-12348 were open and an SSH daemon was listening, as described in the system architecture.
+\subsubsection{Black box testing}
+For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}. No weak ciphers have been detected for HTTPS, also no XSS attacks or SQL injections have been found. We only discovered, that UDP port 12345 was open inexplicably. TCP ports 12346-12348 were open and an SSH daemon was listening, as described in the system architecture. Furthermore, we examined the system's functionality and security design by clicking through the application. We looked at the used CSRF tokens and cookies which also seemed secure. By inspecting the fields of the user certificates we found the command injection vulnerability. Also access control regarding to the CA functionality (e.g. downloading the certificate of another user, login with a forged certificate) was tested by hand. In order to scan and connect to open ports we used, amongst others, the system commands \code{nmap}, \code{telnet} and \code{netcat}.
+
 
 % TODO CYrill, Silvan
 \subsubsection{White box testing}
-For white box testing we used e.g. code review, privilege escalation techniques and a lot of information gathering approaches\footnote{https://netsec.ws/?p=309}.
+For white box testing we used e.g. code review, privilege escalation techniques/scripts and a lot of information gathering approaches\footnote{https://netsec.ws/?p=309} on all components. We checked file permissions and attributes by using system commands such as \code{ls}, \code{namei}, \code{lsattr} and identified running network services and processes with the use of \code{netstat}, \code{ps} and \code{lsof}. 
+\paragraph{Webbox:} On the webbox machine we analyzed different configuration/settings files including those of nginx, uwsgi (application server), openssl (used for CA functionalities) and Flask but could not find any suspicious or unusual configuration. Looking at the application's python files and the shell scripts (containing the openssl commands) confirmed the existence of the command injection vulnerability together with a Git repository file  we found in the Flask application folder. This allowed us to inspect their Flask implementation history including some interesting commits named "adding second exploit".
+\paragraph{Firewall:} For the firewall we used system tools like \code{iptables} in order to investigate the defined firewall rules. The logs and all running services were also closely analyzed using linux internal commands.  
+
+\paragraph{Sqlbox:} In order to check the existing database users and their privileges we used \code{mysql}. 
+
+\paragraph{Logbox:}
+
 
 \subsubsection{Countermeasures}
 In this section we briefly discuss the implementation of the proposed countermeasures in the risk analysis. The number after each countermeasure corresponds to the number in the risk analysis.
@@ -272,7 +284,7 @@ and then issuing a certificate, we were able to compromise the applications secr
 \end{enumerate}
 
 \subsubsection{UDP Bash}
-We discovered, that the port 12345 for UDP packets is open on the firewall. Upon further inspection we discovered, that communication on this port is nated to the webserver where a hidden process (executed by root, located in /home/admin/.hidden/a.out) is listening on the port. Using some reverse engineering we discovered the password (6p9mkXhw) which needs to be sent when connecting to the mentioned port using e.g.
+We discovered, that the port 12345 for UDP packets is open on the firewall. Upon further inspection we noticed, that communication on this port is nated to the webserver where a hidden process (executed by root, located in /home/admin/.hidden/a.out) is listening on the port. Using some reverse engineering we discovered the password (6p9mkXhw) which needs to be sent when connecting to the mentioned port using e.g.
 \begin{lstlisting}[language=bash]
 $nc 192.168.56.10 12345 -u
 \end{lstlisting}
