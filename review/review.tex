@@ -176,7 +176,7 @@ We examined the system using white and black box testing, for this we roughly fo
 For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}. No weak ciphers have been detected for HTTPS, also no XSS attacks or SQL injections have been found. We only discovered, that UDP port 12345 was open inexplicably. TCP ports 12346-12348 were open and an SSH daemon was listening, as described in the system architecture.
 
 % TODO CYrill, Silvan
-\subsubsection{White box testing} TODO: alle -> results of testing
+\subsubsection{White box testing}
 For white box testing we used e.g. code review, privilege escalation techniques and a lot of information gathering approaches\footnote{https://netsec.ws/?p=309}.
 
 \subsubsection{Countermeasures}
@@ -279,25 +279,30 @@ $nc 192.168.56.10 12345 -u
 
 Then we got access to the webserver bash as a root user, which allows to execute whatever command we like.
 
-\section{Comparison} (TODO alle)
+\section{Comparison} %(TODO alle)
 
 %Compare your system with the external system you were given for the review. Are there any remarkable highlights in your system or the external system?
 In this section we would like to compare our system to the one we reviewed.
 
+There are two aspects the reviewed system does we like but didn't do ourselves. The first being FDE, the second encryption of the client keys. For both we think it is good to have, but it hinders the usability of the system and is not particularly useful (e.g. if all keys use the same password). We also like the simplicity of the reviewed system, whereas our system is built a little more complex. And nevertheless they check certificate revocation status in their backend, whereas we rely on nginx. We like their solution because it eases error handling.
+
+On the other hand there are some things we like better in our system. We have some basic DDoS protection which is missing in the reviewed system. Their system is missing periodical backup of configuration and keys and also the database backup is missing. Further, the reviewed system pushes to the backup, whereas in our system the backup pulls the data to backup.
+
+A last thing which is different and which we think is not that nice, is that the webserver and the CA scripts are on the same machine whereas we separated the components onto two servers.
+
+
 % TODO Lukas
-\begin{itemize}
-	\item we didn't do FDE for usability reasons
-	\item We use a separate CA server, they have CA stuff on the webserver (-> principle of separation of concerns)
-	\item they encrypt the client keys with a password, we don't. but as they use the same passphrase for all keys, security doesn't really increase. can even lead to false security feeling.
-	\item they have no ddos protection
-	\item we don't check revocation status in backend (only nginx -> worse for error handling)
-	\item they don't have a periodical backup of configuration and keys. (only for logs via rsyslog)
-	\item they don't back up the user database
-	\item they do the backup (rsyslog) in the "other" direction than we do		
-	\item their application is more lightweight (-> principle of simplicity)
-	
-	
-\end{itemize}
+%\begin{itemize}
+	%\item we didn't do FDE for usability reasons
+	%\item We use a separate CA server, they have CA stuff on the webserver (-> principle of separation of concerns)
+	%\item they encrypt the client keys with a password, we don't. but as they use the same passphrase for all keys, security doesn't really increase. can even lead to false security feeling.
+	%\item they have no ddos protection
+	%\item we don't check revocation status in backend (only nginx -> worse for error handling)
+	%\item they don't have a periodical backup of configuration and keys. (only for logs via rsyslog)
+	%\item they don't back up the user database
+	%\item they do the backup (rsyslog) in the "other" direction than we do		
+%	\item their application is more lightweight (-> principle of simplicity)
+%\end{itemize}
 
 
 \end{document}
