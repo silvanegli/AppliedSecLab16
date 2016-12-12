@@ -62,6 +62,8 @@
 %  \item The database is not backed up to another machine and thus there is no resilience against failure in this component
 \end{itemize}
 
+% TODO Cyrill Security Design
+
 \subsection{Risk Analysis} %(TODO Lukas)
 
 %Is the risk analysis coherent and complete? That is, are all relevant assets, threat sources, and threats listed? 
@@ -154,6 +156,8 @@ The Flask backend restricts access to the CA Functionality over https to logged 
   The harddrive of the sqlbox machine is encrypted which protects against physical theft. The user data which is sent between the client and the system uses HTTPS, which protects against an eavesdropping attacker. A user can only change his own user information after authenticating to the system which guarantees the integrity of the user data. The system reveals user data only to the user that authenticated himself.
 \item \textbf{Access Control on all Components}
 %(File Permission/user stuff...)
+
+% TODO describe difference of users
 \begin{enumerate}[label=(\alph*)]
 \item \textbf{Firewall}: There are two user accounts on this machine: \textit{admin} and \textit{syslog}. The user \textit{admin} has its home folder \texttt{/home/admin} and \texttt{/var/mail/admin}. The user \textit{syslog} also has its own home folder \texttt{/home/syslog} and logs the iptables in \texttt{/var/log/iptables}.
 \item \textbf{Webbox}: There are three user accounts: \textit{admin}, \textit{caweb} and \textit{syslog}. The users \textit{admin} and \textit{syslog} are similar as on the firewall. The user \textit{caweb} stores all CA scripts and webserver functionality in its own home folder \texttt{/home/caweb}. 
@@ -183,9 +187,11 @@ White box testing
 	\item Firewall: 12345 -> to webbox\\ openssh-sftp-server installed,  
 \end{itemize}
 
+% TODO Lukas
 \subsubsection{Black box testing} TODO: alle -> results of testing
 For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}.
 
+% TODO CYrill, Silvan
 \subsubsection{White box testing} TODO: alle -> results of testing
 For white box testing we used e.g. code review, privilege escalation techniques and a lot of information gathering approaches\footnote{https://netsec.ws/?p=309}.
 
@@ -294,6 +300,7 @@ Then we got access to the webserver bash as a root user, which allows to execute
 %Compare your system with the external system you were given for the review. Are there any remarkable highlights in your system or the external system?
 In this section we would like to compare our system to the one we reviewed.
 
+% TODO Lukas
 \begin{itemize}
 	\item we didn't do FDE for usability reasons
 	\item We use a separate CA server, they have CA stuff on the webserver (-> principle of separation of concerns)
