@@ -40,12 +40,29 @@
 
 \section{Report and Design Review}
 
-Study the documentation that came with the external system and evaluation. 
+%Study the documentation that came with the external system and evaluation. 
 
-\subsection{System Architecture and Security Concepts} (TODO Cyrill)
+\subsection{System Architecture and Security Concepts} %(TODO Cyrill)
 
-Is the chosen architecture well-suited for the tasks specified in the requirements? Are the security design decisions well motivated and justified? List positive and negative aspects for each question.
+%Is the chosen architecture well-suited for the tasks specified in the requirements? Are the security design decisions well motivated and justified? List positive and negative aspects for each question.
 
+\subsubsection{Positive aspects}
+\begin{itemize}
+\item There is a firewall on a separate machine where all incoming and outgoing traffic passes through. Using such a setup, it is easy to manage any connection between the system and the outside.
+\item The database server is on a separate machine. Even if part of the system (e.g. the webserver) is compromised the user data may still be uncompromised.
+\item The log files from different machines, all applications and all configurations are backed up to a separate machine. This helps detecting intrusions into the system, modifications of the system and restoring the system after failures.
+\item They apply the minimum exposure principle whenever possible. For example only sending data between the webserver and the database server, only accessing the backup server directly from the firewall and sending logs and backups to the backup server but not sending anything in the other direction.
+\item The root CA, which signs the intermediate CA is not used in the running system which is a good practice, since the intermediate CA private key can be compromised and then the root CA can create and sign another intermediate CA.
+  
+\end{itemize}
+
+\subsubsection{Negative aspects}
+\begin{itemize}
+\item CA server and Webserver are not separated. Separating them would increase the resilience against partial compromise and also it becomes harder to exploit vulnerabilities in the webserver to impact the certificate authority and vice versa.
+%  \item The database is not backed up to another machine and thus there is no resilience against failure in this component
+\end{itemize}
+
+% TODO Cyrill Security Design
 
 \subsection{Risk Analysis} %(TODO Lukas)
 
@@ -100,7 +117,7 @@ In conclusion we would like to mention that we liked most of the countermeasures
 %Does the system meet the functional and security requirements given in the assignment? Are they implemented correctly? If not, list any missing functionality %or security measure.
 In the following we will analyze the implementation of the functional and security requirements given in the project assignment.
 
-\subsubsection{Functional Requirements} (TODO Silvan)
+\subsubsection{Functional Requirements} %(TODO Silvan)
 
 \begin{enumerate}
 
@@ -125,22 +142,27 @@ The remote system administration all happens over SSH. Every component runs an s
 
 
 \end{enumerate}
-\subsubsection{Security Requirements}\label{sec_req} (TODO Cyrill)
+\subsubsection{Security Requirements}\label{sec_req} %(TODO Cyrill)
 \begin{enumerate}
 
 \item \textbf{Access Control with regard to CA Functionality and Data}
-The Flask backend restricts access to the CA Functionality over https to loged in users only. It also checks whether a user is authorized to download or revoke the certificate in question. The webserver verifies the signature of provided user certificates in order to prevent access with a faked certificate. As the application server (uwsgi) is started as service with user caweb and group www-data this implies that the issued user keys and pk12 files are accessible by the web server which contradicts the principles of least privilege and separation of concern.
+The Flask backend restricts access to the CA Functionality over https to logged in users only. It also checks whether a user is authorized to download or revoke the certificate in question. The webserver verifies the signature of provided user certificates in order to prevent access with a faked certificate. As the application server (uwsgi) is started as service with user caweb and group www-data this implies that the issued user keys and pk12 files are accessible by the web server which contradicts the principles of least privilege and separation of concern.
 
 \item \textbf{Secrecy and Integrity for Private Keys in Backup}
- backup files are append-only (see lsattr) (-> no deletion)
+  The harddrive of the logbox machine is encrypted which protects against physical theft. The machines are all in the internal network which makes eavesdropping on the logs difficult for an attacker outside this network. The log files belong to the user syslog and are created with the ext file system attribute \texttt{a} which makes the files append-only. These attributes can be modified using \texttt{chattr}. Since the files are append-only, an attacker that does not have the same rights as the syslog user or root rights cannot remove his traces by modifying the log files.
+  
+ %backup files are append-only (see lsattr) (-> no deletion)
 \item \textbf{Secrecy and Integrity for User Data}
+  The harddrive of the sqlbox machine is encrypted which protects against physical theft. The user data which is sent between the client and the system uses HTTPS, which protects against an eavesdropping attacker. A user can only change his own user information after authenticating to the system which guarantees the integrity of the user data. The system reveals user data only to the user that authenticated himself.
 \item \textbf{Access Control on all Components}
-(File Permission/user stuff...)
+%(File Permission/user stuff...)
+
+% TODO describe difference of users
 \begin{enumerate}[label=(\alph*)]
-\item \textbf{Firewall}:
-\item \textbf{Webbox}:
-\item \textbf{Sqlbox}:
-\item \textbf{Logbox}:
+\item \textbf{Firewall}: There are two user accounts on this machine: \textit{admin} and \textit{syslog}. The user \textit{admin} has its home folder \texttt{/home/admin} and \texttt{/var/mail/admin}. The user \textit{syslog} also has its own home folder \texttt{/home/syslog} and logs the iptables in \texttt{/var/log/iptables}.
+\item \textbf{Webbox}: There are three user accounts: \textit{admin}, \textit{caweb} and \textit{syslog}. The users \textit{admin} and \textit{syslog} are similar as on the firewall. The user \textit{caweb} stores all CA scripts and webserver functionality in its own home folder \texttt{/home/caweb}. 
+\item \textbf{Sqlbox}: There are two user accounts: \textit{admin} and \textit{syslog}. Both are similar as in the firewall. 
+\item \textbf{Logbox}: There are three user accounts: \textit{admin}, \textit{syslog} and \textit{backups}. The user \textit{admin} behaves similar as on the firewall. The user \textit{syslog} has logs from all machines (including itself) stored under \texttt{/var/syslog/<machine name>/<application name>.log}. The user \textit{backups} backs up different CA settings in his home folder \texttt{/home/backups}.
 \end{enumerate}
 \end{enumerate}
 
@@ -165,9 +187,11 @@ White box testing
 	\item Firewall: 12345 -> to webbox\\ openssh-sftp-server installed,  
 \end{itemize}
 
+% TODO Lukas
 \subsubsection{Black box testing} TODO: alle -> results of testing
 For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}.
 
+% TODO CYrill, Silvan
 \subsubsection{White box testing} TODO: alle -> results of testing
 For white box testing we used e.g. code review, privilege escalation techniques and a lot of information gathering approaches\footnote{https://netsec.ws/?p=309}.
 
@@ -177,8 +201,8 @@ In this section we briefly discuss the implementation of the proposed countermea
 \paragraph{Web Server}
 \begin{enumerate}[label=(\alph*)] 
 \item \textbf{FDE \footnote{\url{https://en.wikipedia.org/wiki/Disk_encryption}}:} Implemented using Debian's encryption capabilities 
-\item \textbf{DDOS (2):} The mentioned proposals in the risk acceptance seem legitimate. However we want to mention that all types of ACK and SYN-ACK DDoS attacks as well as DDoS attacks that use bogus TCP flags could already be prevented by adding some additional iptables rules that DROP those packages \footnote{\url{https://javapipe.com/iptables-ddos-protection}}. One could also argue to perform the DDOoS prevention on the firewall might be more appropriate as it then happens at an earlier stage and can be implemented on top of the already existing iptables rules.
-\item \textbf{Monitor Intrusion and Attacks (4):} The intrusion and attacks are logged in the nginx, uwsgi and Debian's system logs. However, the system administrator needs to scan them manually in order to detect any strange behavior. Furthermore, once an attacker gains root access, these files can be modified too. More sophisticated solutions could aim for Host Based Intrusion Detection, automated Log File Monitoring, automated alerting system or File Integrity Checks using tools like Tripwire \footnote{\url{http://www.tripwire.org/}} for example.
+\item \textbf{DDOS (2):} The mentioned proposals in the risk acceptance seem legitimate. However we want to mention that all types of ACK and SYN-ACK DDoS attacks as well as DDoS attacks that use bogus TCP flags could already be prevented by adding some additional iptables rules that DROP those packages \footnote{\url{https://javapipe.com/iptables-ddos-protection}}. One could also argue to perform the DDoS prevention on the firewall might be more appropriate as it then happens at an earlier stage and can be implemented on top of the already existing iptables rules.
+\item \textbf{Monitor Intrusion and Attacks (4):} The intrusion and attacks are logged in the nginx, uwsgi and Debian's system logs. However, the system administrator needs to scan them manually in order to detect any strange behavior. Furthermore, once an attacker gains root access, these files can be modified too. More sophisticated solutions could aim for Host Based Intrusion Detection, automated Log File Monitoring, automated alerting system or File Integrity Checks using tools like Tripwire\footnote{\url{http://www.tripwire.org/}} for example.
 \item \textbf{Monitoring Logs (5)}: Likewise here, a system administrator manually needs to observe the logs of the application server (uwsgi) in order to detect harming employees. Probably a more realistic approach would be to include a verification step into the process of issuing user certificates.
 \item \textbf{Access to CA private key with two user credentials(5):} Even if we don't understand how this helps against harmful employees, this is not implemented.
 \end{enumerate} 
@@ -210,22 +234,22 @@ In this section we briefly discuss the implementation of the proposed countermea
 
 \paragraph{User Data}
 \begin{enumerate}[label=(\alph*)]
-\item \textbf{Access Control (1):} TODO
+\item \textbf{Access Control (1):} There are three users for the mysql database on the sqlbox machine: root@localhost, caweb@webbox and rsyslog@localhost. root can access any database. caweb can only access the iMovies database and rsyslog can only access the Syslog database. If an attacker would gain access to the mysql database but not as user caweb or root he would not be able to extract user information.
 \item \textbf{HTTPS (2):} As for the Private Keys, HTTPS is implemented and no weak ciphers are allowed.
 \item \textbf{Notification Channel for Irregularities (3):} No notification channels have been found.
 \end{enumerate}
 
 \paragraph{System Logs} 
 \begin{enumerate}[label=(\alph*)]
-	\item \textbf{SSH (1):} TODO
-	\item \textbf{Log encryption (2.1):} TODO
-	\item \textbf{Integrity control (2.2):} TODO
-	\item \textbf{Notification channel (2.4):} Not found.
+	\item \textbf{SSH (1):} The administrators connect to the system using SSH and thus the communication is confidential and no logging information should be leaked. No security issue has been found in the SSH usage.
+	\item \textbf{Log encryption (2.1):} The harddisk where the logs are stored is encrypted. No further (file level) encryption scheme has been found.
+	\item \textbf{Integrity control (2.2):} Using the ext filesystem attribute \texttt{a} which only allows appending to files, the integrity of the logs is ensured after each backup (unless the attacker gains syslog or root privileges on the logbox machine).
+	\item \textbf{Notification channel (2.4):} No notification channels have been found.
 \end{enumerate}
 
 \paragraph{Internet connection} 
 \begin{enumerate}[label=(\alph*)]
-	\item \textbf{SSH and HTTPS:} TODO
+	\item \textbf{SSH and HTTPS:} As already stated, the used SSH and HTTPS implementations are secure.
 \end{enumerate}
 
 For assets as trust and people no technical implementations were proposed, thus they were not evaluated in the review.
@@ -276,6 +300,7 @@ Then we got access to the webserver bash as a root user, which allows to execute
 %Compare your system with the external system you were given for the review. Are there any remarkable highlights in your system or the external system?
 In this section we would like to compare our system to the one we reviewed.
 
+% TODO Lukas
 \begin{itemize}
 	\item we didn't do FDE for usability reasons
 	\item We use a separate CA server, they have CA stuff on the webserver (-> principle of separation of concerns)
