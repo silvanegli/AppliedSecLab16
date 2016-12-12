@@ -189,7 +189,7 @@ White box testing
 
 % TODO Lukas
 \subsubsection{Black box testing} TODO: alle -> results of testing
-For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}.
+For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}. Furthermore, we examined the system's functionality and security design by clicking through the application. We looked at the used csrf tokens, cookies and certificates (server and user) where we found the command injection vulnerability. Also access control regarding to the CA functionality (e.g. downloading the certificate of another user, login with a forged certificate) was tested by hand.
 
 % TODO CYrill, Silvan
 \subsubsection{White box testing} TODO: alle -> results of testing
