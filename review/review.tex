@@ -189,18 +189,19 @@ We examined the system using white and black box testing, for this we roughly fo
 
 % TODO Lukas
 \subsubsection{Black box testing}
-For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}. No weak ciphers have been detected for HTTPS, also no XSS attacks or SQL injections have been found. We only discovered, that UDP port 12345 was open inexplicably. TCP ports 12346-12348 were open and an SSH daemon was listening, as described in the system architecture. Furthermore, we examined the system's functionality and security design by clicking through the application. We looked at the used csrf tokens and cookies which also looked secure. By inspecting the fields of the user certificates we found the command injection vulnerability. Also access control regarding to the CA functionality (e.g. downloading the certificate of another user, login with a forged certificate) was tested by hand. In order to scan and connect to open ports we used, amongst others, the system commands \code{nmap}, \code{telnet} and \code{netcat}.
+For black box testing the web application we used ZAP\footnote{https://www.owasp.org/index.php/OWASP\_Zed\_Attack\_Proxy\_Project}. Additionally we used different tools to test the HTTPS connection\footnote{http://wiki.cacert.org/SSLScanner}. A very broad vulnerability scanning was also performed with Nessus\footnote{https://www.tenable.com/products/nessus-vulnerability-scanner}. No weak ciphers have been detected for HTTPS, also no XSS attacks or SQL injections have been found. We only discovered, that UDP port 12345 was open inexplicably. TCP ports 12346-12348 were open and an SSH daemon was listening, as described in the system architecture. Furthermore, we examined the system's functionality and security design by clicking through the application. We looked at the used CSRF tokens and cookies which also seemed secure. By inspecting the fields of the user certificates we found the command injection vulnerability. Also access control regarding to the CA functionality (e.g. downloading the certificate of another user, login with a forged certificate) was tested by hand. In order to scan and connect to open ports we used, amongst others, the system commands \code{nmap}, \code{telnet} and \code{netcat}.
 
 
 % TODO CYrill, Silvan
 \subsubsection{White box testing}
 For white box testing we used e.g. code review, privilege escalation techniques/scripts and a lot of information gathering approaches\footnote{https://netsec.ws/?p=309} on all components. We checked file permissions and attributes by using system commands such as \code{ls}, \code{namei}, \code{lsattr} and identified running network services and processes with the use of \code{netstat}, \code{ps} and \code{lsof}. 
 \paragraph{Webbox:} On the webbox machine we analyzed different configuration/settings files including those of nginx, uwsgi (application server), openssl (used for CA functionalities) and Flask but could not find any suspicious or unusual configuration. Looking at the application's python files and the shell scripts (containing the openssl commands) confirmed the existence of the command injection vulnerability together with a Git repository file  we found in the Flask application folder. This allowed us to inspect their Flask implementation history including some interesting commits named "adding second exploit".
-\paragraph{Firewall:} For the firewall we used system tools like \code{iptables} in order to investigate the defined NAT table rules.
+\paragraph{Firewall:} For the firewall we used system tools like \code{iptables} in order to investigate the defined firewall rules. The logs and all running services were also closely analyzed using linux internal commands.  
 
 \paragraph{Sqlbox:} In order to check the existing database users and their privileges we used \code{mysql}. We especially checked which user have access to a certain part of the database and from which machine they can connect to the database.
 
 \paragraph{Logbox:} We investigated the backup of log files and application files. We especially looked at the files owned by \textit{syslog} and what kind of log files from which machine are stored. For the backed up application and configuration files owned by \textit{backups}, we checked which parts were updated and how the updates were performed.
+
 
 \subsubsection{Countermeasures}
 In this section we briefly discuss the implementation of the proposed countermeasures in the risk analysis. The number after each countermeasure corresponds to the number in the risk analysis.
@@ -302,25 +303,30 @@ $nc 192.168.56.10 12345 -u
 
 Then we got access to the webserver bash as a root user, which allows to execute whatever command we like.
 
-\section{Comparison} (TODO alle)
+\section{Comparison} %(TODO alle)
 
 %Compare your system with the external system you were given for the review. Are there any remarkable highlights in your system or the external system?
 In this section we would like to compare our system to the one we reviewed.
 
+There are two aspects the reviewed system does we like but didn't do ourselves. The first being FDE, the second encryption of the client keys. For both we think it is good to have, but it hinders the usability of the system and is not particularly useful (e.g. if all keys use the same password). We also like the simplicity of the reviewed system, whereas our system is built a little more complex. And nevertheless they check certificate revocation status in their backend, whereas we rely on nginx. We like their solution because it eases error handling.
+
+On the other hand there are some things we like better in our system. We have some basic DDoS protection which is missing in the reviewed system. Their system is missing periodical backup of configuration and keys and also the database backup is missing. Further, the reviewed system pushes to the backup, whereas in our system the backup pulls the data to backup.
+
+A last thing which is different and which we think is not that nice, is that the webserver and the CA scripts are on the same machine whereas we separated the components onto two servers.
+
+
 % TODO Lukas
-\begin{itemize}
-	\item we didn't do FDE for usability reasons
-	\item We use a separate CA server, they have CA stuff on the webserver (-> principle of separation of concerns)
-	\item they encrypt the client keys with a password, we don't. but as they use the same passphrase for all keys, security doesn't really increase. can even lead to false security feeling.
-	\item they have no ddos protection
-	\item we don't check revocation status in backend (only nginx -> worse for error handling)
-	\item they don't have a periodical backup of configuration and keys. (only for logs via rsyslog)
-	\item they don't back up the user database
-	\item they do the backup (rsyslog) in the "other" direction than we do		
-	\item their application is more lightweight (-> principle of simplicity)
-	
-	
-\end{itemize}
+%\begin{itemize}
+	%\item we didn't do FDE for usability reasons
+	%\item We use a separate CA server, they have CA stuff on the webserver (-> principle of separation of concerns)
+	%\item they encrypt the client keys with a password, we don't. but as they use the same passphrase for all keys, security doesn't really increase. can even lead to false security feeling.
+	%\item they have no ddos protection
+	%\item we don't check revocation status in backend (only nginx -> worse for error handling)
+	%\item they don't have a periodical backup of configuration and keys. (only for logs via rsyslog)
+	%\item they don't back up the user database
+	%\item they do the backup (rsyslog) in the "other" direction than we do		
+%	\item their application is more lightweight (-> principle of simplicity)
+%\end{itemize}
 
 
 \end{document}
