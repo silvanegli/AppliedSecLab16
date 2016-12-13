@@ -50,21 +50,36 @@
 
 %Is the chosen architecture well-suited for the tasks specified in the requirements? Are the security design decisions well motivated and justified? List positive and negative aspects for each question.
 
-\subsubsection{Positive aspects}
+\subsubsection{Architecture}
+\textbf{Positive aspects}
 \begin{itemize}
-\item There is a firewall on a separate machine where all incoming and outgoing traffic passes through. Using such a setup, it is easy to manage any connection between the system and the outside.
+\item There is a firewall on a separate machine where all incoming and outgoing traffic passes through. Using such a setup, it is easy to manage any connection between the system and the outside. All communication between the system and the outside is based on either SSL/TLS or SSH which provides integrity and secrecy. Only relevant ports are open and redirect to the corresponding machine in the system which reduces the attack surface of the system.
 \item The database server is on a separate machine. Even if part of the system (e.g. the webserver) is compromised the user data may still be uncompromised.
 \item The log files from different machines, all applications and all configurations are backed up to a separate machine. This helps detecting intrusions into the system, modifications of the system and restoring the system after failures.
-\item They apply the minimum exposure principle whenever possible. For example only sending data between the webserver and the database server, only accessing the backup server directly from the firewall and sending logs and backups to the backup server but not sending anything in the other direction.
 \item The root CA, which signs the intermediate CA is not used in the running system which is a good practice, since the intermediate CA private key can be compromised and then the root CA can create and sign another intermediate CA.
   
 \end{itemize}
 
-\subsubsection{Negative aspects}
+\textbf{Negative aspects}
 \begin{itemize}
-\item CA server and Webserver are not separated. Separating them would increase the resilience against partial compromise and also it becomes harder to exploit vulnerabilities in the webserver to impact the certificate authority and vice versa.
-%  \item The database is not backed up to another machine and thus there is no resilience against failure in this component
+\item CA server and Webserver are not separated. Separating them would increase the resilience against partial compromise and it also becomes harder to exploit vulnerabilities in the webserver to impact the certificate authority and vice versa.
 \end{itemize}
+
+\subsubsection{Security Design}
+\textbf{Positive aspects}
+\begin{itemize}
+\item They apply the minimum exposure principle whenever possible. For example only sending user data between the webserver and the database server, only accessing the backup server directly from the firewall and sending logs and backups to the backup server but not sending anything in the other direction. All these decisions reduce the attack surface of the system and expose as little information as possible.
+\item The sessions are managed using a long session id to prevent bruteforcing, they are used only in conjunction with HTTPS and there are measures against Cross Site Scripting (XSS) and Cross Site Request Forgery (CSRF). Active sessions expire after being inactive in the system for a certain amount of time or after a longer fixed amount of time to prevent someone from hijacking the session and keeping it alive.
+\item Keys for the certificates are generated using OpenSSL and up-to-date algorithms and are only sent to the clients over secure channels such as HTTPS. OpenSSL is a widely used tool for creating keys and certificates and it is not likely to contain any major bugs and such bugs would be quickly fixed. The keys are backed up to be able to restore the CA authority in case of a failure. The private keys of the clients are not encrypted in the CA authority, which is reasonable since it would not actually increase the security because the CA authority needs them in an unencrypted form.
+\item The data at rest is secured using full disk encryption provided by the Debian system. The full disk is a good countermeasure against against physical theft of the hardware.
+%The user passwords in the database are not salted which would lead to compromising all user passwords in case of a database leak.
+\end{itemize}
+
+\textbf{Negative aspects}
+\begin{itemize}
+\item The database is not backed up to another machine and thus there is no resilience against failure in this component. If an attacker could e.g. overwrite or delete all entries in the database or if he could damage the harddisk of the database server, one could not recover a working system.
+\end{itemize}
+
 
 % TODO Cyrill Security Design
 
@@ -76,7 +91,7 @@
 %
 %Are the countermeasures appropriate?
 %2.4.5 -2 -> HTTPS does not prevent MITM attack
-In this section we will discuss the evaluated assets, the according threats and countermeasures. We point out the validity of the threats and countermeasures and if their likelihood and impacts are defined appropriately. For this we list up the assets:
+In this section we will discuss the evaluated assets, the according threats and countermeasures. We point out the validity of the threats and countermeasures and if their likelihood and impacts are defined appropriately. For this we list the assets:
 
 \paragraph{Web Server}
 In general the threats and their countermeasure seem appropriate, but there are a few threats missing. The analysis focuses mostly on rendering the service unavailable but does not talk about integrity of the systems. For example a possible threat that a hacker or malware could get access to the system and install sniffing software or similar is not considered. Also it does not mention the possibility of changing the service in a non-destructive manner.
@@ -129,17 +144,16 @@ In the following we will analyze the implementation of the functional and securi
 The web application provides all requested functionality needed for the Certificate Issuing Process. This includes login with credentials or user certificate, changing the user's information, requesting a new certificate, displaying the the new certificate in a list along with all other valid (not yet revoked) certificates and the possibility to download all valid certificates. Client certificates are issued by an intermediate CA which uses a certificate signed by the root CA. 
 
 \item \textbf {Login with client certificate:}
-For the login with client certificates, the web server (nginx) verifies the certificate using the intermediate and root CA's certificates. The result is then forwarded together with the user certificate to the backend (Flask application) which checks if the certificate is not revoked and whether the user id (uid) provided in the certificate's subject field exists. If so the user gets loged in.
+For the login with client certificates, the web server (nginx) verifies the certificate using the intermediate and root CA's certificates. The result is then forwarded together with the user certificate to the backend (Flask application) which checks if the certificate is not revoked and whether the user id (uid) provided in the certificate's subject field exists. If so the user is logged in.
 
 \item \textbf{Certificate Revocation:}
-In the list of valid certificates there is a revoke link allowing the user to revoke the corresponding certificate. Before revoking, the backend  checks if the certificate was not already revoked. The revocation process includes the update of the CRL. Login with revoked certificates is prevented by the backend as described above. The newly generated CRL is published on the web server. The CRL however is only accessible for loged in users for which we don't see any specific reason. Moreover, the CRL contains no signature which bars the user from verifying the CRL's authenticity.
+In the list of valid certificates there is a revoke link allowing the user to revoke the corresponding certificate. Before revoking, the backend  checks if the certificate was not already revoked. The revocation process includes the update of the CRL. Login with revoked certificates is prevented by the backend as described above. The newly generated CRL is published on the web server. The CRL however is only accessible for logged in users for which we don't see any specific reason. Moreover, the CRL contains no signature which bars the user from verifying the CRL's authenticity.
 
 \item \textbf{CA Administrator Interface:}
-CA administrators can inspect the CA's current state through a dedicated web interface. They must provide a valid user certificate in order to authenticate. The implementation of the authentication is handled in the same way as for a normal user. As a last step, the backend checks if the user in the certificate is listed in the ca\_admins.txt file which contains the name of all CA administrators. This prevents a normal user from accessing the admin interface.
+CA administrators can inspect the CA's current state through a dedicated web interface. They must provide a valid user certificate in order to authenticate. CA administrator authentication is implemented in the same way as client authentication. As a last step, the backend checks if the user in the certificate is listed in the ca\_admins.txt file which contains the name of all CA administrators. This prevents a normal user from accessing the admin interface.
 
 \item \textbf{Key Backup:}
-The backup for client as well as CA keys and certificates is located on the logbox machine. Newly issued client certificates and keys are transferred after creation over an SSH connection from the webbox to the backup. However, if the logbox is not running (e.g maintenance reasons) or the connection fails for other reasons, the backup will not be performed. This is a problem as there is no regular key backup (mentioned in section 1.3 of the report),
- meaning that if the backup of client keys and certificates at creation time fails, there will never be a backup created for those. 
+The backup for client as well as CA keys and certificates is located on the logbox machine. Newly issued client certificates and keys are transferred after creation over an SSH connection from the webbox to the backup. However, if the logbox is not running (e.g maintenance reasons) or the connection fails for other reasons, the backup will not be performed. This is a problem as there is no regular key backup (mentioned in section 1.3 of the report), meaning that if the backup of client keys and certificates at creation time fails, they will never be backed up.
 
 \item \textbf{System Administration and Maintenance:}
 The remote system administration all happens over SSH. Every component runs an sshd process listening for incoming SSH connections on port 22. The firewall forwards incoming TCP connections on the ports 12346, 12347, 12348 to port 22 on the webbox, sqlbox and logbox respectively. The automated backup solution is partly implemented. For the logs they use rsyslog which forwards the system and application logs to the logbox. The configuration files are not backed up automatically and neither is the user database.
@@ -159,14 +173,12 @@ The Flask backend restricts access to the CA Functionality over https to logged 
 \item \textbf{Secrecy and Integrity for User Data}
   The harddrive of the sqlbox machine is encrypted which protects against physical theft. The user data which is sent between the client and the system uses HTTPS, which protects against an eavesdropping attacker. A user can only change his own user information after authenticating to the system which guarantees the integrity of the user data. The system reveals user data only to the user that authenticated himself.
 \item \textbf{Access Control on all Components}
-%(File Permission/user stuff...)
-
-% TODO describe difference of users
+Access control should be defined according to the principles of least privilege, minimum exposure and separation of concerns while still remaining usable and as simple as possible. For this section, good practice means according to these principles.
 \begin{enumerate}[label=(\alph*)]
-\item \textbf{Firewall}: There are two user accounts on this machine: \textit{admin} and \textit{syslog}. The user \textit{admin} has its home folder \texttt{/home/admin} and \texttt{/var/mail/admin}. The user \textit{syslog} also has its own home folder \texttt{/home/syslog} and logs the iptables in \texttt{/var/log/iptables}.
-\item \textbf{Webbox}: There are three user accounts: \textit{admin}, \textit{caweb} and \textit{syslog}. The users \textit{admin} and \textit{syslog} are similar as on the firewall. The user \textit{caweb} stores all CA scripts and webserver functionality in its own home folder \texttt{/home/caweb}. 
-\item \textbf{Sqlbox}: There are two user accounts: \textit{admin} and \textit{syslog}. Both are similar as in the firewall. 
-\item \textbf{Logbox}: There are three user accounts: \textit{admin}, \textit{syslog} and \textit{backups}. The user \textit{admin} behaves similar as on the firewall. The user \textit{syslog} has logs from all machines (including itself) stored under \texttt{/var/syslog/<machine name>/<application name>.log}. The user \textit{backups} backs up different CA settings in his home folder \texttt{/home/backups}.
+\item \textbf{Firewall}: There are two user accounts on this machine: \textit{admin} and \textit{syslog}. The user \textit{admin} has its home folder \texttt{/home/admin} and \texttt{/var/mail/admin}. The user \textit{syslog} also has its own home folder \texttt{/home/syslog} and logs the iptables in \texttt{/var/log/iptables}. It is good practice to have a separate user that stores and owns the log files.
+\item \textbf{Webbox}: There are three user accounts: \textit{admin}, \textit{caweb} and \textit{syslog}. The users \textit{admin} and \textit{syslog} are similar as in the firewall except that \textit{syslog} stores logs of different applications. The user \textit{caweb} stores all CA scripts and webserver functionality in its own home folder \texttt{/home/caweb}. Having a user \textit{caweb} which perfoms all webserver and CA application related operations while having no admin rights is a good practice since compromising this user does not automatically grant full access to the system. He can for example not modify any log files since they are owned by \textit{syslog} and thus not remove the traces of braking into the system (as long as they were logged). As described above, creating separate users for the webserver and the CA authority would be better. The CA authority user would handle the private keys and certificates and the webserver user all web related tasks.
+\item \textbf{Sqlbox}: There are two user accounts: \textit{admin} and \textit{syslog}. Both are similar as in the firewall except that \textit{syslog} stores logs of different applications. The \code{mysql} database has three users: \textit{root}, \textit{rsyslog} and \textit{caweb}. Only \textit{caweb} can access the user data from the machine webbox. \textit{Rsyslog} can only access log data from the sqlbox itself while \textit{root} can access any database from sqlbox itself. Restricting access to the user data or log data to one user and one machine is a good practice.
+\item \textbf{Logbox}: There are three user accounts: \textit{admin}, \textit{syslog} and \textit{backups}. The user \textit{admin} behaves similar as in the firewall. The user \textit{syslog} has logs from all machines (including itself) stored under \texttt{/var/syslog/} using the following naming convention: \texttt{<machine>/<app name>.log} with the ext file attribute \texttt{a} making them append-only as explained above. The user \textit{backups} owns backups of different webserver and CA authority applications and settings stored in his home folder \texttt{/home/backups}. These users are separated because they serve a different purpose, logging versus backup.
 \end{enumerate}
 \end{enumerate}
 
@@ -186,9 +198,9 @@ For white box testing we used e.g. code review, privilege escalation techniques/
 \paragraph{Webbox:} On the webbox machine we analyzed different configuration/settings files including those of nginx, uwsgi (application server), openssl (used for CA functionalities) and Flask but could not find any suspicious or unusual configuration. Looking at the application's python files and the shell scripts (containing the openssl commands) confirmed the existence of the command injection vulnerability together with a Git repository file  we found in the Flask application folder. This allowed us to inspect their Flask implementation history including some interesting commits named "adding second exploit".
 \paragraph{Firewall:} For the firewall we used system tools like \code{iptables} in order to investigate the defined NAT table rules.
 
-\paragraph{Sqlbox:} In order to check the existing database users and their privileges we used \code{mysql}. 
+\paragraph{Sqlbox:} In order to check the existing database users and their privileges we used \code{mysql}. We especially checked which user have access to a certain part of the database and from which machine they can connect to the database.
 
-\paragraph{Logbox:}
+\paragraph{Logbox:} We investigated the backup of log files and application files. We especially looked at the files owned by \textit{syslog} and what kind of log files from which machine are stored. For the backed up application and configuration files owned by \textit{backups}, we checked which parts were updated and how the updates were performed.
 
 \subsubsection{Countermeasures}
 In this section we briefly discuss the implementation of the proposed countermeasures in the risk analysis. The number after each countermeasure corresponds to the number in the risk analysis.
