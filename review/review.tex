@@ -55,7 +55,7 @@
 \begin{itemize}
 \item There is a firewall on a separate machine where all incoming and outgoing traffic passes through. All communication between the system and the outside is based on either SSL/TLS or SSH which provides integrity and secrecy. Only system relevant ports are open and redirected to the corresponding machine in the system which reduces the attack surface of the system.
 \item The database server is on a separate machine. Even if part of the system (e.g. the webserver) are compromised the user data may still be uncompromised.
-\item The log files from different machines, all application data and all configurations are backed up to a separate machine which allows faster restoring of the system after failures. Making the logs append-only additionally helps detecting intrusions or modifications of the system since existing log entries can not be changed. 
+\item The log files from different machines, all application data and all configurations are backed up to a separate machine which allows faster restoring of the system after failures. Making the logs append-only additionally helps detecting intrusions or modifications of the system since existing log entries can not be changed and therefore traceability is guaranteed. 
 
 \item The root CA, which signs the intermediate CA, is not used in the running system. This is a good practice, because in a case where the intermediate CA private key gets compromised, the root CA can still revoke the intermediate CA's certificate. After that the root CA can create and sign a new intermediate CA.
   
@@ -63,7 +63,7 @@
 
 \textbf{Negative aspects}
 \begin{itemize}
-\item CA server and Webserver are not separated. Separating them would increase the resilience against partial compromise and it also becomes harder to exploit vulnerabilities in the webserver to impact the certificate authority and vice versa.
+\item CA core and web server are not separated. Separating them would increase the resilience against partial compromise according to the principle of compartmentalization. For example, even if an attacker had full access to the file system through a vulnerability or misconfiguration in the web server he would not be able to access the user certificates.
 \end{itemize}
 
 \subsubsection{Security Design}
