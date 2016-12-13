@@ -53,10 +53,11 @@
 \subsubsection{Architecture}
 \textbf{Positive aspects}
 \begin{itemize}
-\item There is a firewall on a separate machine where all incoming and outgoing traffic passes through. Using such a setup, it is easy to manage any connection between the system and the outside. All communication between the system and the outside is based on either SSL/TLS or SSH which provides integrity and secrecy. Only relevant ports are open and redirect to the corresponding machine in the system which reduces the attack surface of the system.
-\item The database server is on a separate machine. Even if part of the system (e.g. the webserver) is compromised the user data may still be uncompromised.
-\item The log files from different machines, all applications and all configurations are backed up to a separate machine. This helps detecting intrusions into the system, modifications of the system and restoring the system after failures.
-\item The root CA, which signs the intermediate CA is not used in the running system which is a good practice, since the intermediate CA private key can be compromised and then the root CA can create and sign another intermediate CA.
+\item There is a firewall on a separate machine where all incoming and outgoing traffic passes through. All communication between the system and the outside is based on either SSL/TLS or SSH which provides integrity and secrecy. Only system relevant ports are open and redirected to the corresponding machine in the system which reduces the attack surface of the system.
+\item The database server is on a separate machine. Even if part of the system (e.g. the webserver) are compromised the user data may still be uncompromised.
+\item The log files from different machines, all application data and all configurations are backed up to a separate machine which allows faster restoring of the system after failures. Making the logs append-only additionally helps detecting intrusions or modifications of the system since existing log entries can not be changed. 
+
+\item The root CA, which signs the intermediate CA, is not used in the running system. This is a good practice, because in a case where the intermediate CA private key gets compromised, the root CA can still revoke the intermediate CA's certificate. After that the root CA can create and sign a new intermediate CA.
   
 \end{itemize}
 
