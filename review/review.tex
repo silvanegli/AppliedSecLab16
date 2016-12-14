@@ -142,7 +142,7 @@ In the following we will analyze the implementation of the functional and securi
 \begin{enumerate}
 
 \item \textbf{Certificate Issuing:}
-The web application provides all requested functionality needed for the Certificate Issuing Process. This includes login with credentials or user certificate, changing the user's information, requesting a new certificate, displaying the the new certificate in a list along with all other valid (not yet revoked) certificates and the possibility to download all valid certificates. Client certificates are issued by an intermediate CA which uses a certificate signed by the root CA. 
+The web application provides all requested functionality needed for the Certificate Issuing Process. This includes login with credentials or user certificate, changing the user's information, requesting a new certificate, displaying the new certificate in a list along with all other valid (not yet revoked) certificates and the possibility to download all valid certificates. Client certificates are issued by an intermediate CA which uses a certificate signed by the root CA. 
 
 \item \textbf {Login with client certificate:}
 For the login with client certificates, the web server (nginx) verifies the certificate using the intermediate and root CA's certificates. The result is then forwarded together with the user certificate to the backend (Flask application) which checks if the certificate is not revoked and whether the user id (uid) provided in the certificate's subject field exists. If so the user is logged in.
@@ -157,7 +157,7 @@ CA administrators can inspect the CA's current state (number of issued/revoked c
 The backup for client as well as CA keys and certificates is located on the logbox machine. Newly issued client certificates and keys are transferred after creation over an SSH connection from the webbox to the backup. However, if the logbox is not running (e.g maintenance reasons) or the connection fails for other reasons, the backup will not be performed. This is a problem as there is no regular key backup (mentioned in section 1.3 of the report) meaning, that if the backup of client keys and certificates at creation time fails, they will never be backed up.
 
 \item \textbf{System Administration and Maintenance:}
-The remote system administration all happens over SSH. Every component runs an ssh daemon listening for incoming SSH connections on port 22. The firewall forwards incoming TCP connections on the ports 12346, 12347, 12348 to port 22 on the webbox, sqlbox and logbox respectively. The automated backup solution is partly implemented. For the logs they use rsyslog which forwards the system and application logs to the logbox. The configuration files are not backed up automatically and neither is the user database.
+The remote system administration all happens over SSH. Every component runs an SSH daemon listening for incoming SSH connections on port 22. The firewall forwards incoming TCP connections on the ports 12346, 12347, 12348 to port 22 on the webbox, sqlbox and logbox respectively. The automated backup solution is partly implemented. For the logs they use rsyslog which forwards the system and application logs to the logbox. The configuration files are not backed up automatically and neither is the user database.
 
 
 \end{enumerate}
@@ -165,10 +165,10 @@ The remote system administration all happens over SSH. Every component runs an s
 \begin{enumerate}
 
 \item \textbf{Access Control with regard to CA Functionality and Data}
-The Flask backend restricts access to the CA Functionality over https to logged in users only. It also checks whether a user is authorized to download or revoke the certificate in question. The webserver verifies the signature of provided user certificates in order to prevent access with a faked certificate. As the application server (uwsgi) is started as service with user caweb and group www-data and the issued user keys and pk12 files are owned by a different user, the webserver adheres to the principles of least privilege.
+The Flask backend restricts access to the CA functionality over HTTPS to logged in users only. It also checks whether a user is authorized to download or revoke the certificate in question. The webserver verifies the signature of provided user certificates in order to prevent access with a faked certificate. As the application server (uwsgi) is started as service with user caweb and group www-data and the issued user keys and pk12 files are owned by a different user, the webserver adheres to the principles of least privilege.
 
 \item \textbf{Secrecy and Integrity for Private Keys in Backup}
-  The harddrive of the logbox machine is encrypted which protects against physical theft. The machines are all in the internal network which makes eavesdropping on the private keys difficult for an attacker outside this network. The backed up keys are owned by a special backup user.
+  The harddrive of the logbox machine is encrypted which protects against physical theft. The machines are all in the internal network which makes eavesdropping on the private keys difficult for an attacker outside this network. The backed up keys are owned by a special backup user, they are not encrypted on a file level though.
   
  %backup files are append-only (see lsattr) (-> no deletion)
 \item \textbf{Secrecy and Integrity for User Data}
