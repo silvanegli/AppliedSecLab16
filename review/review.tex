@@ -291,9 +291,9 @@ The space of possible commands beeing executed by any user is only limited by th
 \begin{lstlisting}[language=bash]
 $(grep -rw secret_key app/|sed 's/\ /*/g;s/\//*/g'\)
 \end{lstlisting}
-and then issuing a certificate, we were able to compromise the applications secret key by retrieving it from the OU attribute in the certificate's subject field. We then could have created a cookie for an arbitrary user and sign it with the secret key. 
+and then issuing a certificate, we were able to compromise the application's secret key by retrieving it from the OU attribute in the certificate's subject field. We then could have created a cookie for an arbitrary user and sign it with the secret key. 
 
-\paragraph{Mitigation:} The vulnerability could be mitigated by
+\paragraph{Mitigation:} The vulnerability could be mitigated by the following two countermeasures.
 \begin{enumerate}
 \item Properly sanitize the user's input by allowing only alphanumerical characters for example. Note that this should be done on any field not only first name as they are vulnerable too. 
 \item Setting shell=False in the subprocess module and therefore disable all shell based features. In case the application relies on any shell based features it should use the wrappers provided by python. (e.g. os.walk())
@@ -312,7 +312,7 @@ Then we got access to the webserver bash as a root user, which allows to execute
 %Compare your system with the external system you were given for the review. Are there any remarkable highlights in your system or the external system?
 In this section we would like to compare our system to the one we reviewed.
 
-There are two aspects the reviewed system does we like but didn't do ourselves. The first being FDE, the second encryption of the client keys. For both we think it is good to have, but it hinders the usability of the system and is not particularly useful (e.g. if all keys use the same password). We also like the simplicity of the reviewed system, whereas our system is built a little more complex. And nevertheless they check certificate revocation status in their backend, whereas we rely on nginx. We like their solution because it eases error handling.
+There are two aspects the reviewed system does we like but did not  do ourselves. The first being FDE, the second encryption of the client keys. For both we think it is good to have, but it hinders the usability of the system and is not particularly useful (e.g. if all keys use the same password). We also like the simplicity of the reviewed system, whereas our system is built a little more complex. And nevertheless they check certificate revocation status in their backend, whereas we rely on nginx. We like their solution because it eases error handling.
 
 On the other hand there are some things we like better in our system. We have some basic DDoS protection which is missing in the reviewed system. Their system is missing periodical backup of configuration and keys and also the database backup is missing. Further, the reviewed system pushes to the backup, whereas in our system the backup pulls the data to backup.
 
