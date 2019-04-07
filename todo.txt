@@ -1,2 +1,0 @@
-- use openssl ca module instead of x509 for creating signed user certs (currently index.txt is not updated)
-- include email in certificate
