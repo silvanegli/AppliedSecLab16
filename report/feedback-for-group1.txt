@@ -1,0 +1,117 @@
+Feedback for your project and the review conducted by your group.
+(Group 1: Cyrill Krähenbühl, Silvan Egli, and Lukas Bischofberger)
+
+Project grade: 5.7 [59.5/70 pt]
+
+Please note that the project grade accounts for 40% of your final grade for the course and the exam accounts for the remaining 60% of your individual grade. We cannot reveal your final grade to you until it has been officially decreed via myStudies, so we cannot give you information about the exam until after that date.
+
+Find information about your report below.
+
+-------------------------------------------------
+System Description & Implementation:   17/20
+- System description (SD): 	5.5/7
+- Implementation (IMP):		7  /9
+- Presentation (P): 		3.5/4
+
+SD:
++ simple, clear design
++ intermediate CA, offline storage of root CA private key
++ backup server pulls backups
+- CA core and web server on same network (not as bad as on same machine, 
+  but isolating the WS in a DMZ would have been preferable) (-0.5 pt)
+- unclear how Django authenticates to CACore 
+- sysadmin access through firewall may create single point of failure,
+  unclear where and how authentication happens
+- Sect 1.3 well-organized but quite short (-1 pt)
+  - forgot to mention authenticity
+  - not specified where the root CA private key is stored
+  - unclear whether and how private keys are protected in PKCS #12 archive
+  - key management in 1.3.3 does not cover keys for ssh
+  
+IMP: 
++ all requirements addressed, but 
+- shell injection due to insufficient validation of email address (-1 pt)
+- bug in certificate issuing (-0.5 pt)
+- log is not tamper-proof (-0.5 pt)
+- unnecessary open ports
+
+P:
+- unclear from Figure 1 and Sect 1.1 where DB server runs
+  DB server only appears in Sect 1.2 on p 5 (-0.5 pt)
+
+-------------------------------------------------
+Risk Analysis: 			   				15.5/20
+- Assets (A): 				2  /3
+- Threat Sources (TS): 		2.5/3
+- Risk definitions (RD): 	2  /2
+- Risk evaluation (RE): 	5.5/7
+- Presentation (P): 		3.5/5
+
+A:
++ quite comprehensive list
+- many security properties are missing (mostly availability and 
+  integrity) (-0.5 pt)
+- missing asset: reputation (-0.5 pt)
+- unclear why "Private key holder" is separate from CA admin 
+
+TS:
+- missing threat source: investigated entities, unloyal CA admin 
+  (since he has access to private key) (-0.5 pt)
+
+RE:
++ very comprehensive risk evaluation (56 entries!)
+- some evaluations and countermeasures are questionnable (-1 pt), e.g.
+  - no 1, 5: why M? can in principle be replaced quickly 
+    (provided safe backup is available, see below)
+  - no 21: why is the likelihood different from the one in no 19? 
+    (*after* sanitization of all input, same countermeasure) 
+  - no 25: how could you deny access to sysadmins?
+  - no 30, 32, 33: does not make much sense as sysadmin is root
+  - no 38: is this sufficient? maybe crypto should be used?
+    (see also Sect 2.4.24)
+  - no 40: private key hopefully protected by passphrase?
+  - no 46: what about stealing root CA private key?
+  - no 56: not really a countermeasure, rather a form of risk acceptance
+- Sect 2.4.25:
+  - missing expected impact of additional countermeasures
+  - insurance against threats may be expensive for a small company
+    and not help much for recovering from a loss of reputation
+  - no 21: why is input validation not sufficient?
+  - no 38: not a countermeasure
+- missing threats: (-0.5 pt) 
+  - extraction of user credentials by social engineering 
+  - unloyal CA admin steals private key
+
+P:
+- in A: asset "Application server" does not occur in system description;
+  it is unclear what this server is. 
+- in A: "Backup server" appears twice with contradicting descriptions
+- in RE: several mismatches between asset mentioned in threats and asset
+  in subsection title (no 47, 49, 50, 52, 54)
+- terminology: using both "confidential" and "private"
+
+
+-------------------------------------------------
+Review of group 4:						19/20
+- System Description (SD): 	3/4
+- Risk analysis (RA): 		4/4
+- Implementation (IMP): 	4/4
+- Comparison (CMP): 		3/3
+- Presentation (P): 		5/5
+
+SD:
+- no comment on storing user private key in the clear on the CA/web-server (-1pt)
+
+IMP:
+- thorough analysis, good job finding the bad backup and the lack of signatures on CRLs.
+
+CMP:
+- short, but hitting all the main differences and comparing reasonably
+
+-------------------------------------------------
+Presentation:			8/10
+
+Your analysis of the other groups project was presented well, but you could have added more on comparison to your system, and a consideration and judgment of their risk analysis (at a high level). In your own presentation, the 'justification' for lack of DMZ was not very convincing, and in general you were talking very fast and loose, with little precision at times. 
+
+
+
